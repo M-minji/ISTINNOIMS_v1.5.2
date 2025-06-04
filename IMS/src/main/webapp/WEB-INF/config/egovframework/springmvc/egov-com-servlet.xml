@@ -1,0 +1,64 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context" xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+
+	<context:component-scan base-package="egovframework">
+		<context:include-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
+		<context:exclude-filter expression="org.springframework.stereotype.Service" type="annotation"/>
+		<context:exclude-filter expression="org.springframework.stereotype.Repository" type="annotation"/>
+	</context:component-scan>
+
+	<!-- For Pagination Tag -->
+	<bean class="egovframework.com.cmm.ImagePaginationRenderer" id="imageRenderer"/>
+
+	<bean class="egovframework.rte.ptl.mvc.tags.ui.pagination.DefaultPaginationManager" id="paginationManager">
+		<property name="rendererType">
+			<map>
+				<entry key="image" value-ref="imageRenderer"/>
+			</map>
+		</property>
+	</bean>
+
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="webBindingInitializer">
+            <bean class="egovframework.com.cmm.web.EgovBindingInitializer"/>
+        </property>
+    </bean>
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+ 
+
+	<mvc:interceptors>
+		<bean class="egovframework.rndp.com.interceptor.web.LoginInterceptor" />
+		<bean class="egovframework.rndp.com.interceptor.web.MatrixIntrceptor" />
+		<bean class="egovframework.rndp.com.interceptor.web.LogInterceptor" /> 
+		<mvc:interceptor>
+			<mvc:mapping path="/login.do" />
+			<mvc:exclude-mapping path="/main.do" />
+			<bean class="egovframework.rndp.com.interceptor.web.LoginInterceptor" /> 
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+
+	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="defaultErrorView" value="egovframework/com/cmm/error/egovError"/>
+		<property name="exceptionMappings">
+			<props>
+				<prop key="org.springframework.dao.DataAccessException">egovframework/com/cmm/error/dataAccessFailure</prop>
+				<prop key="org.springframework.transaction.TransactionException">egovframework/com/cmm/error/dataAccessFailure</prop>
+				<prop key="egovframework.rte.fdl.cmmn.exception.EgovBizException">egovframework/com/cmm/error/egovBizException</prop>
+				<prop key="org.springframework.web.HttpSessionRequiredException">egovframework/com/uat/uia/EgovLoginUsr</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- for JFile -->
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" p:order="0"/> 
+	<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver"
+		p:order="1" p:viewClass="org.springframework.web.servlet.view.tiles3.TilesView" />
+	<!-- Don't add suffix or prefix like you do with .jsp files -->
+	<bean id="tilesConfigurer"
+		class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+		<property name="definitions">
+			<value>/WEB-INF/config/egovframework/springmvc/tiles-layout.xml</value>
+		</property>
+	</bean>
+	
+ </beans>

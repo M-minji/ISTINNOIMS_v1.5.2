@@ -1,0 +1,982 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="adminmenuVO" type="egovframework.rndp.admin.menu.service.AdminmenuVO"/>
+	<typeAlias  alias="menuBeanVO" type="egovframework.rndp.admin.menu.service.MenuBeanVO"/>
+	
+	<resultMap id="adminmenuVO1" class="adminmenuVO">
+		<result property="key" column="k_admin_menu_key"/>
+		<result property="root" column="k_admin_menu_root"/>
+		<result property="ref" column="k_admin_menu_ref"/>
+		<result property="depth" column="k_admin_menu_depth"/>
+		<result property="step" column="k_admin_menu_step"/>
+		<result property="name" column="k_admin_menu_name"/>
+		<result property="url" column="k_admin_menu_url"/>
+		<result property="target" column="k_admin_menu_target"/>
+		<result property="groupKey" column="k_admin_group_key"/>
+	</resultMap>
+	<select id="adminmenuDAO.adminmenuTopList" parameterClass="adminmenuVO" resultMap="adminmenuVO1">
+		/* adminmenuDAO.adminmenuTopList */
+		<![CDATA[
+			SELECT 
+				m.k_admin_menu_key
+				, k_admin_menu_root
+				, k_admin_menu_ref
+				, k_admin_menu_depth
+				, k_admin_menu_step
+				, k_admin_menu_name
+				, k_admin_menu_url
+				, k_admin_menu_target
+				, m.k_admin_group_key
+			FROM k_admin_menu m, k_admin_auth t, k_admin a
+			WHERE 
+				a.k_admin_id = #id# 
+			AND 
+				a.k_admin_key = t.k_admin_key
+			AND 
+				t.k_admin_auth_flag = 'T'
+			AND 
+				t.k_admin_menu_key = m.k_admin_menu_key
+			AND 
+				m.k_admin_menu_key != '1'
+		]]>
+			/* 2015 04 28 admin group key menu */
+			<isNotEmpty prepend="AND" property="groupKey">
+				m.k_admin_group_key = #groupKey#
+			</isNotEmpty>
+			ORDER BY k_admin_menu_root
+	</select>
+	
+	<resultMap id="adminmenuVO2" class="adminmenuVO">
+		<result property="key" column="k_admin_menu_key"/>
+		<result property="root" column="k_admin_menu_root"/>
+		<result property="ref" column="k_admin_menu_ref"/>
+		<result property="depth" column="k_admin_menu_depth"/>
+		<result property="step" column="k_admin_menu_step"/>
+		<result property="name" column="k_admin_menu_name"/>
+		<result property="url" column="k_admin_menu_url"/>
+		<result property="target" column="k_admin_menu_target"/>
+	</resultMap>
+	<select id="adminmenuDAO.adminmenuLeftList" parameterClass="int" resultMap="adminmenuVO2">
+		/* adminmenuDAO.adminmenuLeftList */
+		<![CDATA[
+			select 
+				k_admin_menu_key
+				, k_admin_menu_root
+				, k_admin_menu_ref
+				, k_admin_menu_depth
+				, k_admin_menu_step
+				, k_admin_menu_name
+				, k_admin_menu_url
+				, k_admin_menu_target
+			from 
+				k_admin_menu
+			where 
+				k_admin_menu_root = #root# 
+			order by k_admin_menu_step
+		]]>
+	</select>
+	<select id="adminmenuDAO.adminMenuAllList"  resultMap="adminmenuVO2">
+		/* adminmenuDAO.adminMenuAllList */
+		<![CDATA[
+			select 
+				k_admin_menu_key
+				, k_admin_menu_root
+				, k_admin_menu_ref
+				, k_admin_menu_depth
+				, k_admin_menu_step
+				, k_admin_menu_name
+				, k_admin_menu_url
+				, k_admin_menu_target
+				, IFNULL(k_admin_group_key,0), '' as group_name 
+			from 
+				k_admin_menu
+			where 1=1
+			order by k_admin_menu_step
+		]]>
+	</select>
+	<resultMap id="adminmenuVO3" class="adminmenuVO">
+		<result property="key" column="k_admin_menu_key"/>
+		<result property="root" column="k_admin_menu_root"/>
+		<result property="ref" column="k_admin_menu_ref"/>
+		<result property="depth" column="k_admin_menu_depth"/>
+		<result property="step" column="k_admin_menu_step"/>
+		<result property="name" column="k_admin_menu_name"/>
+		<result property="url" column="k_admin_menu_url"/>
+		<result property="target" column="k_admin_menu_target"/>
+		<result property="groupKey" column="k_admin_group_key"/>
+	</resultMap>
+
+	<select id="adminmenuDAO.adminmenuList" resultMap="adminmenuVO3">
+		/* adminmenuDAO.adminmenuList */
+		<![CDATA[
+			select 
+				k_admin_menu_key
+				, k_admin_menu_root
+				, k_admin_menu_ref
+				, k_admin_menu_depth
+				, k_admin_menu_step
+				, k_admin_menu_name
+				, k_admin_menu_url
+				, k_admin_menu_target
+				, IFNULL(k_admin_group_key, 0) AS k_admin_group_key
+			from 
+				k_admin_menu m 
+			order by k_admin_menu_root, k_admin_menu_step
+		]]>
+	</select>
+	
+	
+	<resultMap id="categoryAdminMenu" class="adminmenuVO">
+		<result property="ref" column="k_admin_menu_ref"/>
+		<result property="name" column="k_admin_menu_name"/>
+	</resultMap>
+	<select id="adminmenuDAO.category" parameterClass="int" resultMap="categoryAdminMenu">
+		/* adminmenuDAO.category */
+		<![CDATA[
+			select 
+				k_admin_menu_ref
+				, k_admin_menu_name 
+			from k_admin_menu
+			where k_admin_menu_key = #ref#
+		]]>
+	</select>
+	
+	<select id="adminmenuDAO.category2" parameterClass="int" resultMap="categoryAdminMenu">
+		/* adminmenuDAO.category2 */
+		<![CDATA[
+			select 
+				k_admin_menu_ref
+				, k_admin_menu_name 
+			from k_admin_menu
+			where k_admin_menu_key = #ref#
+		]]>
+	</select>
+	
+	<select id="adminmenuDAO.adminmenuMax" resultClass="int">
+		/* adminmenuDAO.adminmenuMax */
+		select IFNULL(max(k_admin_menu_key), 0) + 1  from k_admin_menu
+	</select>
+	
+	<resultMap id="adminmenuVO4" class="adminmenuVO">
+		<result property="root" column="k_admin_menu_root"/>
+		<result property="ref" column="k_admin_menu_ref"/>
+		<result property="depth" column="k_admin_menu_depth"/>
+		<result property="step" column="k_admin_menu_step"/>
+	</resultMap>
+	<select id="adminmenuDAO.adminmenuInfo" parameterClass="int" resultMap="adminmenuVO4">
+		/* adminmenuDAO.adminmenuInfo */
+		select 
+			k_admin_menu_root
+			, k_admin_menu_ref
+			, k_admin_menu_depth
+			, k_admin_menu_step 
+		from 
+			k_admin_menu
+		where k_admin_menu_key = #key#
+	</select>
+	
+	<select id="adminmenuDAO.adminmenuMaxStep1" parameterClass="adminmenuVO" resultClass="int">
+		/* adminmenuDAO.adminmenuMaxStep1 */
+		select 
+			IFNULL(max(k_admin_menu_step), 0) + 1 
+		from 
+			k_admin_menu
+		where 
+			k_admin_menu_root = #root# 
+		and k_admin_menu_depth > #depth#
+		and k_admin_menu_step > #step#
+	</select>
+	
+	<select id="adminmenuDAO.adminmenuMaxStep2" parameterClass="adminmenuVO" resultClass="int">
+		/* adminmenuDAO.adminmenuMaxStep2 */
+		<![CDATA[
+		select 
+			k_admin_menu_step 
+		from 
+			k_admin_menu
+		where 
+			k_admin_menu_root = #root#
+		and 
+			k_admin_menu_depth <= #depth#
+		and 
+			k_admin_menu_step > #step#
+		order by k_admin_menu_step
+		limit 1
+		]]>
+	</select>
+	
+	<update id="adminmenuDAO.adminmenuMoveStepPlus" parameterClass="adminmenuVO">
+		/* adminmenuDAO.adminmenuMoveStepPlus */
+		update k_admin_menu set k_admin_menu_step = k_admin_menu_step +1 
+		where k_admin_menu_root = #root# 
+		and k_admin_menu_step > #step#
+	</update>
+	
+	<update id="adminmenuDAO.adminmenuMoveStepMinus" parameterClass="adminmenuVO">
+		/* adminmenuDAO.adminmenuMoveStepMinus */
+		update k_admin_menu set k_admin_menu_step = k_admin_menu_step -1 
+		where k_admin_menu_root = #root# 
+		and k_admin_menu_step > #step#
+	</update>
+	
+	<insert id="adminmenuDAO.adminmenuInsert" parameterClass="adminmenuVO">
+		/* adminmenuDAO.adminmenuInsert */
+		insert into k_admin_menu(
+			k_admin_menu_key
+			, k_admin_menu_root
+			, k_admin_menu_ref
+			, k_admin_menu_depth
+			, k_admin_menu_step
+			, k_admin_menu_name
+			, k_admin_menu_url
+			, k_admin_menu_target
+			, k_admin_group_key
+		) values (
+			#key#
+			, #root#
+			, #ref#
+			, #depth#
+			, #step#
+			, #name#
+			, #url#
+			, #target#
+			, #groupKey#
+		)
+	</insert>
+	
+	<resultMap id="adminmenuInfo" class="adminmenuVO">
+		<result property="root" column="k_admin_menu_root"/>
+		<result property="ref" column="k_admin_menu_ref"/>
+		<result property="depth" column="k_admin_menu_depth"/>
+		<result property="step" column="k_admin_menu_step"/>
+		<result property="name" column="k_admin_menu_name"/>
+		<result property="url" column="k_admin_menu_url"/>
+		<result property="target" column="k_admin_menu_target"/>
+	</resultMap>
+	
+	<select id="adminmenuDAO.adminmenuInfo1" parameterClass="int" resultMap="adminmenuInfo">
+		/* adminmenuDAO.adminmenuInfo1 */
+		<![CDATA[
+			select 
+				k_admin_menu_root
+				, k_admin_menu_ref
+				, k_admin_menu_depth
+				, k_admin_menu_step
+				, k_admin_menu_name
+				, k_admin_menu_url
+				, k_admin_menu_target
+				, IFNULL(k_admin_group_key,0) AS group_name
+			from k_admin_menu
+			where k_admin_menu_key = #key#
+		]]>	
+	</select>
+	
+	<update id="adminmenuDAO.adminmenuUpdate" parameterClass="adminmenuVO">
+		/* adminmenuDAO.adminmenuUpdate */
+		update 
+			k_admin_menu set k_admin_menu_name = #name#
+			, k_admin_menu_url = #url#
+			, k_admin_menu_target = #target#
+			, k_admin_group_key = #groupKey#
+		where k_admin_menu_key = #key#
+	</update>
+	
+	<resultMap id="adminmenuOrder" class="adminmenuVO">
+		<result property="root" column="k_admin_menu_root"/>
+		<result property="name" column="k_admin_menu_name"/>
+	</resultMap>
+	<select id="adminmenuDAO.adminmenuOrderList" parameterClass="int" resultMap="adminmenuOrder">
+		<![CDATA[
+		/* adminmenuDAO.adminmenuOrderList */
+		select 
+			k_admin_menu_root
+			, k_admin_menu_name 
+		from k_admin_menu
+		where k_admin_menu_depth = 0 
+		and k_admin_menu_root <> #root# 
+		order by k_admin_menu_root
+		]]>	
+	</select>
+	
+	<update id="adminmenuDAO.adminmenuOrder1" parameterClass="adminmenuVO">
+		/* adminmenuDAO.adminmenuOrder1 */
+		<![CDATA[
+		update k_admin_menu set k_admin_menu_root = #strRoot1# 
+		where k_admin_menu_root = #strRoot2#
+		]]>
+	</update>
+	
+	<update id="adminmenuDAO.adminmenuOrder2" parameterClass="adminmenuVO">
+		/* adminmenuDAO.adminmenuOrder2 */
+		<![CDATA[
+		update k_admin_menu set k_admin_menu_root = k_admin_menu_root + #strRoot1#
+		where k_admin_menu_root >= #strRoot2#
+		]]>
+	</update>
+	
+	<update id="adminmenuDAO.adminmenuSubOrder1" parameterClass="adminmenuVO">
+		/* adminmenuDAO.adminmenuSubOrder1 */
+		<![CDATA[
+		update k_admin_menu set k_admin_menu_step = #strStep1# 
+		where k_admin_menu_root = #root#
+		and k_admin_menu_step = #strStep2#
+		]]>
+	</update>
+	
+	<update id="adminmenuDAO.adminmenuSubOrder2" parameterClass="adminmenuVO">
+		/* adminmenuDAO.adminmenuSubOrder2 */
+		<![CDATA[
+		update k_admin_menu set k_admin_menu_step = k_admin_menu_step + #strStep1#
+		where k_admin_menu_root = #root# 
+		and k_admin_menu_step >= #strStep2#
+		]]>
+	</update>
+	
+	<resultMap id="adminmenuSubOrder" class="adminmenuVO">
+		<result property="step" column="k_admin_menu_step"/>
+		<result property="name" column="k_admin_menu_name"/>
+	</resultMap>
+	<select id="adminmenuDAO.adminmenuSubOrderList" parameterClass="adminmenuVO" resultMap="adminmenuSubOrder">
+		<![CDATA[
+		/* adminmenuDAO.adminmenuSubOrderList */
+		select 
+			k_admin_menu_step
+			, k_admin_menu_name 
+		from k_admin_menu
+		where 
+			k_admin_menu_step <> #step# 
+		and k_admin_menu_root = #root#
+		and k_admin_menu_depth = #depth# 
+		order by k_admin_menu_step
+		]]>	
+	</select>
+	
+	<resultMap id="adminmenuDeleteTree" class="adminmenuVO">
+		<result property="key" column="k_admin_menu_key"/>
+		<result property="depth" column="k_admin_menu_depth"/>
+	</resultMap>
+	<select id="adminmenuDAO.deleteTree" parameterClass="adminmenuVO" resultMap="adminmenuDeleteTree">
+		<![CDATA[
+		/* adminmenuDAO.deleteTree */
+		select 
+			k_admin_menu_key
+			, k_admin_menu_depth 
+		from k_admin_menu
+		where k_admin_menu_root = #root# 
+		and k_admin_menu_depth >= #depth# 
+		and k_admin_menu_step >= #step# 
+		order by k_admin_menu_step
+		]]>	
+	</select>
+	
+	<delete id="adminmenuDAO.adminmenuDelete" parameterClass="int">
+		/* adminmenuDAO.adminmenuDelete */
+		delete from k_admin_menu where k_admin_menu_key = #key#
+	</delete>
+	
+	<update id="adminmenuDAO.adminmenuMoveStep" parameterClass="adminmenuVO">
+		/* adminmenuDAO.adminmenuMoveStep */
+		update k_admin_menu set k_admin_menu_step = k_admin_menu_step-1
+		where k_admin_menu_root = #root#
+		and k_admin_menu_step > #step#
+	</update>
+	
+	<update id="adminmenuDAO.adminmenuStepUp" parameterClass="int">
+		/* adminmenuDAO.adminmenuStepUp */
+		update k_admin_menu set k_admin_menu_root = k_admin_menu_root - 1
+		where k_admin_menu_root > #root#
+	</update>
+	
+	
+	
+	
+	
+	<resultMap id="menuBean" class="menuBeanVO">
+		<result property="key" column="k_menu_key"/>
+		<result property="adminId" column="k_admin_id"/>
+		<result property="root" column="k_menu_root"/>
+		<result property="ref" column="k_menu_ref"/>
+		<result property="depth" column="k_menu_depth"/>
+		<result property="step" column="k_menu_step"/>
+		<result property="groupKey" column="k_menu_group_key"/>
+		<result property="name" column="k_menu_name"/>
+		<result property="type" column="k_menu_type"/>
+		<result property="visible" column="k_menu_visible_flag"/>
+		<result property="statistic" column="k_menu_statistic_flag"/>
+		<result property="description" column="k_menu_description"/>
+		<result property="adminKey" column="k_admin_key"/>
+		<result property="screenId" column="k_screen_id"/>
+	</resultMap>
+	<select id="menuDAO.menuInfoList" parameterClass="int" resultMap="menuBean">
+		/* menuDAO.menuInfoList */
+		select 
+			k_menu_key
+			, k_admin_id
+			, k_menu_root
+			, k_menu_ref
+			, k_menu_depth
+			, k_menu_step
+			, k_menu_group_key
+			, k_menu_name
+			, k_menu_type
+			, k_menu_visible_flag
+			, k_menu_statistic_flag
+			, k_menu_description
+			, m.k_admin_key
+			, m.k_screen_id
+		from k_menu m, k_admin a 
+		where k_menu_group_key = #groupKey#
+		and a.k_admin_key = m.k_admin_key
+		order by k_menu_root, k_menu_step
+	</select>
+	
+	
+	<resultMap id="menu" class="menuBeanVO">
+		<result property="root" column="k_menu_root"/>
+		<result property="adminKey" column="k_admin_key"/>
+		<result property="ref" column="k_menu_ref"/>
+		<result property="depth" column="k_menu_depth"/>
+		<result property="step" column="k_menu_step"/>
+		<result property="groupKey" column="k_menu_group_key"/>
+		<result property="name" column="k_menu_name"/>
+		<result property="description" column="k_menu_description"/>
+	</resultMap>
+	<select id="menuDAO.getMenuMiniInfo" parameterClass="int" resultMap="menu">
+		/* menuDAO.getMenuMiniInfo */
+		<![CDATA[
+			select 
+				k_menu_root
+				, k_admin_key
+				, k_menu_ref
+				, k_menu_depth
+				, k_menu_step
+				, k_menu_group_key
+				, k_menu_name 
+				, k_menu_description
+			from k_menu 
+			where k_menu_key = #key#
+		]]>
+	</select>
+	
+	<resultMap id="menuInfo" class="menuBeanVO">
+		<result property="root" column="k_menu_root"/>
+		<result property="adminKey" column="k_admin_key"/>
+		<result property="ref" column="k_menu_ref"/>
+		<result property="depth" column="k_menu_depth"/>
+		<result property="step" column="k_menu_step"/>
+		<result property="groupKey" column="k_menu_group_key"/>
+		<result property="name" column="k_menu_name"/>
+		<result property="titlefile" column="k_menu_title_filename"/>
+		<result property="type" column="k_menu_type"/>
+		<result property="exist" column="k_menu_page_exist_flag"/>
+		<result property="visible" column="k_menu_visible_flag"/>
+		<result property="image1" column="k_menu_imagefile1"/>
+		<result property="image2" column="k_menu_imagefile2"/>
+		<result property="image3" column="k_menu_imagefile3"/>
+		<result property="image4" column="k_menu_imagefile4"/>
+		<result property="color" column="k_menu_color"/>
+		<result property="boardKey" column="k_menu_board_key"/>
+		<result property="program" column="k_menu_prog_src"/>
+		<result property="link" column="k_menu_link_src"/>
+		<result property="inherit" column="k_menu_auth_inherit_flag"/>
+		<result property="permit" column="k_menu_read_permit_flag"/>
+		<result property="level" column="k_menu_read_level"/>
+		<result property="comment" column="k_menu_comment_flag"/>
+		<result property="statistic" column="k_menu_statistic_flag"/>
+		<result property="description" column="k_menu_description"/>
+		<result property="adminStr" column="k_admin_str"/>
+		<result property="screenId" column="k_screen_id"/>
+		<result property="screenHistory" column="k_screen_history"/>
+	</resultMap>
+	<select id="menuDAO.getMenuInfo" parameterClass="int" resultMap="menuInfo">
+		/* menuDAO.getMenuInfo */
+		<![CDATA[
+			select 
+				k_menu_root
+				, k_admin_key
+				, k_menu_ref
+				, k_menu_depth
+				, k_menu_step
+				, k_menu_group_key
+				, k_menu_name
+				, k_menu_title_filename
+				, k_menu_type
+				, k_menu_page_exist_flag
+				, k_menu_visible_flag
+				, k_menu_imagefile1
+				, k_menu_imagefile2
+				, k_menu_imagefile3
+				, k_menu_imagefile4
+				, k_menu_color
+				, k_menu_board_key
+				, k_menu_prog_src
+				, k_menu_link_src
+				, k_menu_auth_inherit_flag
+				, k_menu_read_permit_flag
+				, k_menu_read_level
+				, k_menu_comment_flag
+				, k_menu_statistic_flag
+				, k_menu_description 
+				, k_admin_str 
+				, k_screen_id 
+				, k_screen_history
+			from k_menu 
+			where k_menu_key = #key#
+		]]>
+	</select>
+	
+	<resultMap id="categoryMenu" class="menuBeanVO">
+		<result property="ref" column="k_menu_ref"/>
+		<result property="name" column="k_menu_name"/>
+	</resultMap>
+	<select id="menuDAO.category" parameterClass="int" resultMap="categoryMenu">
+		/* menuDAO.category */
+		<![CDATA[
+			select 
+				k_menu_ref
+				, k_menu_name 
+			from k_menu 
+			where k_menu_key = #ref#
+		]]>
+	</select>
+	
+	<select id="menuDAO.category2" parameterClass="int" resultMap="categoryMenu">
+		/* menuDAO.category2 */
+		<![CDATA[
+			select 
+				k_menu_ref
+				, k_menu_name 
+			from k_menu 
+			where k_menu_key = #ref#
+		]]>
+	</select>
+	
+	<resultMap id="infoMenu" class="menuBeanVO">
+		<result property="root" column="k_menu_root"/>
+		<result property="ref" column="k_menu_ref"/>
+		<result property="depth" column="k_menu_depth"/>
+		<result property="step" column="k_menu_step"/>
+	</resultMap>
+	<select id="menuDAO.menuInfo" parameterClass="int" resultMap="infoMenu">
+		/* menuDAO.menuInfo */
+		select 
+			k_menu_root
+			, k_menu_ref
+			, k_menu_depth
+			, k_menu_step
+		from
+			k_menu
+		where
+			k_menu_key = #key#
+	</select>
+	
+	<resultMap id="menuDeleteTree" class="menuBeanVO">
+		<result property="key" column="k_menu_key"/>
+		<result property="depth" column="k_menu_depth"/>
+	</resultMap>
+	<select id="menuDAO.deleteTree" parameterClass="menuBeanVO" resultMap="menuDeleteTree">
+		<![CDATA[
+		/* menuDAO.deleteTree */
+		select 
+			k_menu_key
+			, k_menu_depth 
+		from k_menu
+		where k_menu_root = #root# 
+		and k_menu_depth >= #depth# 
+		and k_menu_step >= #step# 
+		order by k_menu_step
+		]]>	
+	</select>
+	
+	<select id="menuDAO.maxStep" parameterClass="menuBeanVO" resultClass="int">
+		<![CDATA[
+			/* menuDAO.maxStep */
+			select max(k_menu_step)+1 from k_menu
+			where k_menu_root = #root#
+			and k_menu_depth > #depth#
+			and k_menu_step > #step#
+		]]>
+	</select>
+
+	<select id="menuDAO.masStep1" parameterClass="menuBeanVO" resultClass="int">
+		<![CDATA[
+			/* menuDAO.masStep1 */
+			select k_menu_step from k_menu
+			where k_menu_root = #root#
+			and k_menu_depth <= #depth#
+			and k_menu_step > #step#
+			order by k_menu_step
+		]]>
+	</select>
+	
+	<update id="menuDAO.moveStep" parameterClass="menuBeanVO">
+		<![CDATA[
+			/* menuDAO.moveStep */
+			update k_menu set k_menu_step = k_menu_step +1
+			where k_menu_root = #root#
+			and k_menu_step > #step#
+		]]>
+	</update>
+	
+	<select id="menuDAO.menuMaxCount" resultClass="int">
+		/* menuDAO.menuMaxCount */
+		select  IFNULL ( max(k_menu_key), 0) + 1 
+		from k_menu
+	</select>
+	
+	<insert id="menuDAO.menuInsert" parameterClass="menuBeanVO">
+		/* menuDAO.menuInsert */
+		insert into k_menu(
+			k_menu_key
+			, k_admin_key
+			, k_menu_root
+			, k_menu_ref
+			, k_menu_depth
+			, k_menu_step
+			, k_menu_group_key
+			, k_menu_name
+			, k_menu_title_filename
+			, k_menu_type
+			, k_menu_page_exist_flag
+			, k_menu_visible_flag
+			, k_menu_imagefile1
+			, k_menu_imagefile2
+			, k_menu_imagefile3
+			, k_menu_imagefile4
+			, k_menu_color
+			, k_menu_board_key
+			, k_menu_prog_src
+			, k_menu_link_src
+			, k_menu_auth_inherit_flag
+			, k_menu_read_permit_flag
+			, k_menu_read_level
+			, k_menu_comment_flag
+			, k_menu_statistic_flag
+			, k_menu_description
+			, k_admin_str
+			, k_screen_id
+			, k_screen_history
+		) values (
+			#key#
+			, #adminKey#
+			, #root#
+			, #ref#
+			, #depth#
+			, #step#
+			, #groupKey#
+			, #name#
+			, #titlefile#
+			, #type#
+			, #exist#
+			, #visible#
+			, #image1#
+			, #image2#
+			, #image3#
+			, #image4#
+			, #color#
+			, #boardKey#
+			, #program#
+			, #link#
+			, #inherit#
+			, #permit#
+			, #level#
+			, #comment#
+			, #statistic#
+			, #description#
+			, #adminStr#
+			, #screenId#
+			, #screenHistory#
+		)
+		
+<!-- 		; -->
+		
+<!-- 		INSERT INTO k_menu_auth -->
+<!-- 		VALUES -->
+<!-- 		( -->
+<!-- 				(SELECT IFNULL(max(a.k_menu_auth_key),0) + 1 FROM k_menu_auth a) -->
+<!-- 			,	1 -->
+<!-- 			,	#key# -->
+<!-- 			,	'T' -->
+<!-- 			,	'T' -->
+<!-- 			,	'T' -->
+<!-- 			,	'T' -->
+<!-- 			,	'T' -->
+<!-- 			,	'T' -->
+<!-- 			,	0 -->
+<!-- 		) -->
+	</insert>
+	
+	<update id="menuDAO.menuUpdate" parameterClass="menuBeanVO">
+		/* menuDAO.menuUpdate */
+		update k_menu set k_admin_key = #adminKey#
+			, k_menu_name = #name#
+			, k_menu_title_filename = #titlefile#
+			, k_menu_type = #type#
+			, k_menu_page_exist_flag = #exist#
+			, k_menu_visible_flag = #visible#
+			, k_menu_imagefile1 = #image1#
+			, k_menu_imagefile2 = #image2#
+			, k_menu_imagefile3 = #image3#
+			, k_menu_imagefile4 = #image4#
+			, k_menu_color = #color#
+			, k_menu_board_key = #boardKey#
+			, k_menu_prog_src = #program#
+			, k_menu_link_src = #link#
+			, k_menu_auth_inherit_flag = #inherit#
+			, k_menu_read_permit_flag = #permit#
+			, k_menu_read_level = #level#
+			, k_menu_comment_flag = #comment#
+			, k_menu_statistic_flag = #statistic#
+			, k_menu_description = #description# 
+			, k_admin_str = #adminStr#
+			, k_screen_id = #screenId#
+			, k_screen_history = #screenHistory#
+		where k_menu_key = #key#
+	</update>
+	
+	<select id="menuDAO.menuFirstAdminKey" parameterClass="String" resultClass="int">
+		/* menuDAO.menuFirstAdminKey */
+		select k_admin_key from k_admin where k_admin_id = #adminId#
+	</select>
+	
+	<update id="menuDAO.menuVisibleUpdate" parameterClass="menuBeanVO">
+		/* menuDAO.menuVisibleUpdate */
+		update k_menu set k_menu_visible_flag = #visible# 
+		where k_menu_key = #key#
+	</update>
+	
+	<update id="menuDAO.menuStatisticUpdate" parameterClass="menuBeanVO">
+		/* menuDAO.menuStatisticUpdate */
+		update k_menu set k_menu_statistic_flag = #statistic# 
+		where k_menu_key = #key#
+	</update>
+	
+	<resultMap id="menuOrder" class="menuBeanVO">
+		<result property="root" column="k_menu_root"/>
+		<result property="groupKey" column="k_menu_group_key"/>
+		<result property="name" column="k_menu_name"/>
+	</resultMap>
+	<select id="menuDAO.menuOrderList" parameterClass="menuBeanVO" resultMap="menuOrder">
+		/* menuDAO.menuOrderList */
+		select 
+			k_menu_root
+			, k_menu_group_key
+			, k_menu_name 
+		from k_menu
+		where k_menu_depth = 0 
+		and k_menu_root != #root#
+		and k_menu_group_key = #groupKey# 
+		order by k_menu_root
+	</select>
+	
+	<update id="menuDAO.menuOrderInfoUpdate" parameterClass="menuBeanVO">
+		/* menuDAO.menuOrderInfoUpdate */
+		update k_menu set k_menu_root = #strRoot# 
+		where k_menu_root = #strRoot2# 
+		and k_menu_group_key = #groupKey#
+	</update>
+	
+	<update id="menuDAO.menuOrderRootStepUpdate" parameterClass="menuBeanVO">
+		<![CDATA[
+		/* menuDAO.menuOrderRootStepUpdate */
+		update k_menu set k_menu_root = k_menu_root + #strRoot# 
+		where k_menu_root >= #strRoot2# 
+		and k_menu_group_key = #groupKey#
+		]]>
+	</update>
+	
+	<resultMap id="menuSubOrder" class="menuBeanVO">
+		<result property="step" column="k_menu_step"/>
+		<result property="groupKey" column="k_menu_group_key"/>
+		<result property="name" column="k_menu_name"/>
+	</resultMap>
+	<select id="menuDAO.menuSubOrderList" parameterClass="menuBeanVO" resultMap ="menuSubOrder">
+		<![CDATA[
+		/* menuDAO.menuSubOrderList */
+		select 
+			k_menu_step
+			, k_menu_group_key
+			, k_menu_name 
+		from k_menu
+		where k_menu_step <> #step# 
+		and k_menu_root = #root# 
+		and k_menu_depth = #depth# 
+		and k_menu_group_key = #groupKey#
+		order by k_menu_step
+		]]>
+	</select>	
+	
+	<update id="menuDAO.menuSubOrderInfo" parameterClass="menuBeanVO">
+		/* menuDAO.menuSubOrderInfo */
+		update k_menu set k_menu_step = #strStep# 
+		where k_menu_root = #strRoot# 
+		and k_menu_step = #strStep2# 
+		and k_menu_group_key = #groupKey#
+	</update>
+	
+	<update id="menuDAO.menuSubOrderStepUpdate" parameterClass="menuBeanVO">
+		<![CDATA[
+		/* menuDAO.menuSubOrderStepUpdate */
+		update k_menu set k_menu_step = k_menu_step + #strStep# 
+		where k_menu_root = #strRoot#
+		and k_menu_step >= #strStep2# 
+		and k_menu_group_key = #groupKey#
+		]]>
+	</update>
+	
+	<update id="menuDAO.menuMoveStepPlus" parameterClass="menuBeanVO">
+		/* menuDAO.menuMoveStepPlus */
+		update k_menu set k_menu_step = k_menu_step +1 
+		where k_menu_root = #root# 
+		and k_menu_step > #step#
+	</update>
+	
+	<update id="menuDAO.menuMoveStepMinus" parameterClass="menuBeanVO">
+		/* menuDAO.menuMoveStepMinus */
+		update k_menu set k_menu_step = k_menu_step -1 
+		where k_menu_root = #root# 
+		and k_menu_step > #step#
+	</update>
+	
+	<delete id="menuDAO.menuDelete" parameterClass="int">
+		delete from k_menu where k_menu_key = #key#
+	</delete>
+	
+	
+	
+	
+	<resultMap id="contentIn" class="menuBeanVO">
+		<result property="key" column="k_menu_key"/>
+		<result property="adminId" column="k_admin_id"/>
+		<result property="root" column="k_menu_root"/>
+		<result property="ref" column="k_menu_ref"/>
+		<result property="depth" column="k_menu_depth"/>
+		<result property="step" column="k_menu_step"/>
+		<result property="groupKey" column="k_menu_group_key"/>
+		<result property="name" column="k_menu_name"/>
+		<result property="type" column="k_menu_type"/>
+		<result property="visible" column="k_menu_visible_flag"/>
+		<result property="exist" column="k_menu_page_exist_flag"/>
+		<result property="description" column="k_menu_description"/>
+	</resultMap>
+	
+	<select id="menuDAO.contentList" parameterClass="menuBeanVO" resultMap="contentIn">
+		/* menuDAO.contentList */
+		select 
+			k_menu_key
+			, k_admin_id
+			, k_menu_root
+			, k_menu_ref
+			, k_menu_depth
+			, k_menu_step
+			, k_menu_group_key
+			, k_menu_name
+			, k_menu_type
+			, k_menu_visible_flag
+			, k_menu_page_exist_flag
+			, k_menu_description
+		from k_menu m, k_admin a 
+		where (k_menu_root = #root# or k_menu_depth = 0) and k_menu_group_key = #groupKey#
+		and a.k_admin_key = m.k_admin_key 
+		order by k_menu_root, k_menu_step
+	</select>
+	
+	<resultMap id="inherit" class="menuBeanVO">
+		<result property="menuKey" column="k_menu_key"/>
+		<result property="ref" column="k_menu_ref"/>
+		<result property="adminId" column="k_admin_id"/>
+		<result property="depth" column="k_menu_depth"/>
+		<result property="name" column="k_menu_name"/>
+		<result property="visible" column="k_menu_visible_flag"/>
+	</resultMap>
+	<select id="menuDAO.inheritId" parameterClass="int" resultMap="inherit">
+		/* menuDAO.inheritId */
+		select 
+			k_menu_key
+			, k_menu_ref
+			, k_admin_id
+			, k_menu_depth
+			, k_menu_name
+			, k_menu_visible_flag
+		from k_menu m, k_admin a 
+		where k_menu_ref = #key#
+		and a.k_admin_key = m.k_admin_key 
+		and k_menu_type = 'C'
+		order by k_menu_key desc
+	</select>
+	
+	<select id="menuDAO.inheritName" parameterClass="int" resultClass="String">
+		/* menuDAO.inheritName */
+		select 
+			k_menu_name
+		from k_menu m
+		where k_menu_key = #menuKey#
+		and k_menu_type = 'C'
+	</select>
+	
+	<resultMap id="matrixInfo" class="menuBeanVO">
+		<result property="key" column="k_menu_key"/>
+		<result property="root" column="k_menu_root"/>
+		<result property="adminKey" column="k_admin_key"/>
+		<result property="ref" column="k_menu_ref"/>
+		<result property="depth" column="k_menu_depth"/>
+		<result property="step" column="k_menu_step"/>
+		<result property="groupKey" column="k_menu_group_key"/>
+		<result property="name" column="k_menu_name"/>
+		<result property="titlefile" column="k_menu_title_filename"/>
+		<result property="type" column="k_menu_type"/>
+		<result property="exist" column="k_menu_page_exist_flag"/>
+		<result property="visible" column="k_menu_visible_flag"/>
+		<result property="image1" column="k_menu_imagefile1"/>
+		<result property="image2" column="k_menu_imagefile2"/>
+		<result property="image3" column="k_menu_imagefile3"/>
+		<result property="image4" column="k_menu_imagefile4"/>
+		<result property="color" column="k_menu_color"/>
+		<result property="boardKey" column="k_menu_board_key"/>
+		<result property="program" column="k_menu_prog_src"/>
+		<result property="link" column="k_menu_link_src"/>
+		<result property="inherit" column="k_menu_auth_inherit_flag"/>
+		<result property="permit" column="k_menu_read_permit_flag"/>
+		<result property="level" column="k_menu_read_level"/>
+		<result property="comment" column="k_menu_comment_flag"/>
+		<result property="statistic" column="k_menu_statistic_flag"/>
+		<result property="description" column="k_menu_description"/>
+	</resultMap>
+	<select id="menuDAO.getAllMenuList" resultMap="matrixInfo">
+		/* menuDAO.getAllMenuList */
+		select 
+			k_menu_key
+			, k_menu_root
+			, k_admin_key
+			, k_menu_ref
+			, k_menu_depth
+			, k_menu_step
+			, k_menu_group_key
+			, k_menu_name
+			, k_menu_title_filename
+			, k_menu_type
+			, k_menu_page_exist_flag
+			, k_menu_visible_flag
+			, k_menu_imagefile1
+			, k_menu_imagefile2
+			, k_menu_imagefile3
+			, k_menu_imagefile4
+			, k_menu_color
+			, k_menu_board_key
+			, k_menu_prog_src
+			, k_menu_link_src
+			, k_menu_auth_inherit_flag
+			, k_menu_read_permit_flag
+			, k_menu_read_level
+			, k_menu_comment_flag
+			, k_menu_statistic_flag
+			, k_menu_description 
+		from k_menu 
+		order by k_menu_group_key, k_menu_root, k_menu_step
+	</select>
+
+</sqlMap>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>게시물</title>
+	</head>
+	
+	<body>
+		<header>
+			<div class="header">
+				<div class="header_title"><h2>메뉴추가</h2></div>
+				<ul class="path">
+					<li>home</li>&#62;
+					<li>메뉴관리</li>&#62;
+					<li>메뉴추가</li>
+				</ul>
+			</div>
+		</header>
+		
+		<!-- 어드민 게시물  -->
+		<section>	
+			<div class="tbl_top">
+				
+			</div>
+		
+
+			<div class="tbl_list">
+				<table>
+					<tbody>
+						<tr>
+							<td>그룹명</td>
+							<th>mes</th>
+						</tr>
+						<tr>
+							<td>메뉴명</td>
+							<th><input type="text"></th>
+						</tr>
+						<tr>
+							<td>페이지 유무</td>
+							<th>
+								<span><input type="radio">있음</span>
+								<span><input type="radio">없음</span>
+							</th>
+						</tr>
+						<tr>
+							<td>화면표시 여부</td>
+							<th>
+								<span><input type="radio">표시함</span>
+								<span><input type="radio">숨김</span>
+							</th>
+						</tr>
+						<tr>
+							<td>화면표시 여부</td>
+							<th>
+								<span><input type="radio">일반페이지</span>
+								<span><input type="radio">게시판</span>
+								<span><input type="radio">프로그램링크</span>
+								<span><input type="radio">사이트링크</span>
+							</th>
+						</tr>
+						<tr>
+							<td>게시판선택</td>
+							<th>
+								<select name="boardKey" disabled>
+									<option value="" selected>게시판선택</option>
+								</select>
+							</th>
+						</tr>
+						<tr>
+							<td>프로그램 링크</td>
+							<th>
+								<a><input type="text"></a>
+							</th>
+						</tr>
+						<tr>
+							<td>사이트링크 URL</td>
+							<th>
+								<a><input type="text"></a>
+							</th>
+						</tr>
+						<tr>
+							<td>관리자선택</td>
+							<th>
+								<span><input type="checkbox">아이디</span>
+								<span><input type="checkbox">아이디</span>
+								<span><input type="checkbox">아이디</span>
+							</th>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</section>
+		
+		<footer>
+			<div class="tbl_btn_right">
+				<ul>
+					<li>
+						<a href="javascript:insert_go();">저장</a>
+					</li>
+					<li>	
+						<a href="javascript:insert_reset();">취소</a>
+					</li>
+					<li>
+						<a href="/admin/menuList.do?groupKey=5">목록</a>
+					</li>
+				</ul>
+			</div>
+		</footer>
+	
+	</body>
+</html>

@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	<typeAlias alias="mesStatisticsVO" type="egovframework.rndp.mes.statistics.service.MesStatisticsVO" />
+	<select id="mesStatisticsDAO.selectMesStatisticsList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+		/*mesStatisticsDAO.selectMesStatisticsList*/
+	 WITH dateTemplate AS (
+         SELECT
+            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
+         FROM 
+            e_tmpyear, e_month, e_date 
+         WHERE 1=1  
+         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN #topStartDate# AND #topEndDate#
+         ORDER BY e_year, e_month, e_date
+      ) SELECT 
+         	d.eDate					AS	eDate
+        ,   MAINTANCE_TYPE			AS 	mMaintanceType
+      	,   MAINTANCE_STAFF_NAME	AS	mMaintanceStaffName
+        ,   COUNT(MAINTANCE_NUM)	AS	mMaintanceCount
+      FROM dateTemplate d
+        LEFT JOIN M_MAINTANCE M ON (DATE_FORMAT(MAINTANCE_DATE, '%Y-%m-%d') = d.eDate)
+        GROUP BY d.eDate
+        ORDER BY d.eDate ASC
+     </select>
+
+	<select id="mesStatisticsDAO.selectMesMaintanceMemList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+		/*mesStatisticsDAO.selectMesMaintanceMemList*/
+		 WITH dateTemplate AS (
+	         SELECT
+	            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
+	         FROM 
+	            e_tmpyear, e_month, e_date 
+	         WHERE 1=1  
+	         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN #topStartDate# AND #topEndDate#
+	         ORDER BY e_year, e_month, e_date
+	      ) SELECT 
+	         	d.eDate					AS	eDate
+	        ,   MAINTANCE_TYPE			AS 	mMaintanceType
+	      	,   MAINTANCE_STAFF_NAME	AS	mMaintanceStaffName
+	        ,   COUNT(MAINTANCE_NUM)	AS	mMaintanceCount
+	      FROM dateTemplate d
+	        LEFT JOIN M_MAINTANCE M ON (DATE_FORMAT(MAINTANCE_DATE, '%Y-%m-%d') = d.eDate)
+	        GROUP BY MAINTANCE_STAFF_NUM
+	        ORDER BY d.eDate ASC
+     </select>
+
+	<select id="mesStatisticsDAO.selectMesMaintanceSrList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+		/*mesStatisticsDAO.selectMesMaintanceSrList*/
+	 WITH dateTemplate AS (
+         SELECT
+            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
+         FROM 
+            e_tmpyear, e_month, e_date 
+         WHERE 1=1  
+         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN #topStartDate# AND #topEndDate#
+         ORDER BY e_year, e_month, e_date
+      ) SELECT 
+         	d.eDate					AS	eDate
+        ,   MAINTANCE_TYPE			AS 	mMaintanceType
+      	,   MAINTANCE_STAFF_NAME	AS	mMaintanceStaffName
+        ,   COUNT(MAINTANCE_NUM)	AS	mMaintanceCount
+      FROM dateTemplate d
+        LEFT JOIN M_MAINTANCE M ON (DATE_FORMAT(MAINTANCE_DATE, '%Y-%m-%d') = d.eDate)
+        GROUP BY MAINTANCE_TYPE
+        ORDER BY d.eDate ASC
+     </select>
+
+	<select id="mesStatisticsDAO.selectAssetList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+		/*mesStatisticsDAO.selectAssetList*/
+	 WITH dateTemplate AS (
+         SELECT
+            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
+         FROM 
+            e_tmpyear, e_month, e_date 
+         WHERE 1=1  
+         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN #topStartDate# AND #topEndDate#
+         ORDER BY e_year, e_month, e_date
+      ) SELECT 
+         	d.eDate					AS eDate
+      	,   ASSET_MAKER				AS sAssetMaker
+        ,   COUNT(A.ASSET_NUM)		AS sAssetCount
+      FROM dateTemplate d
+        LEFT JOIN A_ASSET A ON (DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') = d.eDate)
+        GROUP BY d.eDate
+        ORDER BY d.eDate ASC;
+     </select>
+
+	<select id="mesStatisticsDAO.selectAssetMcList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+		/*mesStatisticsDAO.selectAssetMcList*/
+	 WITH dateTemplate AS (
+         SELECT
+            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
+         FROM 
+            e_tmpyear, e_month, e_date 
+         WHERE 1=1  
+         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN #topStartDate# AND #topEndDate#
+         ORDER BY e_year, e_month, e_date
+      ) SELECT 
+         	d.eDate				AS eDate
+      	,   ASSET_MAKER         AS sAssetMaker
+        ,   COUNT(A.ASSET_NUM) AS sAssetCount
+      FROM dateTemplate d
+        LEFT JOIN A_ASSET A ON (DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') = d.eDate)
+        WHERE   A.ASSET_MAKER IS NOT NULL 
+	    AND A.ASSET_MAKER != '' 
+	    AND A.ASSET_DEL_STATUS != '삭제'
+	    <isNotEmpty property="searchType">
+			AND A.ASSET_STATUS    = #searchType#
+		</isNotEmpty>
+        GROUP BY A.ASSET_MAKER
+        ORDER BY d.eDate ASC;
+     </select>
+
+	<select id="mesStatisticsDAO.selectIEList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+		/*mesStatisticsDAO.selectIEList*/
+	 WITH dateTemplate AS (
+         SELECT
+            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
+         FROM 
+            e_tmpyear, e_month, e_date 
+         WHERE 1=1  
+         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN #topStartDate# AND #topEndDate#
+         ORDER BY e_year, e_month, e_date
+      ) SELECT 
+         	d.eDate
+      	,    IF(ASSET_TYPE_NAME='' OR ASSET_TYPE_NAME IS NULL ,'자산유형누락',ASSET_TYPE_NAME)	AS sAssetMaker
+      	,	ASSET_TYPE			AS sAssetUesType
+        ,   COUNT(A.ASSET_NUM)		AS sAssetCount
+      FROM dateTemplate d
+        LEFT JOIN A_ASSET A ON (DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') = d.eDate)
+        WHERE   A.ASSET_MAKER IS NOT NULL 
+	    AND A.ASSET_MAKER != '' 
+	    AND A.ASSET_DEL_STATUS != '삭제'
+	    <isNotEmpty property="searchType">
+			AND A.ASSET_STATUS    = #searchType#
+		</isNotEmpty>
+        GROUP BY A.ASSET_TYPE
+        ORDER BY d.eDate ASC;
+     </select>
+
+	<select id="mesStatisticsDAO.selectAssetUsList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+		/*mesStatisticsDAO.selectAssetUsList*/
+	 WITH dateTemplate AS (
+         SELECT
+            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
+         FROM 
+            e_tmpyear, e_month, e_date 
+         WHERE 1=1  
+         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN #topStartDate# AND #topEndDate#
+         ORDER BY e_year, e_month, e_date
+      ) SELECT 
+         	d.eDate					AS eDate
+      	,   ASSET_MAKER				AS sAssetMaker
+        ,   COUNT(AU.ASSET_NUM)		AS sAssetCount
+      FROM dateTemplate d
+        LEFT JOIN A_ASSET A ON (DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') = d.eDate)
+        LEFT JOIN A_ASSET_USE AU ON (A.ASSET_NUM = AU.ASSET_NUM)
+        GROUP BY d.eDate
+        ORDER BY d.eDate ASC;
+     </select>
+
+	<select id="mesStatisticsDAO.selectAssetUsMcList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+		/*mesStatisticsDAO.selectAssetUsMcList*/
+	 WITH dateTemplate AS (
+         SELECT
+            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
+         FROM 
+            e_tmpyear, e_month, e_date 
+         WHERE 1=1  
+         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN #topStartDate# AND #topEndDate#
+         ORDER BY e_year, e_month, e_date
+      ) SELECT 
+         	d.eDate				AS eDate
+      	,   ASSET_MAKER         AS sAssetMaker
+        ,   COUNT(AU.ASSET_NUM) AS sAssetCount
+      FROM dateTemplate d
+        LEFT JOIN A_ASSET A ON (DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') = d.eDate)
+        LEFT JOIN A_ASSET_USE AU ON (A.ASSET_NUM = AU.ASSET_NUM)
+        GROUP BY A.ASSET_MAKER
+        ORDER BY d.eDate ASC;
+     </select>
+
+	<select id="mesStatisticsDAO.selectIEUsList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+		/*mesStatisticsDAO.selectIEUsList*/
+	 WITH dateTemplate AS (
+         SELECT
+            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
+         FROM 
+            e_tmpyear, e_month, e_date 
+         WHERE 1=1  
+         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN #topStartDate# AND #topEndDate#
+         ORDER BY e_year, e_month, e_date
+      ) SELECT 
+         	d.eDate
+      	,   ASSET_MAKER				AS sAssetMaker
+      	,	ASSET_USE_TYPE			AS sAssetUesType
+        ,   COUNT(AU.ASSET_NUM)		AS sAssetCount
+      FROM dateTemplate d
+        LEFT JOIN A_ASSET A ON (DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') = d.eDate)
+        LEFT JOIN A_ASSET_USE AU ON (A.ASSET_NUM = AU.ASSET_NUM)
+        GROUP BY AU.ASSET_USE_TYPE
+        ORDER BY d.eDate ASC;
+     </select>
+
+	<select id="mesStatisticsDAO.selectOutputYsList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+		/*mesStatisticsDAO.selectOutputYsList*/
+	WITH dateTemplate AS (
+		    SELECT
+		        CONCAT(e_year, '-', LPAD(e_month, 2, '0')) AS eDate
+		    FROM 
+		        e_tmpyear, e_month
+		    WHERE 1=1  
+		        AND CONCAT(e_year, '-', LPAD(e_month, 2, '0')) BETWEEN '2020-01' AND '2027-12'
+		    ORDER BY e_year, e_month
+		) 
+		SELECT 
+		    LEFT(d.eDate, 4) AS sYear,
+		    COUNT(O_OUTPUT_NUM) AS sOutputCount
+		FROM 
+		    dateTemplate d
+		LEFT JOIN 
+		    O_OUTPUT O ON (DATE_FORMAT(O_STARDATE, '%Y-%m') = d.eDate)
+		GROUP BY 
+		    LEFT(d.eDate, 4)
+		ORDER BY 
+		    sYear ASC;
+     </select>
+
+	<select id="mesStatisticsDAO.selectOutputMsList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+		/*mesStatisticsDAO.selectOutputMsList*/
+	WITH dateTemplate AS (
+		    SELECT
+		        CONCAT(e_year, '-', LPAD(e_month, 2, '0')) AS eDate
+		    FROM 
+		        e_tmpyear, e_month
+		    WHERE 1=1  
+		        AND CONCAT(e_year, '-', LPAD(e_month, 2, '0')) BETWEEN '2024-01' AND '2024-12'
+		    ORDER BY e_year, e_month
+		) 
+		SELECT 
+		    d.eDate,
+		    COUNT(O_OUTPUT_NUM) AS sOutputCount
+		FROM 
+		    dateTemplate d
+		LEFT JOIN 
+		    O_OUTPUT O ON (DATE_FORMAT(O_STARDATE, '%Y-%m') = d.eDate)
+		GROUP BY 
+		    d.eDate
+		ORDER BY 
+		    d.eDate ASC;
+     </select>
+
+	<select id="mesStatisticsDAO.selectOutputsMemList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+		/*mesStatisticsDAO.selectOutputsMemList*/
+	 WITH dateTemplate AS (
+         SELECT
+            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
+         FROM 
+            e_tmpyear, e_month, e_date 
+         WHERE 1=1  
+         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN '2024-01-01' AND '2024-12-31'
+         ORDER BY e_year, e_month, e_date
+      ) SELECT 
+         	d.eDate				AS	eDate
+      	,   k_staff_name		AS	kStaffName
+        ,   COUNT(O_OUTPUT_NUM)	AS	sOutputCount
+      FROM dateTemplate d
+        LEFT JOIN O_OUTPUT O ON (DATE_FORMAT(O_STARDATE, '%Y-%m-%d') = d.eDate)
+        GROUP BY k_staff_name
+        ORDER BY d.eDate ASC;
+     </select>
+     
+     
+     <select id="mesStatisticsDAO.firstValuList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+		/*mesStatisticsDAO.firstValuList*/
+		SELECT '장애관리' AS eWordA, COUNT(*) AS eValueA
+		FROM I_ISSUE AS ii
+		WHERE eIssueStatus != '삭제' AND DATE_FORMAT(ii.eRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		
+		UNION ALL
+		SELECT '점검관리' AS eWordA, COUNT(*) AS eValueA
+		FROM INSPECTION AS insp
+		WHERE insp.eStatus != '삭제' AND DATE_FORMAT(insp.eRegistrationDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		
+		UNION ALL
+		SELECT '변경관리' AS eWordA, COUNT(*) AS eValueA
+		FROM I_CHANGE AS ic
+		WHERE ic.eStatus != '삭제' AND DATE_FORMAT(ic.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		
+		UNION ALL
+		SELECT '문제관리' AS eWordA, COUNT(*) AS eValueA
+		FROM I_BLUE_ISSUE AS ibi
+		WHERE ibi.eStatus != '삭제' AND DATE_FORMAT(ibi.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		
+		UNION ALL
+		SELECT 'SR관리' AS eWordA, COUNT(*) AS eValueA
+		FROM I_BLUE_SR AS ibs
+		WHERE ibs.eStatus != '삭제' AND DATE_FORMAT(ibs.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		
+		
+     </select>
+     <select id="mesStatisticsDAO.secondValuList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+     /*mesStatisticsDAO.secondValuList*/
+     	SELECT SUM(eValueA) AS eValueB,eWordA AS eWordB  FROM
+		(
+			SELECT COUNT(aa.ASSET_TYPE) AS eValueA, aa.ASSET_TYPE_NAME AS eWordA FROM I_ISSUE_ASSET  as iia
+			LEFT JOIN I_ISSUE AS ii  on(iia.ISSUE_NUM = ii.ISSUE_NUM)
+			LEFT JOIN A_ASSET AS aa   on(aa.ASSET_NUM = iia.ASSET_NUM)
+			WHERE ii.eIssueStatus != '삭제' AND aa.ASSET_TYPE IS NOT NULL AND DATE_FORMAT(ii.eRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			GROUP BY aa.ASSET_TYPE 
+			UNION ALL 
+			
+			SELECT COUNT(aa.ASSET_TYPE) AS eValueA, aa.ASSET_TYPE_NAME AS eWordA FROM I_CHANGE_ASSET  as ica
+			LEFT JOIN I_CHANGE AS ic  on(ica.eChangeKey =ic.eChangeKey)
+			LEFT JOIN A_ASSET AS aa   on(aa.ASSET_NUM = ica.eAssetKey)
+			WHERE ic.eStatus != '삭제' AND aa.ASSET_TYPE IS NOT NULL AND DATE_FORMAT(ic.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			GROUP BY aa.ASSET_TYPE 
+			UNION ALL 
+			
+			SELECT COUNT(aa.ASSET_TYPE) AS eValueA, aa.ASSET_TYPE_NAME AS eWordA FROM I_BLUE_ISSUE_ASSET  as ibia
+			LEFT JOIN I_BLUE_ISSUE AS ibi  on(ibia.eIssueKey = ibi.eIssueKey)
+			LEFT JOIN A_ASSET AS aa   on(aa.ASSET_NUM = ibia.eAssetKey)
+			WHERE ibi.eStatus != '삭제' AND aa.ASSET_TYPE IS NOT NULL AND DATE_FORMAT(ibi.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			GROUP BY aa.ASSET_TYPE  
+			UNION ALL 
+			
+			SELECT COUNT(aa.ASSET_TYPE) AS eValueA, aa.ASSET_TYPE_NAME AS eWordA FROM I_BLUE_SR_ASSET  as ibsa
+			LEFT JOIN I_BLUE_SR AS ibs  on(ibsa.eIssueKey = ibs.eIssueKey)
+			LEFT JOIN A_ASSET AS aa   on(aa.ASSET_NUM = ibsa.eAssetKey)
+			WHERE ibs.eStatus != '삭제' AND aa.ASSET_TYPE IS NOT NULL AND DATE_FORMAT(ibs.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			GROUP BY aa.ASSET_TYPE 
+			
+		) as aa
+		GROUP BY eWordA
+     </select>
+       <select id="mesStatisticsDAO.eAssetMakerList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+    	 /*mesStatisticsDAO.eAssetMakerList*/
+     		SELECT  
+	     		COUNT(eei.ENTRY_ITEM_NUM) AS eValueA
+				,aa.ASSET_MAKER  AS eWordA 
+				,SUM(CASE WHEN eei.eEntryImportDate IS NULL OR eei.eEntryImportDate = '' THEN 1 ELSE 0 END) AS eValueB
+			FROM E_ENTRY_ITEM AS eei
+			LEFT JOIN E_ENTRY AS ee ON (ee.ENTRY_NUM  =eei.ENTRY_NUM) 
+			
+			LEFT JOIN A_ASSET AS aa ON (aa.ASSET_NUM =eei.ASSET_NUM)
+			
+			WHERE ee.ENTRY_STATUS != '삭제' AND aa.ASSET_DEL_STATUS != '삭제' AND aa.ASSET_MAKER != '삭제' AND  DATE_FORMAT(ee.eEntryExitDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			GROUP BY aa.ASSET_MAKER
+     </select>
+    <select id="mesStatisticsDAO.eAssetTypeList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+     /*mesStatisticsDAO.secondValuList*/
+     		SELECT  
+     			COUNT(aa.ASSET_TYPE)  AS eValueC
+				,aa.ASSET_TYPE_NAME  AS eWordB
+				,SUM(CASE WHEN eei.eEntryImportDate IS NULL OR eei.eEntryImportDate = '' THEN 1 ELSE 0 END) AS eValueD
+			FROM E_ENTRY_ITEM AS eei
+			LEFT JOIN E_ENTRY AS ee ON (ee.ENTRY_NUM  =eei.ENTRY_NUM) 
+			
+			LEFT JOIN A_ASSET AS aa ON (aa.ASSET_NUM =eei.ASSET_NUM)
+			
+			WHERE ee.ENTRY_STATUS != '삭제' AND aa.ASSET_DEL_STATUS != '삭제' AND  DATE_FORMAT(ee.eEntryExitDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			GROUP BY aa.ASSET_TYPE
+     </select>
+    <select id="mesStatisticsDAO.selectOutputList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+     /*mesStatisticsDAO.selectOutputList*/
+    	SELECT 
+		    eProjectName AS eWordA, 
+		    eStartDate  AS eWordB, 
+		    eEndDate  AS eWordC, 
+		    eManager  AS eWordD, 
+		    eProjectPM AS eWordE, 
+		    ePMContact AS eWordF, 
+		    COUNT(pdf.eDeliverableFileNUM) eValueD,
+		     SUM(CASE WHEN pdf.eFileRowGubun = 'A' THEN 1 ELSE 0 END) AS eValueA,
+		    SUM(CASE WHEN pdf.eFileRowGubun = 'B' THEN 1 ELSE 0 END) AS eValueB,
+		    SUM(CASE WHEN pdf.eFileRowGubun = 'C' THEN 1 ELSE 0 END) AS eValueC
+		FROM P_PROJECT AS pp
+		LEFT JOIN P_Deliverable_file AS pdf ON pp.P_PROJECT_NUM = pdf.eProjectNum 
+		
+		WHERE eProjectStatus != '삭제' AND 
+		    ((eStartDate BETWEEN #topStartDate# AND #topEndDate#)  
+		    OR 
+		    (eEndDate BETWEEN #topStartDate# AND #topEndDate#)) 
+		     
+		  GROUP BY pp.P_PROJECT_NUM
+     </select>
+    <select id="mesStatisticsDAO.selectProjectList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+     /*mesStatisticsDAO.selectProjectList*/
+   		SELECT 
+		    eProjectName AS eWordA, 
+		    DATE_FORMAT(eStartDate, '%Y-%m-%d')  AS eWordB, 
+		    DATE_FORMAT(eEndDate, '%Y-%m-%d')    AS eWordC, 
+		    eManager  AS eWordD, 
+		    eProjectPM AS eWordE, 
+		    ePMContact AS eWordF, 
+		    COUNT(prf.eReportFileNUM) eValueD,
+		     SUM(CASE WHEN prf.eFileRowGubun = 'A' THEN 1 ELSE 0 END) AS eValueA,
+		    SUM(CASE WHEN prf.eFileRowGubun = 'B' THEN 1 ELSE 0 END) AS eValueB,
+		    SUM(CASE WHEN prf.eFileRowGubun = 'C' THEN 1 ELSE 0 END) AS eValueC
+		FROM P_PROJECT AS pp
+		LEFT JOIN P_Report_file AS prf ON pp.P_PROJECT_NUM = prf.eProjectNum 
+		
+		WHERE 1=1  AND eProjectStatus != '삭제' 
+		     <isNotEmpty property="topStartDate">
+		            <![CDATA[
+		                AND DATE_FORMAT(eStartDate, '%Y-%m-%d') >= #topStartDate#
+		                ]]>
+		         </isNotEmpty>
+		          <isNotEmpty property="topEndDate">
+	                <![CDATA[
+	                AND DATE_FORMAT(eEndDate, '%Y-%m-%d') <= #topEndDate#
+	                ]]>
+	            </isNotEmpty>
+		   
+		  GROUP BY pp.P_PROJECT_NUM
+     </select>
+     
+     <select id="mesStatisticsDAO.eAssetTmpMakerList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+    	 /*mesStatisticsDAO.eAssetTmpMakerList*/
+    	 	SELECT  
+	     		COUNT(eei.eEquipmentItemKey) AS eValueA
+				,eei.eAssetMaker  AS eWordA 
+				,SUM(CASE WHEN eei.eEntryExporterDate IS NULL OR eei.eEntryExporterDate = '' THEN 1 ELSE 0 END) AS eValueB
+			FROM E_EQUIPMENT_IN_ITEM AS eei
+			LEFT JOIN E_EQUIPMENT_IN AS ee ON (ee.eEquipmentInKey =eei.eEquipmentInKey) 
+			WHERE ee.eStatus != '삭제' AND (eei.eAssetMaker IS NOT NULL AND eei.eAssetMaker != '') 
+				AND  DATE_FORMAT(ee.eEntryImportDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			GROUP BY eei.eAssetMaker
+     </select>
+    <select id="mesStatisticsDAO.eAssetTmpTypeList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
+     /*mesStatisticsDAO.eAssetTmpTypeList*/
+   			SELECT  
+     			COUNT(eei.eAssetTypeName)  AS eValueC
+				,eei.eAssetTypeName  AS eWordB
+				,SUM(CASE WHEN eei.eEntryExporterDate IS NULL OR eei.eEntryExporterDate = '' THEN 1 ELSE 0 END) AS eValueD
+			FROM E_EQUIPMENT_IN_ITEM AS eei
+			LEFT JOIN E_EQUIPMENT_IN AS ee ON (ee.eEquipmentInKey =eei.eEquipmentInKey) 
+			WHERE ee.eStatus != '삭제'  AND  DATE_FORMAT(ee.eEntryImportDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			GROUP BY eei.eAssetTypeName
+     </select>
+        
+</sqlMap>

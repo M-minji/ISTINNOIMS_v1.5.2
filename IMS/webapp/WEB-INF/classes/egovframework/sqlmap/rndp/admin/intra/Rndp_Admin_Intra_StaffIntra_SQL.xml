@@ -1,0 +1,778 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+	<typeAlias  alias="staffIntraVO" type="egovframework.rndp.admin.intra.staff.service.StaffIntraVO"/> 
+	<typeAlias  alias="staffMenuAuthVO" type="egovframework.rndp.admin.intra.staff.service.StaffMenuAuthVO"/> 
+	
+	<resultMap id="selectStaffReuestList" class="staffIntraVO">
+		<result property="kStaffRequestKey" 		column="k_staff_request_key"	/>
+		<result property="kClassName" 				column="k_class_name"			/>
+		<result property="kPositionName" 			column="POSITION_NAME"		/>
+		<result property="kSectorName" 				column="k_sector_name"			/>
+		<result property="kStaffNum" 				column="k_staff_num"			/>
+		<result property="kStaffId" 				column="k_staff_id"				/>
+		<result property="kStaffName" 				column="k_staff_name"			/>
+		<result property="kStaffEmail" 				column="k_staff_email"			/>
+		<result property="kStaffComment" 			column="k_staff_comment"		/>
+		<result property="kStaffStateFlag" 			column="k_staff_state_flag"		/>
+		<result property="kStaffImagefile" 			column="k_staff_imagefile"		/>
+	</resultMap>
+	
+	<!-- 직원신청 승인 : 리스트 -->
+	<select id="staffIntraDAO.selectStaffReuestList" parameterClass="staffIntraVO" resultMap="selectStaffReuestList">
+		/* staffIntraDAO.selectStaffReuestList */
+		SELECT
+			k_staff_request_key,
+			k_class_name,
+			POSITION_NAME,
+			k_sector_name,
+			k_staff_num,
+			k_staff_id,
+			k_staff_name,
+			k_staff_email,
+			k_staff_comment,
+			k_staff_state_flag,
+			k_staff_imagefile
+		FROM
+			k_staff_request s,
+			k_class c,
+			K_POSITION p,
+			k_sector t
+		WHERE
+			s.k_class_key = c.k_class_key
+			AND s.k_position_key = p.POSITION_NUM
+			AND s.k_sector_key = t.k_sector_key
+		ORDER BY
+			k_staff_state_flag, k_class_rank, POSITION_rank, k_staff_name
+		LIMIT
+			#startNum# OFFSET #endNum#
+	</select>
+	
+	<select id="staffIntraDAO.selectCount" parameterClass="staffIntraVO" resultClass="int">
+		SELECT
+			COUNT(k_staff_request_key)
+		FROM
+			k_staff_request
+	</select>
+	
+	<resultMap id="selectStaffInfoForView" class="staffIntraVO">
+		<result property="kStaffRequestKey" 	column="k_staff_request_key"	/>
+		<result property="kClassName" 			column="k_class_name"			/>
+		<result property="kSectorName" 			column="k_sector_name"			/>
+		<result property="kPositionName" 		column="POSITION_NAME"		/>
+		<result property="kStaffNum" 			column="k_staff_num"			/>
+		<result property="kStaffId" 			column="k_staff_id"				/>
+		<result property="kStaffName" 			column="k_staff_name"			/>
+		<result property="kStaffPassword" 		column="k_staff_password"		/>
+		<result property="kStaffBirthday" 		column="kStaffBirthday"			/>
+		<result property="kStaffBirthdayFlag" 	column="kStaffBirthdayFlag"		/>
+		<result property="kStaffEmail" 			column="k_staff_email"			/>
+		<result property="kStaffMessenger" 		column="k_staff_messenger"		/>
+		<result property="kStaffPost1" 			column="k_staff_post1"			/>
+		<result property="kStaffPost2" 			column="k_staff_post2"			/>
+		<result property="kStaffAddress1" 		column="k_staff_address1"		/>
+		<result property="kStaffAddress2" 		column="k_staff_address2"		/>
+		<result property="kStaffTelephone1" 	column="k_staff_telephone1"		/>
+		<result property="kStaffTelephone2" 	column="k_staff_telephone2"		/>
+		<result property="kStaffTelephone3" 	column="k_staff_telephone3"		/>
+		<result property="kStaffMobile1" 		column="k_staff_mobile1"		/>
+		<result property="kStaffMobile2" 		column="k_staff_mobile2"		/>
+		<result property="kStaffMobile3" 		column="k_staff_mobile3"		/>
+		<result property="kStaffHomepage" 		column="k_staff_homepage"		/>
+		<result property="kStaffComment" 		column="k_staff_comment"		/>
+		<result property="kStaffStateFlag" 		column="k_staff_state_flag"		/>
+		<result property="kStaffImagefile" 		column="k_staff_imagefile"		/>
+	</resultMap>
+	
+	<!-- 직원신청 승인 : 세부정보 조회 -->
+	<select id="staffIntraDAO.selectStaffInfoForView" parameterClass="int" resultMap="selectStaffInfoForView">
+		/* staffIntraDAO.selectStaffInfoForView */
+		<![CDATA[
+		SELECT
+			k_staff_request_key,
+			k_class_name,
+			t.k_sector_name,
+			POSITION_NAME,
+			k_staff_num,
+			k_staff_id,
+			k_staff_name,
+			k_staff_password,
+			(SUBSTR(k_staff_birthday, 0, 4) || '년 ' || SUBSTR(k_staff_birthday, 5, 2) || '월 ' || SUBSTR(k_staff_birthday, 7, 2) || '일') AS kStaffBirthday,
+			DECODE(k_Staff_birthday_flag, 'T', '양력', 'F', '음력') AS kStaffBirthdayFlag,
+			k_staff_email,
+			k_staff_messenger,
+			k_staff_post1,
+			k_staff_post2,
+			k_staff_address1,
+			k_staff_address2,
+			k_staff_telephone1,
+			k_staff_telephone2,
+			k_staff_telephone3,
+			k_staff_mobile1,
+			k_staff_mobile2,
+			k_staff_mobile3,
+			k_staff_homepage,
+			k_staff_comment,
+			k_staff_state_flag,
+			k_staff_imagefile
+		FROM
+			k_staff_request s,
+			k_class c,
+			k_sector t,
+			K_POSITION p
+		WHERE
+			k_staff_request_key = #kStaffRequestKey#
+			AND s.k_class_key = c.k_class_key
+			AND s.k_sector_key = t.k_sector_key
+			AND s.k_position_key = p.POSITION_NUM
+		]]>
+	</select>
+	
+	<!-- 직원신청 승인 : 사번 업데이트 -->
+	<update id="staffIntraDAO.updateStaffNum" parameterClass="staffIntraVO">
+		/* staffIntraDAO.updateStaffNum */
+		UPDATE
+			k_staff_request
+		SET
+			k_staff_num = #kStaffNum#,
+			k_staff_state_flag = #kStaffStateFlag#
+		WHERE
+			k_staff_request_key = #kStaffRequestKey#
+	</update>
+	
+	<!-- 직원신청 승인 : 스텝 테이블에 정보 인서트 -->
+	<insert id="staffIntraDAO.insertStaffApp" parameterClass="staffIntraVO">
+		/* staffIntraDAO.insertStaffApp */
+		INSERT INTO
+			k_staff (
+				k_staff_key,
+				k_class_key,
+				POSITION_NUM,
+				k_staff_id,
+				k_staff_name,
+				k_staff_password,
+				k_staff_birthday,
+				k_staff_birthday_flag,
+				k_staff_email,
+				k_staff_messenger,
+				k_staff_post1,
+				k_staff_post2,
+				k_staff_address1,
+				k_staff_address2,
+				k_staff_telephone1,
+				k_staff_telephone2,
+				k_staff_telephone3,
+				k_staff_mobile1,
+				k_staff_mobile2,
+				k_staff_mobile3,
+				k_staff_homepage,
+				k_staff_comment,
+				k_staff_state_flag,
+				k_staff_imagefile,
+				k_staff_sign_image,
+				k_staff_num,
+				k_mail_use,
+				k_sector_key
+			)
+		SELECT
+			(
+				SELECT
+					COALESCE(MAX(k_staff_key) + 1, 1)
+				FROM
+					k_staff
+			),
+			k_class_key,
+			POSITION_NUM,
+			k_staff_id,
+			k_staff_name,
+			k_staff_password,
+			k_staff_birthday,
+			k_staff_birthday_flag,
+			k_staff_email,
+			k_staff_messenger,
+			k_staff_post1,
+			k_staff_post2,
+			k_staff_address1,
+			k_staff_address2,
+			k_staff_telephone1,
+			k_staff_telephone2,
+			k_staff_telephone3,
+			k_staff_mobile1,
+			k_staff_mobile2,
+			k_staff_mobile3,
+			k_staff_homepage,
+			k_staff_comment,
+			k_staff_state_flag,
+			k_staff_imagefile,
+			k_staff_sign_image,
+			k_staff_num,
+			k_mail_use,
+			k_sector_key
+		FROM
+			k_staff_request
+		WHERE
+			k_staff_request_key = #kStaffRequestKey#
+	</insert>
+
+	<!-- 직원신청 승인 : 삭제 -->
+	<delete id="staffIntraDAO.deleteStaffReuest" parameterClass="staffIntraVO">
+		/* staffIntraDAO.deleteStaffReuest */
+		DELETE FROM
+			k_staff_request
+		WHERE
+			k_staff_request_key = #kStaffRequestKey#
+	</delete>
+	
+	<resultMap id="selectStaffList" class="staffIntraVO">
+		<result property="kStaffKey" 				column="k_staff_key"			/>
+		<result property="kClassName" 				column="k_class_name"			/>
+		<result property="kPositionName" 			column="POSITION_NAME"		/>
+		<result property="kSectorName" 				column="k_sector_name"			/>
+		<result property="kStaffNum" 				column="k_staff_num"			/>
+		<result property="kStaffId" 				column="k_staff_id"				/>
+		<result property="kStaffName" 				column="k_staff_name"			/>
+		<result property="kStaffEmail" 				column="k_staff_email"			/>
+		<result property="kStaffComment" 			column="k_staff_comment"		/>
+		<result property="kStaffStateFlag" 			column="k_staff_state_flag"		/>
+		<result property="kStaffImagefile" 			column="k_staff_imagefile"		/>
+	</resultMap>
+
+
+	<select id="staffIntraDAO.selectStaffList" parameterClass="staffIntraVO" resultMap="selectStaffList">
+		/* staffIntraDAO.selectStaffList */
+		SELECT
+			k_staff_key,
+			k_class_name,
+			POSITION_NAME,
+			k_sector_name,
+			k_staff_num,
+			k_staff_id,
+			k_staff_name,
+			k_staff_email,
+			k_staff_comment,
+			
+			DECODE(k_staff_state_flag, 1, '재직', 2, '휴직', 3, '정직', 4, '퇴직') AS k_staff_state_flag,
+			k_staff_imagefile
+		FROM
+			k_staff s,
+			k_class c,
+			K_POSITION p,
+			k_sector t
+		WHERE
+			s.k_class_key = c.k_class_key
+			AND s.k_position_key = p.POSITION_NUM
+			AND s.k_sector_key = t.k_sector_key
+		ORDER BY
+			k_staff_state_flag,
+			k_class_rank,
+			POSITION_rank,
+			k_staff_id
+		LIMIT
+			#startNum# OFFSET #endNum#
+	</select>
+	
+	<resultMap id="selectSectorList" class="staffIntraVO">
+		<result property="kSectorKey" 			column="k_sector_key"		/>
+		<result property="kSectorRank" 			column="k_sector_rank"		/>
+		<result property="kSectorName" 			column="k_sector_name"		/>
+	</resultMap>
+	<!-- 직원 정보 관리 : k_sector 리스트 -->
+	<select id="staffIntraDAO.selectSectorList" parameterClass="staffIntraVO" resultMap="selectSectorList">
+		/* staffIntraDAO.selectSectorList */
+		SELECT
+			k_sector_key,
+			k_sector_rank,
+			k_sector_name
+		FROM
+			k_sector
+		ORDER BY
+			k_sector_rank
+	</select>
+	
+	<resultMap id="selectClassList" class="staffIntraVO">
+		<result property="kClassKey" 			column="k_class_key"		/>
+		<result property="kClassRank" 			column="k_class_rank"		/>
+		<result property="kClassName" 			column="k_class_name"		/>
+	</resultMap>
+	<!-- 직원 정보 관리 : k_class 리스트 -->
+	<select id="staffIntraDAO.selectClassList" parameterClass="staffIntraVO" resultMap="selectClassList">
+		/* staffIntraDAO.selectClassList" */
+		SELECT
+			k_class_key,
+			k_class_rank,
+			k_class_name
+		FROM
+			k_class
+		ORDER BY
+			k_class_rank
+	</select>
+	
+	<resultMap id="selectPositionList" class="staffIntraVO">
+		<result property="kPositionKey" 			column="POSITION_NUM"			/>
+		<result property="kPositionRank" 			column="POSITION_rank"		/>
+		<result property="kPositionName" 			column="POSITION_NAME"		/>
+	</resultMap>
+	<!-- 직원 정보 관리 : k_class 리스트 -->
+	<select id="staffIntraDAO.selectPositionList" parameterClass="staffIntraVO" resultMap="selectPositionList">
+		/* staffIntraDAO.selectPositionList" */
+		SELECT
+			POSITION_NUM,
+			POSITION_rank,
+			POSITION_NAME
+		FROM
+			K_POSITION
+		ORDER BY
+			POSITION_rank
+	</select>
+	
+	<insert id="staffIntraDAO.insertStaff" parameterClass="staffIntraVO">
+		/* staffIntraDAO.insertStaff */
+		INSERT INTO
+			k_staff (
+				k_staff_key,
+				k_class_key,
+				POSITION_NUM,
+				k_staff_num,
+				k_staff_id,
+				k_staff_name,
+				k_staff_password,
+				k_staff_birthday,
+				k_staff_birthday_flag,
+				k_staff_email,
+				k_staff_messenger,
+				k_staff_post1,
+				k_staff_post2,
+				k_staff_address1,
+				k_staff_address2,
+				k_staff_telephone1,
+				k_staff_telephone2,
+				k_staff_telephone3,
+				k_staff_mobile1,
+				k_staff_mobile2,
+				k_staff_mobile3,
+				k_staff_homepage,
+				k_staff_comment,
+				k_staff_state_flag,
+				k_staff_imagefile,
+				k_staff_sign_image,
+				k_sector_key,
+				k_mail_use,
+				k_staff_auth_c,
+				k_staff_auth_w,
+				k_staff_auth_m,
+				k_staff_auth_d,
+				k_staff_auth_close
+			)
+		VALUES
+			(
+				(SELECT
+					COALESCE(MAX(k_staff_key) + 1, 1)
+				FROM
+					k_staff),
+				#kClassKey#,
+				#kPositionKey#,
+				#kStaffNum#,
+				#kStaffId#,
+				#kStaffName#,
+				#kStaffPassword#,
+				#kStaffBirthday#,
+				#kStaffBirthdayFlag#,
+				#kStaffEmail#,
+				#kStaffMessenger#,
+				#kStaffPost1#,
+				#kStaffPost2#,
+				#kStaffAddress1#,
+				#kStaffAddress2#,
+				#kStaffTelephone1#,
+				#kStaffTelephone2#,
+				#kStaffTelephone3#,
+				#kStaffMobile1#,
+				#kStaffMobile2#,
+				#kStaffMobile3#,
+				#kStaffHomepage#,
+				#kStaffComment#,
+				#kStaffStateFlag#,
+				#kStaffImagefile#,
+				#kStaffSignImage#,
+				#kSectorKey#,
+				#kMailUse#,
+				#kStaffAuthConfirmFlag#,
+				#kStaffAuthWriteFlag#,
+				#kStaffAuthModifyFlag#,
+				#kStaffAuthDelFlag#,
+				#kStaffAuthCloseFlag#
+			)		
+	</insert>
+	
+	<resultMap id="selectStaffInfo" class="staffIntraVO">
+		<result property="kStaffKey" 				column="k_staff_key"				/>
+		<result property="kClassKey" 				column="k_class_key"				/>
+		<result property="kPositionKey" 			column="POSITION_NUM"				/>
+		<result property="kStaffNum" 				column="k_staff_num"				/>
+		<result property="kStaffId" 				column="k_staff_id"					/>
+		<result property="kStaffName" 				column="k_staff_name"				/>
+		<result property="kStaffPassword" 			column="k_staff_password"			/>
+		<result property="kStaffBirthday" 			column="k_staff_birthday"			/>
+		<result property="kStaffBirthdayFlag" 		column="k_staff_birthday_flag"		/>
+		<result property="kStaffEmail" 				column="k_staff_email"				/>
+		<result property="kStaffMessenger" 			column="k_staff_messenger"			/>
+		<result property="kStaffPost1" 				column="k_staff_post1"				/>
+		<result property="kStaffPost2" 				column="k_staff_post2"				/>
+		<result property="kStaffAddress1" 			column="k_staff_address1"			/>
+		<result property="kStaffAddress2" 			column="k_staff_address2"			/>
+		<result property="kStaffTelephone1" 		column="k_staff_telephone1"			/>
+		<result property="kStaffTelephone2" 		column="k_staff_telephone2"			/>
+		<result property="kStaffTelephone3" 		column="k_staff_telephone3"			/>
+		<result property="kStaffMobile1" 			column="k_staff_mobile1"			/>
+		<result property="kStaffMobile2" 			column="k_staff_mobile2"			/>
+		<result property="kStaffMobile3" 			column="k_staff_mobile3"			/>
+		<result property="kStaffHomepage" 			column="k_staff_homepage"			/>
+		<result property="kStaffComment" 			column="k_staff_comment"			/>
+		<result property="kStaffStateFlag" 			column="k_staff_state_flag"			/>
+		<result property="kStaffImagefile" 			column="k_staff_imagefile"			/>
+		<result property="kSectorKey" 				column="k_sector_key"				/>
+		<result property="kClassName" 				column="k_class_name"				/>
+		<result property="kPositionName" 			column="POSITION_NAME"			/>
+		<result property="kSectorName" 				column="k_sector_name"				/>
+		<result property="kStaffAuthConfirmFlag" 				column="k_staff_auth_c"				/>
+		<result property="kStaffAuthWriteFlag" 				column="k_staff_auth_w"				/>
+		<result property="kStaffAuthModifyFlag" 				column="k_staff_auth_m"				/>
+		<result property="kStaffAuthDelFlag" 				column="k_staff_auth_d"				/>
+		<result property="kStaffAuthCloseFlag" 				column="k_staff_auth_close"				/>
+	</resultMap>
+	
+	<select id="staffIntraDAO.selectStaffInfo" parameterClass="staffIntraVO" resultMap="selectStaffInfo">
+		/* staffIntraDAO.selectStaffInfo */
+		SELECT
+			s.k_staff_key,
+			s.k_class_key,
+			s.k_position_key,
+			k_staff_num,
+			k_staff_id,
+			k_staff_name,
+			k_staff_password,
+			k_staff_birthday,
+			k_staff_birthday_flag,
+			k_staff_email,
+			k_staff_messenger,
+			k_staff_post1,
+			k_staff_post2,
+			k_staff_address1,
+			k_staff_address2,
+			k_staff_telephone1,
+			k_staff_telephone2,
+			k_staff_telephone3,
+			k_staff_mobile1,
+			k_staff_mobile2,
+			k_staff_mobile3,
+			k_staff_homepage,
+			k_staff_comment,
+			k_staff_state_flag,
+			k_staff_imagefile,
+			s.k_sector_key,
+			k_class_name,
+			POSITION_NAME,
+			t.k_sector_name,
+			k_staff_auth_c,
+			k_staff_auth_w,
+			k_staff_auth_m,
+			k_staff_auth_d,
+			k_staff_auth_close
+		FROM
+			k_staff s,
+			k_class c,
+			K_POSITION p,
+			k_sector t
+		WHERE
+			k_staff_key = #kStaffKey#
+			AND s.k_position_key = p.POSITION_NUM
+			AND s.k_class_key = c.k_class_key
+			AND s.k_sector_key = t.k_sector_key
+	</select>
+	
+	<update id="staffIntraDAO.updateStaff" parameterClass="staffIntraVO">
+		/* staffIntraDAO.updateStaff */
+		UPDATE
+			k_staff
+		SET
+			k_class_key = #kClassKey#,
+			POSITION_NUM = #kPositionKey#,
+			k_staff_num = #kStaffNum#,
+			k_staff_id = #kStaffId#,
+			k_staff_name = #kStaffName#,
+			k_staff_birthday = #kStaffBirthday#,
+			k_staff_birthday_flag = #kStaffBirthdayFlag#,
+			k_staff_email = #kStaffEmail#,
+			k_staff_messenger = #kStaffMessenger#,
+			k_staff_post1 = #kStaffPost1#,
+			k_staff_post2 = #kStaffPost2#,
+			k_staff_address1 = #kStaffAddress1#,	
+			k_staff_address2 = #kStaffAddress2#,
+			k_staff_telephone1 = #kStaffTelephone1#,
+			k_staff_telephone2 = #kStaffTelephone2#,
+			k_staff_telephone3 = #kStaffTelephone3#,
+			k_staff_mobile1 = #kStaffMobile1#,
+			k_staff_mobile2 = #kStaffMobile2#,
+			k_staff_mobile3 = #kStaffMobile3#,
+			k_staff_state_flag = #kStaffStateFlag#,
+			k_sector_key = #kSectorKey#,
+			k_staff_auth_c = #kStaffAuthConfirmFlag#,
+			k_staff_auth_w = #kStaffAuthWriteFlag#,
+			k_staff_auth_m = #kStaffAuthModifyFlag#,
+			k_staff_auth_d = #kStaffAuthDelFlag#,
+			k_staff_auth_close = #kStaffAuthCloseFlag#
+		WHERE
+			k_staff_key = #kStaffKey#
+	</update>
+	
+	<delete id="staffIntraDAO.deleteStaff"  parameterClass="staffIntraVO">
+		/* staffIntraDAO.deleteStaff */
+		DELETE FROM
+			k_staff
+		WHERE
+			k_staff_key = #kStaffKey#
+	</delete>
+	
+	<select id="staffIntraDAO.selectCountBusinessNote" parameterClass="staffIntraVO" resultClass="int">
+		/* staffIntraDAO.selectCountBusinessNote */
+		SELECT 
+			COUNT(k_business_note_key)
+		FROM
+			k_business_note
+		WHERE
+			k_staff_key = #kStaffKey#
+	</select>
+
+	<resultMap id="selectStaffInfo2" class="staffIntraVO">
+		<result property="kStaffKey" 				column="k_staff_key"				/>
+		<result property="kClassName" 				column="k_class_name"				/>
+		<result property="kPositionName" 			column="POSITION_NAME"			/>
+		<result property="kStaffNum" 				column="k_staff_num"				/>
+		<result property="kStaffId" 				column="k_staff_id"					/>
+		<result property="kStaffName" 				column="k_staff_name"				/>
+		<result property="kStaffPassword" 			column="k_staff_password"			/>
+		<result property="kStaffBirthday" 			column="k_staff_birthday"			/>
+		<result property="kStaffBirthdayFlag" 		column="k_staff_birthday_flag"		/>
+		<result property="kStaffEmail" 				column="k_staff_email"				/>
+		<result property="kStaffMessenger" 			column="k_staff_messenger"			/>
+		<result property="kStaffPost1" 				column="k_staff_post1"				/>
+		<result property="kStaffPost2" 				column="k_staff_post2"				/>
+		<result property="kStaffAddress1" 			column="k_staff_address1"			/>
+		<result property="kStaffAddress2" 			column="k_staff_address2"			/>
+		<result property="kStaffTelephone1" 		column="k_staff_telephone1"			/>
+		<result property="kStaffTelephone2" 		column="k_staff_telephone2"			/>
+		<result property="kStaffTelephone3" 		column="k_staff_telephone3"			/>
+		<result property="kStaffMobile1" 			column="k_staff_mobile1"			/>
+		<result property="kStaffMobile2" 			column="k_staff_mobile2"			/>
+		<result property="kStaffMobile3" 			column="k_staff_mobile3"			/>
+		<result property="kStaffHomepage" 			column="k_staff_homepage"			/>
+		<result property="kStaffComment" 			column="k_staff_comment"			/>
+		<result property="kStaffStateFlag" 			column="k_staff_state_flag"			/>
+		<result property="kStaffImagefile" 			column="k_staff_imagefile"			/>
+		<result property="kSectorName" 				column="k_sector_name"				/>
+		<result property="kStaffSignImage" 			column="k_staff_sign_image"			/>
+		<result property="kStaffAuthConfirmFlag" 				column="k_staff_auth_c"				/>
+		<result property="kStaffAuthWriteFlag" 				column="k_staff_auth_w"				/>
+		<result property="kStaffAuthModifyFlag" 				column="k_staff_auth_m"				/>
+		<result property="kStaffAuthDelFlag" 				column="k_staff_auth_d"				/>
+		<result property="kStaffAuthCloseFlag" 				column="k_staff_auth_close"				/>
+	</resultMap>
+	
+	<select id="staffIntraDAO.selectStaffView2" parameterClass="staffIntraVO" resultMap="selectStaffInfo2">
+		/* staffIntraDAO.selectStaffView2 */
+		SELECT
+			k_staff_key,
+			k_class_name,
+			POSITION_NAME,
+			k_staff_num,
+			k_staff_id,
+			k_staff_name,
+			k_staff_password,
+			(SUBSTR(k_staff_birthday, 0, 4) || '년 ' || SUBSTR(k_staff_birthday, 5, 2) || '월 ' || SUBSTR(k_staff_birthday, 7, 2) || '일') AS k_staff_birthday,
+			DECODE(k_Staff_birthday_flag, 'T', '양력', 'F', '음력') AS k_staff_birthday_flag,
+			k_staff_email,
+			k_staff_messenger,
+			k_staff_post1,
+			k_staff_post2,
+			k_staff_address1,
+			k_staff_address2,
+			k_staff_telephone1,
+			k_staff_telephone2,
+			k_staff_telephone3,
+			k_staff_mobile1,
+			k_staff_mobile2,
+			k_staff_mobile3,
+			k_staff_homepage,
+			k_staff_comment,
+			DECODE(k_staff_state_flag, 1, '재직', 2, '휴직', 3, '정직', 4, '퇴직') AS k_staff_state_flag,
+			k_staff_imagefile,
+			t.k_sector_name,
+			k_staff_sign_image,
+			k_staff_auth_c,
+			k_staff_auth_w,
+			k_staff_auth_m,
+			k_staff_auth_d,
+			k_staff_auth_close
+		FROM
+			k_staff s,
+			k_class c,
+			K_POSITION p,
+			k_sector t
+		WHERE
+			s.k_staff_key = #kStaffKey#
+			AND s.k_class_key = c.k_class_key
+			AND s.k_position_key = p.POSITION_NUM
+			AND s.k_sector_key = t.k_sector_key
+	</select>
+	
+	<select id="staffIntraDAO.selectStaffMenuList" parameterClass="staffMenuAuthVO" resultClass="staffMenuAuthVO">
+		/* staffIntraDAO.selectStaffMenuList */
+		
+		SELECT	 m.k_menu_key 				AS kMenuKey 
+						, m.k_menu_root 			AS kMenuRoot 
+						, m.k_menu_ref 				AS kMenuRef 
+						, m.k_menu_depth 			AS kMenuDepth 
+						, m.k_menu_step 			AS kMenuStep 
+						, m.k_menu_group_key AS kMenuGroupKey 
+						, m.k_menu_name 			AS kMenuName 
+						, a.k_menu_auth_key 		AS kMenuAuthKey 
+						, TRIM(ifnull(a.k_menu_auth_flag, '')) 		AS kMenuAuthFlag 
+						, a.k_staff_key 				AS kStaffKey 
+						, (SELECT k_staff_name FROM k_staff WHERE k_staff_key = #kStaffKey#) AS kStaffName 
+			FROM	k_menu m 
+				LEFT OUTER JOIN k_menu_auth a 
+					ON (m.k_menu_key = a.k_menu_key AND a.k_staff_key = #kStaffKey#)
+			WHERE 1=1
+				AND m.k_menu_group_key = 1
+				AND m.k_menu_visible_flag = 'T'	
+			ORDER BY 	m.k_menu_root,	m.k_menu_ref,		m.k_menu_depth,		m.k_menu_step
+	</select>
+	
+	<select id="staffIntraDAO.selectStaffTopMenuList" parameterClass="staffMenuAuthVO" resultClass="staffMenuAuthVO">
+		/* staffIntraDAO.selectStaffTopMenuList */
+		
+		SELECT	 m.k_menu_key 				AS kMenuKey 
+						, m.k_menu_root 			AS kMenuRoot 
+						, m.k_menu_ref 				AS kMenuRef 
+						, m.k_menu_depth 			AS kMenuDepth 
+						, m.k_menu_step 			AS kMenuStep 
+						, m.k_menu_group_key AS kMenuGroupKey 
+						, m.k_menu_name 			AS kMenuName 
+						, a.k_menu_auth_key 		AS kMenuAuthKey 
+						, TRIM(ifnull(a.k_menu_auth_flag, 'F')) 		AS kMenuAuthFlag 
+						, a.k_staff_key 				AS kStaffKey 
+						, (SELECT k_staff_name FROM k_staff WHERE k_staff_key = #kStaffKey#) AS kStaffName 
+			FROM	k_menu m 
+				LEFT OUTER JOIN k_menu_auth a 
+					ON (m.k_menu_key = a.k_menu_key AND a.k_staff_key = #kStaffKey#)
+			WHERE 1=1
+				AND m.k_menu_group_key = 1
+				AND m.k_menu_visible_flag = 'T'	
+				AND m.k_menu_depth  = 0
+			ORDER BY 	m.k_menu_root,	m.k_menu_ref,		m.k_menu_depth,		m.k_menu_step
+	</select>
+	
+	<select id="staffIntraDAO.selectStaffTopMenuList2" parameterClass="staffMenuAuthVO" resultClass="staffMenuAuthVO">
+		/* staffIntraDAO.selectStaffTopMenuList2 매트릭스 */
+		
+		SELECT	 m.k_menu_key 				AS kMenuKey 
+						, m.k_menu_root 			AS kMenuRoot 
+						, m.k_menu_ref 				AS kMenuRef 
+						, m.k_menu_depth 			AS kMenuDepth 
+						, m.k_menu_step 			AS kMenuStep 
+						, m.k_menu_group_key AS kMenuGroupKey 
+						, m.k_menu_name 			AS kMenuName 
+						, m.k_menu_prog_src 			AS program 
+						, a.k_menu_auth_key 		AS kMenuAuthKey 
+						, TRIM(ifnull(a.k_menu_auth_flag, 'F')) 		AS kMenuAuthFlag 
+						, TRIM(ifnull(a.k_menu_auth_c, 'F')) 		AS kMenuAuthC 
+						, TRIM(ifnull(a.k_menu_auth_m, 'F')) 		AS kMenuAuthM 
+						, TRIM(ifnull(a.k_menu_auth_d, 'F')) 		AS kMenuAuthD 
+						, TRIM(ifnull(a.k_menu_auth_w, 'F')) 		AS kMenuAuthW 
+						, a.k_staff_key 				AS kStaffKey 
+						, (SELECT k_staff_name FROM k_staff WHERE k_staff_key = #kStaffKey#) AS kStaffName
+						, (case when m.k_screen_id is null then '스크린ID 미설정'
+							   when m.k_screen_id = '' then '스크린ID 미설정'
+							   else m.k_screen_id end) as screenId
+						, IFNULL(m.k_screen_history, '신규') AS screenHistory
+			FROM	k_menu m 
+				LEFT OUTER JOIN k_menu_auth a 
+					ON (m.k_menu_key = a.k_menu_key AND a.k_staff_key = #kStaffKey#)
+			WHERE 1=1
+				AND m.k_menu_group_key = 1
+				AND m.k_menu_visible_flag = 'T'	
+				AND TRIM(IFNULL(a.k_menu_auth_flag, 'F')) = 'T'
+				AND m.k_menu_depth  != 0
+			ORDER BY 	m.k_menu_root,	m.k_menu_ref,		m.k_menu_depth,		m.k_menu_step
+	</select>
+	
+	<select id="staffIntraDAO.selectStaffMenu" parameterClass="staffMenuAuthVO" resultClass="staffMenuAuthVO">
+		/* staffIntraDAO.selectStaffMenu */
+		
+		SELECT	 m.k_menu_key 				AS kMenuKey 
+						, m.k_menu_root 			AS kMenuRoot 
+						, m.k_menu_ref 				AS kMenuRef 
+						, m.k_menu_depth 			AS kMenuDepth 
+						, m.k_menu_step 			AS kMenuStep 
+						, m.k_menu_group_key AS kMenuGroupKey 
+						, m.k_menu_name 			AS kMenuName 
+						, a.k_menu_auth_key 		AS kMenuAuthKey 
+						, TRIM(ifnull(a.k_menu_auth_flag, 'F'))		AS kMenuAuthFlag 
+						, a.k_staff_key 				AS kStaffKey 
+						, (SELECT k_staff_name FROM k_staff WHERE k_staff_key = #kStaffKey#) AS kStaffName 
+			FROM	k_menu m 
+				LEFT OUTER JOIN k_menu_auth a 
+					ON (m.k_menu_key = a.k_menu_key AND a.k_staff_key = #kStaffKey#)
+			WHERE 1=1
+				AND m.k_menu_group_key = 5
+				AND m.k_menu_visible_flag = 'T'	
+				AND m.k_menu_key = #kMenuKey#
+			ORDER BY 	m.k_menu_root,	m.k_menu_ref,		m.k_menu_depth,		m.k_menu_step
+	</select>
+	
+	
+	<insert id="staffIntraDAO.staffMenuAuthUpdate" parameterClass="staffMenuAuthVO">
+		/* staffIntraDAO.staffMenuAuthUpdate */
+		insert into k_menu_auth(k_menu_auth_key
+			, k_staff_key
+			, k_menu_key
+			, k_menu_auth_flag
+		) values (
+			#kMenuAuthKey#
+			, #kStaffKey#
+			, #kMenuKey#
+			, #kMenuAuthFlag#
+		)
+	</insert>
+	
+	<select id="staffIntraDAO.staffMenuAuthMaxCnt" resultClass="int">
+		/* staffIntraDAO.staffMenuAuthMaxCnt */
+		select coalesce(max(k_menu_auth_key), 0)+1 from k_menu_auth
+	</select>
+	
+	<delete id="staffIntraDAO.deleteStaffMenuAuth"  parameterClass="staffMenuAuthVO">
+		/* staffIntraDAO.deleteStaffMenuAuth */
+		DELETE	FROM	k_menu_auth
+		WHERE 1=1
+			AND k_staff_key = #kStaffKey#
+	</delete>	
+	
+	
+	
+	<update id="staffIntraDAO.updateStaffImageFile" parameterClass="staffIntraVO">
+		/* staffIntraDAO.updateStaffImageFile */
+		update	k_staff
+		set		
+		<isEqual property="kParamImage" compareValue="1">
+				k_staff_imagefile	= #kStaffImagefile#
+		</isEqual>
+		<isEqual property="kParamImage" compareValue="2">
+				k_staff_sign_image	= #kStaffSignImage#
+		</isEqual>
+		where	k_staff_key 		= #kStaffKey#
+	</update>
+	
+ 
+</sqlMap>

@@ -1,0 +1,23 @@
+@CHARSET "UTF-8";
+
+@page {margin:0; page-break-after:always;}
+	@media print {
+	
+	body,html {padding:0; margin:0;}
+	/* insert your style declarations here */
+	
+	
+
+/* 	
+프린트 바코드		
+	.barcode_pop {page-break-before:always;}
+	.barcode_pop table tbody tr {border:none !important;}
+	.barcode_pop table tbody tr th {border:none !important; padding:0.2em 0em;}
+	.barcode_pop table tbody tr td {border:none !important;}
+	
+ */
+	
+	
+	.inspect_pt {page-break-after:always; display:block; width:297mm; min-height:180mm;}
+
+} 

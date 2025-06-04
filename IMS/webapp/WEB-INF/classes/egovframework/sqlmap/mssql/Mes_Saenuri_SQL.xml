@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	<typeAlias alias="mesSaenuriVO" type="egovframework.rndp.mes.saenuri.service.MesSaenuriVO" />
+	
+	<select id="mesSaenuriDAO.selectMesDiscardList" parameterClass="mesSaenuriVO" resultClass="mesSaenuriVO">
+		/* mesSaenuriDAO.selectMesDiscardList */
+		SELECT 
+		<!-- 
+			dm.DateRec 						AS DateRec
+		,	dm.PlantCode 					AS PlantCode
+		,	dm.RoomCode 					AS RoomCode
+		,	dm.GroupCode 					AS GroupCode
+		,	dm.MachCode 					AS MachCode
+		,	dm.OrderCode 					AS OrderCode
+		,	dm.StyleCode 					AS StyleCode
+		,	dm.StSize 						AS StSize
+		,	dm.StColor 						AS StColor
+		,	dm.StLot 						AS StLot
+		,	dm.Shift 						AS Shift
+		,	dm.Rounds 						AS Rounds
+		,	dm.TotalRounds 					AS TotalRounds
+		,	dm.NumberOfDiscards 			AS NumberOfDiscards
+		,	dm.DiffDiscards 				AS DiffDiscards
+		,	dm.RespoCode 					AS RespoCode
+		,	dm.LinkProgram 					AS LinkProgram
+		,	dm.NameProg 					AS NameProg
+		,	dm.TargetProg 					AS TargetProg
+		,	dm.PiecesProg 					AS PiecesProg
+		,	dm.MachineId 					AS MachineId
+		,	dm.ShiftDisabled 				AS ShiftDisabled
+		,	dm.ModelCode 					AS ModelCode
+		 -->
+		 	dm.DateRec 						AS dateRec
+		,	dm.PlantCode 					AS plantCode
+		,	dm.RoomCode 					AS roomCode
+		,	dm.GroupCode 					AS groupCode
+		,	dm.MachCode 					AS machCode
+		,	dm.OrderCode 					AS orderCode
+		,	dm.StyleCode 					AS styleCode
+		,	dm.StSize 						AS stSize
+		,	dm.StColor 						AS stColor
+		,	dm.StLot 						AS stLot
+		,	dm.Shift 						AS shift
+		,	dm.Rounds 						AS rounds
+		,	dm.TotalRounds 					AS totalRounds
+		,	dm.NumberOfDiscards 			AS numberOfDiscards
+		,	dm.DiffDiscards 				AS diffDiscards
+		,	dm.RespoCode 					AS respoCode
+		,	dm.LinkProgram 					AS linkProgram
+		,	dm.NameProg 					AS nameProg
+		,	dm.TargetProg 					AS targetProg
+		,	dm.PiecesProg 					AS piecesProg
+		,	dm.MachineId 					AS machineId
+		,	dm.ShiftDisabled 				AS shiftDisabled
+		,	dm.ModelCode 					AS modelCode
+		FROM 
+			discard_monitor dm
+		WHERE 1=1
+		AND dm.PlantCode = 'IKSAN'
+		<![CDATA[ 	 
+	 		AND CONVERT(CHAR(10), dm.DateRec, 23) >= #topStartDate# 
+	 		AND CONVERT(CHAR(10), dm.DateRec, 23) <= #topEndDate#  
+	 	]]>
+	 	ORDER BY dm.DateRec DESC
+		OFFSET #firstIndex# ROWS FETCH NEXT #recordCountPerPage# ROWS ONLY
+	</select>
+	
+	<select id="mesSaenuriDAO.selectMesDiscardListCnt" parameterClass="mesSaenuriVO" resultClass="int">
+		/* mesSaenuriDAO.selectMesDiscardListCnt */
+		SELECT 
+			COUNT(*)
+		FROM 
+			discard_monitor dm
+		WHERE 1=1
+		AND dm.PlantCode = 'IKSAN'
+		<![CDATA[ 	 
+	 		AND CONVERT(CHAR(10), dm.DateRec, 23) >= #topStartDate# 
+	 		AND CONVERT(CHAR(10), dm.DateRec, 23) <= #topEndDate#  
+	 	]]>
+	</select>
+	
+	<select id="mesSaenuriDAO.selectMesProductionsList" parameterClass="mesSaenuriVO" resultClass="mesSaenuriVO">
+		/* mesSaenuriDAO.selectMesProductionsList */
+		SELECT 
+		    pm.DateRec                  AS dateRec
+		,   pm.PlantCode                AS plantCode
+		,   pm.RoomCode                 AS roomCode
+		,   pm.GroupCode                AS groupCode
+		,   pm.MachCode                 AS machCode
+		,   pm.OrderCode                AS orderCode
+		,   pm.StyleCode                AS styleCode
+		,   pm.StSize                   AS StSize
+		,   pm.StColor                  AS stColor
+		,   pm.StLot                    AS stLot
+		,   pm.TimeOn                   AS timeOn
+		,   pm.TimeOff                  AS timeOff
+		,   pm.Pieces                   AS pieces
+		,   pm.OrderPieces              AS orderPieces
+		,   pm.TargetPieces             AS targetPieces
+		,   pm.Discards                 AS fiscards
+		,   pm.Cycle                    AS vycle
+		,   pm.Condition                AS vondition
+		,   pm.Shift                    AS dhift
+		,   pm.RespoCode                AS respoCode
+		,   pm.Reason                   AS reason
+		,   pm.OrderDiscards            AS orderDiscards
+		,   pm.DateStartShift           AS dateStartShift
+		,   pm.BalancingCode            AS balancingCode
+		,   pm.LinkProgram              AS linkProgram
+		,   pm.NameProg1                AS nameProg1
+		,   pm.TargetProg1              AS targetProg1
+		,   pm.PiecesProg1              AS piecesProg1
+		,   pm.CycleTimeProg1           AS cycleTimeProg1
+		,   pm.NameProg2                AS nameProg2
+		,   pm.TargetProg2              AS targetProg2
+		,   pm.PiecesProg2              AS piecesProg2
+		,   pm.CycleTimeProg2           AS cycleTimeProg2
+		,   pm.NameProg3                AS nameProg3
+		,   pm.TargetProg3              AS targetProg3
+		,   pm.PiecesProg3              AS piecesProg3
+		,   pm.CycleTimeProg3           AS cycleTimeProg3
+		,   pm.NameProg4                AS nameProg4
+		,   pm.TargetProg4              AS targetProg4
+		,   pm.PiecesProg4              AS piecesProg4
+		,   pm.CycleTimeProg4           AS cycleTimeProg4
+		,   pm.NameProg5                AS nameProg5
+		,   pm.TargetProg5              AS targetProg5
+		,   pm.PiecesProg5              AS piecesProg5
+		,   pm.CycleTimeProg5           AS cycleTimeProg5
+		,   pm.MachineId                AS machineId
+		,   pm.ShiftDisabled            AS shiftDisabled
+		,   pm.ManualStopInProd         AS manualStopInProd
+		,   pm.ModelCode                AS modelCode
+		FROM 
+		    productions_monitor pm
+		WHERE 1=1
+		AND pm.PlantCode = 'IKSAN'
+		<![CDATA[ 	 
+	 		AND CONVERT(CHAR(10), pm.DateRec, 23) >= #topStartDate# 
+	 		AND CONVERT(CHAR(10), pm.DateRec, 23) <= #topEndDate#  
+	 	]]>
+	 	ORDER BY pm.DateRec DESC
+		OFFSET #firstIndex# ROWS FETCH NEXT #recordCountPerPage# ROWS ONLY
+	</select>
+	
+	<select id="mesSaenuriDAO.selectMesProductionsListCnt" parameterClass="mesSaenuriVO" resultClass="int">
+		/* mesSaenuriDAO.selectMesProductionsListCnt */
+		SELECT 
+		   COUNT(*)
+		FROM 
+		    productions_monitor pm
+		WHERE 1=1
+		AND pm.PlantCode = 'IKSAN'
+		<![CDATA[ 	 
+	 		AND CONVERT(CHAR(10), pm.DateRec, 23) >= #topStartDate# 
+	 		AND CONVERT(CHAR(10), pm.DateRec, 23) <= #topEndDate#  
+	 	]]>
+	</select>
+	
+	<select id="mesSaenuriDAO.selectMesStopsList" parameterClass="mesSaenuriVO" resultClass="mesSaenuriVO">
+		/* mesSaenuriDAO.selectMesStopsList */
+		SELECT 
+		    sm.StopCode             AS stopCode
+		,   sm.DateRec              AS dateRec
+		,   sm.PlantCode            AS plantCode
+		,   sm.RoomCode             AS roomCode
+		,   sm.GroupCode            AS groupCode
+		,   sm.MachCode             AS machCode
+		,   sm.CyclePos             AS cyclePos
+		,   sm.OrderCode            AS orderCode
+		,   sm.StyleCode            AS styleCode
+		,   sm.StSize               AS stSize
+		,   sm.StColor              AS stColor
+		,   sm.StLot                AS stLot
+		,   sm.Shift                AS shift
+		,   sm.LastStopCode         AS lastStopCode
+		,   sm.LastDateRec          AS lastDateRec
+		,   sm.Count                AS count
+		,   sm.RespoCode            AS respoCode
+		,   sm.LastShiftStop        AS lastShiftStop
+		,   sm.LinkProgram          AS linkProgram
+		,   sm.NameProg             AS nameProg
+		,   sm.TargetProg           AS targetProg
+		,   sm.PiecesProg           AS piecesProg
+		,   sm.Reason               AS reason
+		,   sm.DateEndStop          AS dateEndStop
+		,   sm.MachineId            AS machineId
+		,   sm.ShiftDisabled        AS shiftDisabled
+		,   sm.UniqueId             AS uniqueId
+		,   sm.ModelCode            AS modelCode
+		FROM 
+		    stops_monitor sm
+		WHERE 1=1
+		AND sm.PlantCode = 'IKSAN'
+		<![CDATA[ 	 
+	 		AND CONVERT(CHAR(10), sm.DateRec, 23) >= #topStartDate# 
+	 		AND CONVERT(CHAR(10), sm.DateRec, 23) <= #topEndDate#  
+	 	]]>
+	 	ORDER BY sm.DateRec DESC
+		OFFSET #firstIndex# ROWS FETCH NEXT #recordCountPerPage# ROWS ONLY
+	</select>
+	
+	<select id="mesSaenuriDAO.selectMesStopsListCnt" parameterClass="mesSaenuriVO" resultClass="int">
+		/* mesSaenuriDAO.selectMesStopsListCnt */
+		SELECT 
+		    COUNT(*)
+		FROM 
+		    stops_monitor sm
+		WHERE 1=1
+		AND sm.PlantCode = 'IKSAN'
+		<![CDATA[ 	 
+	 		AND CONVERT(CHAR(10), sm.DateRec, 23) >= #topStartDate# 
+	 		AND CONVERT(CHAR(10), sm.DateRec, 23) <= #topEndDate#  
+	 	]]>
+	</select>
+</sqlMap>

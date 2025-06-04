@@ -1,0 +1,103 @@
+@charset "utf-8";
+ @charset "utf-8";
+@import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css");
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard-dynamic-subset.css");
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/variable/pretendardvariable-dynamic-subset.css");
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/variable/pretendardvariable.css");
+
+@import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+/* 프로젝트 기본스타일 */
+
+html {margin:0; padding:0;overflow-y:auto;display:inline-block; width:100%; height:100%;}
+body, p, ul, ol, li, dl, dt, dd, form, table, th, td, fieldset, input, textarea, select, button, 
+pre {margin:0; padding:0; -webkit-text-size-adjust:none; font-weight:400;} 
+body, input, textarea, select, button {font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif, "Noto Sans KR","Malgun Gothic","맑은고딕","Nanum Gothic","나눔고딕","돋움","굴림";padding:0;margin:0;}
+
+ul, li, ol{list-style:none;padding:0;margin:0;}
+a{color:#333;text-decoration:none;cursor:pointer;}
+
+/* b{font-weight:800;} */
+/* 아이폰 가로모드 글자 크기 확대 방지: -webkit-text-size-adjust:none; */ 
+
+header, footer, nav, aside, section, article {display:block;}
+fieldset, img {border:0;}
+img {-ms-interpolation-mode:bicubic !important; border:0;}
+table {padding:0; border-spacing:0px; border:0; border-collapse:collapse;}
+
+
+.inp_color_border{ border:1px solid #cccccc; background-color:none !important;}
+.inp_color_none{border:none !important; background-color:none !important;}
+.inp_color{background-color: #f1f1f1; border:1px solid #cccccc;}
+
+
+
+/* input */
+
+.inputTxt, select, textarea {margin:0; color:#333; border:1px solid #cccccc;}
+input[type="text"], input[type="password"], .inputTxt{font-size:11pt;vertical-align: bottom;margin:0;height:30px; color:#565656; border:1px solid #cccccc;}
+select {padding:0; height:32px !important;}
+
+input:not([type]), input[type="email" i], input[type="number" i], input[type="password" i], input[type="tel" i], input[type="url" i], input[type="text" i] {
+    padding:0;
+}
+table{border-collapse:collapse;border-spacing:0; width:100%;}
+
+
+
+
+/* 스크롤스타일 */
+/* Chrome, Safari용 스크롤 바 */
+.gnb::-webkit-scrollbar {width: 8px; height: 8px; border:3px solid #2c3f6a; }
+.gnb::-webkit-scrollbar-button:start:decrement, .gnb::-webkit-scrollbar-button:end:increment {display: block; height: 10px; background:#2c3f6a;}
+.gnb::-webkit-scrollbar-track {background:#2c3f6a; -webkit-border-radius: 10px; border-radius:10px; -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,.2)}
+.gnb::-webkit-scrollbar-thumb {height: 50px; width: 50px; background:rgb(20, 85, 167); -webkit-border-radius: 8px; border-radius: 8px; -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,.1)}
+
+/* Internet Explorer용 코드 */
+/* .gnb {overflow:hidden;} */
+
+/* 모바일 */
+
+@media all and(max-width:320px){
+	select {height:37px !important;padding:0;}
+	input[type="text"], input[type="password"], .inputTxt{margin:0;height:32px !important; color:#565656; border:1px solid #bdbdbd;}
+	
+	
+
+}
+
+
+
+@media all and (min-width:320px) and(max-width:640px){
+	select {height:32px !important;padding:0;}
+	input[type="text"], input[type="password"], .inputTxt{margin:0;height:32px !important; color:#565656; border:1px solid #bdbdbd;}
+
+	
+
+}
+
+
+
+@media all and (min-width:640px) and (max-width:1024px){
+	select {height:35px !important;padding:0;}
+	input[type="text"], input[type="password"], .inputTxt{margin:0;height:32px; color:#565656; border:1px solid #bdbdbd;}
+
+	
+
+}
+
+@media all and (min-width:1024px) and (max-width:1366px){
+	
+	input[type="text"], input[type="password"], .inputTxt{margin:0;height:32px !important; color:#565656; border:1px solid #bdbdbd;}
+	
+}
+
+
+
+@media all and (min-width:1366px) and (max-width:1450px){
+
+	
+}
+
+

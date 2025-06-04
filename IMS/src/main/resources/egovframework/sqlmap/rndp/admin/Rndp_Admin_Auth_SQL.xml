@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap>
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="adminAuthVO" type="egovframework.rndp.admin.admin.service.AdminAuthVO"/>
+
+	<resultMap id="adminAuth" class="adminAuthVO">
+		<result property="menuKey" column="k_admin_menu_key"/>
+		<result property="menuName" column="k_admin_menu_name"/>
+		<result property="flag" column="k_admin_auth_flag"/>
+	</resultMap>
+	<select id="adminAuthDAO.adminMenuAuthList" parameterClass="int" resultMap="adminAuth">
+		<![CDATA[
+		/* adminAuthDAO.adminMenuAuthList */
+			select 
+				k_admin_menu_key
+				, k_admin_menu_name
+				, (select k_admin_auth_flag from k_admin_auth t where t.k_admin_key = a.k_admin_key and t.k_admin_menu_key = m.k_admin_menu_key) as k_admin_auth_flag
+			from k_admin_menu m, k_admin a 
+			where k_admin_menu_depth = 0
+			and k_admin_key = #key# 
+			order by k_admin_menu_root
+		]]>
+	</select>
+	
+	<insert id="adminAuthDAO.adminAuthInsert" parameterClass="adminAuthVO">
+		/* adminAuthDAO.adminAuthInsert */
+		insert into k_admin_auth(k_admin_auth_key
+			, k_admin_key
+			, k_admin_menu_key
+			, k_admin_auth_flag
+		) values (
+			#key#
+			, #adminKey#
+			, #menuKey#
+			, #flag#
+		)
+	</insert>
+	
+	<select id="adminAuthDAO.adminAuthMaxCount" resultClass="int">
+		/* adminAuthDAO.adminAuthMaxCount */
+		select coalesce(max(k_admin_auth_key), 0)+1 from k_admin_auth
+	</select>
+	
+	<delete id="adminAuthDAO.adminAuthDelete" parameterClass="int">
+		/* adminAuthDAO.adminAuthDelete */
+		delete from k_admin_auth where k_admin_key = #adminKey#
+	</delete>
+</sqlMap>

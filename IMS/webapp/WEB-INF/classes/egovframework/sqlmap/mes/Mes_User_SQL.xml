@@ -1,0 +1,1176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap>
+	<typeAlias 	alias="mesUserVO" type="egovframework.rndp.mes.user.service.MesUserVO" />
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	
+	<select id="mesUserDAO.selectUserffList" parameterClass="mesUserVO" resultClass="mesUserVO">
+		/* mesUserDAO.selectUserffList */
+		SELECT
+			k_staff_key 		AS mesUserKey
+		,	k_class_name 		AS kClassName
+		,	POSITION_NAME 	AS kPositionName
+		,	k_sector_name 		AS kSectorName
+		,	k_staff_num 		AS mesUserNum
+		,	k_staff_id 			AS mesUserId
+		,	k_staff_name 		AS mesUserName
+		,	k_staff_email 		AS mesUserEmail
+		,	k_staff_comment 	AS mesUserComment
+		,	CONCAT(k_staff_mobile1, '-' , k_staff_mobile2, '-', k_staff_mobile3) AS mesUserTelephone1
+		,	CASE k_staff_state_flag 
+				WHEN 1 THEN '재직'
+				WHEN 2 THEN '휴직'
+				WHEN 3 THEN '정직'
+				WHEN 4 THEN '퇴직'
+				END AS mesUserStateFlag
+		,	k_staff_imagefile AS mesUserImagefile
+		,	s.k_staff_count		AS count
+		FROM
+			k_staff s 
+		LEFT JOIN k_class c ON s.k_class_key = c.k_class_key
+		LEFT JOIN K_POSITION p ON s.k_position_key = p.POSITION_NUM
+		LEFT JOIN k_sector t ON s.k_sector_key = t.k_sector_key
+		WHERE 1=1
+		AND s.k_staff_state_flag != '2' 		/* 퇴사 */
+		AND s.k_staff_state_flag != '99999' 	/* 삭제 처리시 상태 */
+		<isEmpty property="mesUserMaster">
+				AND s.k_staff_key NOT IN (1,2)
+		</isEmpty>
+		<isEqual property="mesUserMaster" compareValue="innost">
+			AND s.k_staff_key NOT IN (1)
+		</isEqual>
+		<isNotEmpty property="searchWord">
+			<isEqual property="searchType" compareValue="1">
+				AND	(LOWER(k_staff_name) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+					OR LOWER(k_staff_id) LIKE CONCAT('%', LOWER(#searchWord#), '%'))
+			</isEqual>
+			<isEqual property="searchType" compareValue="2">
+				AND	LOWER(k_staff_name) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			</isEqual>
+			<isEqual property="searchType" compareValue="3">
+				AND	LOWER(k_staff_id) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			</isEqual>
+		</isNotEmpty>
+		ORDER BY k_staff_state_flag, k_class_rank, POSITION_rank, k_staff_id
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+		
+	<select id="mesUserDAO.selectUserCount" parameterClass="mesUserVO" resultClass="int">
+		/* mesUserDAO.selectUserCount*/
+		SELECT
+			COUNT(k_staff_key)
+		FROM
+			k_staff s 
+		LEFT JOIN k_class c ON s.k_class_key = c.k_class_key
+		LEFT JOIN K_POSITION p ON s.k_position_key = p.POSITION_NUM
+		LEFT JOIN k_sector t ON s.k_sector_key = t.k_sector_key
+		WHERE 1=1
+		AND s.k_staff_state_flag != '2'
+		AND s.k_staff_state_flag != '99999'
+		<isEmpty property="mesUserMaster">
+				AND s.k_staff_key NOT IN (1,2)
+		</isEmpty>
+		<isEqual property="mesUserMaster" compareValue="innost">
+			AND s.k_staff_key NOT IN (1)
+		</isEqual>
+		<isNotEmpty property="searchWord">
+			<isEqual property="searchType" compareValue="1">
+				AND	(LOWER(k_staff_name) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+					OR LOWER(k_staff_id) LIKE CONCAT('%', LOWER(#searchWord#), '%'))
+			</isEqual>
+			<isEqual property="searchType" compareValue="2">
+				AND	LOWER(k_staff_name) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			</isEqual>
+			<isEqual property="searchType" compareValue="3">
+				AND	LOWER(k_staff_id) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			</isEqual>
+		</isNotEmpty>
+	</select>
+				
+	<select id="mesUserDAO.mesUserMenuList" parameterClass="mesUserVO" resultClass="mesUserVO">
+		/* mesUserDAO.mesUserMenuList */
+		SELECT	 
+			  m.k_menu_key 								AS mesMenuKey 
+			, m.k_menu_root 							AS mesMenuRoot 
+			, m.k_menu_ref 								AS mesMenuRef 
+			, m.k_menu_depth 							AS mesMenuDepth 
+			, m.k_menu_step 							AS mesMenuStep 
+			, m.k_menu_group_key 						AS mesMenuGroupKey 
+			, m.k_menu_name 							AS mesMenuName 
+			, a.k_menu_auth_key 						AS mesMenuAuthKey 
+			, TRIM(ifnull(a.k_menu_auth_flag, '')) 		AS mesMenuAuthFlag 
+			, TRIM(ifnull(a.k_menu_auth_c, '')) 		AS mesMenuAuthC 
+			, TRIM(ifnull(a.k_menu_auth_m, '')) 		AS mesMenuAuthM 
+			, TRIM(ifnull(a.k_menu_auth_d, '')) 		AS mesMenuAuthD
+			, TRIM(ifnull(a.k_menu_auth_w, '')) 		AS mesMenuAuthW 
+			, a.k_staff_key								AS mesMemberKey
+		FROM
+			k_menu m 
+		LEFT OUTER JOIN k_menu_auth a ON (m.k_menu_key = a.k_menu_key AND a.k_staff_key = #kStaffKey#)
+		WHERE 1=1
+		AND m.k_menu_group_key = 1
+		AND m.k_menu_visible_flag = 'T'
+		GROUP BY m.k_menu_key
+		ORDER BY 	m.k_menu_root,	m.k_menu_ref,		m.k_menu_depth,		m.k_menu_step
+	</select>		
+	
+	<select id="mesUserDAO.selectSectorList" parameterClass="mesUserVO" resultClass="mesUserVO">
+		/* mesUserDAO.selectSectorList */
+		SELECT
+			k_sector_key   AS  kSectorKey,
+			k_sector_rank   AS  kSectorRank,
+			k_sector_name  AS  kSectorName
+		FROM
+			k_sector
+		ORDER BY
+			k_sector_rank
+	</select>
+	<select id="mesUserDAO.selectClassList" parameterClass="mesUserVO" resultClass="mesUserVO">
+				/* mesUserDAO.selectClassList" */
+		SELECT
+			k_class_key  AS  kClassKey,
+			k_class_rank  AS  kClassRank,
+			k_class_name  AS  kClassName
+		FROM
+			k_class
+		ORDER BY
+			k_class_rank
+	</select>
+	
+	<insert id="mesUserDAO.mesUserPositionInsert" parameterClass="mesUserVO">
+		/* mesUserDAO.mesUserPositionInsert */
+		INSERT INTO
+			K_POSITION
+		VALUES(
+				(SELECT
+						ifnull(MAX(POSITION_NUM), 0) + 1
+					FROM
+						K_POSITION as aa
+				),
+				#kPositionRank#,
+				#kPositionName#
+			)
+	</insert>
+	<select id="mesUserDAO.selectUserInfo" parameterClass="mesUserVO" resultClass="mesUserVO">
+		/* mesUserDAO.selectUserInfo */
+		SELECT
+			s.k_staff_key   	AS  mesUserKey,
+			s.k_class_key   	AS  kClassKey,
+			s.k_position_key   AS  kPositionKey,
+			k_staff_num   		AS  mesUserNum,
+			k_staff_id   		AS  mesUserId,
+			k_staff_name   		AS  mesUserName,
+			AES_DECRYPT(k_staff_password,get_daily_key())   	AS  mesUserPassword,
+			k_staff_birthday   AS  mesUserBirthday,
+			k_staff_birthday_flag   AS  mesUserBirthdayFlag,
+			k_staff_email   AS  mesUserEmail,
+			k_staff_messenger   AS  mesUserMessenger,
+			k_staff_post1   AS  mesUserPost1,
+			k_staff_post2   AS  mesUserPost2,
+			k_staff_address1   AS  mesUserAddress1,
+			k_staff_address2   AS  mesUserAddress2,
+			k_staff_telephone1   AS  mesUserTelephone1,
+			k_staff_telephone2   AS  mesUserTelephone2,
+			k_staff_telephone3   AS  mesUserTelephone3,
+			k_staff_mobile1   AS  mesUserMobile1,
+			k_staff_mobile2   AS  mesUserMobile2,
+			k_staff_mobile3   AS  mesUserMobile3,
+			k_staff_homepage   AS  mesUserHomepage,
+			k_staff_comment   AS  mesUserComment,
+			k_staff_state_flag   AS  mesUserStateFlag,
+			k_staff_imagefile   AS  mesUserImagefile,
+			s.k_sector_key   AS  kSectorKey,
+			k_class_name   AS  kClassName,
+			POSITION_NAME   AS  kPositionName,
+			t.k_sector_name   AS  kSectorName,
+			k_staff_auth_c   AS  mesUserAuthConfirmFlag,
+			k_staff_auth_w   AS  mesUserAuthWriteFlag,
+			k_staff_auth_m   AS  mesUserAuthModifyFlag,
+			k_staff_auth_d   AS  mesUserAuthDelFlag,
+			k_staff_auth_close   AS   mesUserAuthCloseFlag,
+			s.k_staff_item_gubun AS	kStaffItemGubun
+		FROM
+			k_staff  s 
+			LEFT JOIN  k_class c ON ( s.k_class_key = c.k_class_key )
+			LEFT JOIN  K_POSITION p ON ( s.k_position_key = p.POSITION_NUM )
+			LEFT JOIN  k_sector t ON ( s.k_sector_key = t.k_sector_key )
+		WHERE  1=1 
+		AND 	k_staff_key = #mesUserKey#
+	</select>
+	
+	<!-- 순위 맥스 다음값 가져오기 -->
+	<select id="mesUserDAO.selectMaxRank" resultClass="int">
+		/* mesUserDAO.selectMaxRank */
+		SELECT
+			ifnull(MAX(POSITION_rank), 0) + 1
+		FROM
+			K_POSITION
+	</select>
+	
+	<select id="mesUserDAO.selectpositionInfo" parameterClass="mesUserVO" resultClass="mesUserVO">
+		/* mesUserDAO.selectpositionInfo */
+		SELECT
+			POSITION_NUM  AS  kPositionKey,	
+			POSITION_rank AS  kPositionRank,
+			POSITION_NAME  AS  kPositionName
+		FROM
+			K_POSITION
+		WHERE
+			POSITION_NUM = #kPositionKey#
+	</select>
+	<update id="mesUserDAO.mesUserPositionUpdate" parameterClass="mesUserVO">
+		/* mesUserDAO.mesUserPositionUpdate */
+		UPDATE
+			K_POSITION
+		SET
+			POSITION_NAME = #kPositionName#
+		WHERE
+			POSITION_NUM = #kPositionKey#
+	</update>
+	
+	<delete id="mesUserDAO.mesUserPositionDelete" parameterClass="mesUserVO">
+		/* mesUserDAO.mesUserPositionDelete */
+		DELETE FROM
+			K_POSITION
+		WHERE
+			POSITION_NUM = #kPositionKey#
+	</delete>
+	
+	<!-- 부서 변경 저장1 -->
+	<update id="mesUserDAO.updattRank1" parameterClass="mesUserVO"> 
+		/* mesUserDAO.updattRank1 */
+		UPDATE
+			K_POSITION
+		SET
+			POSITION_rank = #Num1#
+		WHERE
+			POSITION_rank = #kPositionRank#
+	</update>
+	
+	<!-- 부서 변경 저장2 -->
+	<update id="mesUserDAO.updattRank2" parameterClass="mesUserVO"> 
+		/* mesUserDAO.updattRank2 */
+		<![CDATA[
+ 		UPDATE 
+ 			K_POSITION 
+ 		SET 
+ 			POSITION_rank = POSITION_rank + #Num1# 
+ 		WHERE 
+ 			POSITION_rank >= #kPositionRank# 
+ 		]]> 
+	</update>
+	
+	
+	<select id="mesUserDAO.selectIclassList" parameterClass="mesUserVO" resultClass="mesUserVO">
+		/* mesUserDAO.selectIclassList */
+		SELECT
+			k_class_key   AS  kClassKey ,
+			k_class_rank  AS  kClassRank ,
+			k_class_name  AS  kClassName ,
+			(SELECT COUNT(k_staff_key) FROM k_staff WHERE k_class_key = a.k_class_key) as useCnt
+		FROM
+			k_class a
+		WHERE 1=1
+<!-- 		AND a.k_class_key != 0 -->
+		ORDER BY
+		k_class_rank ASC   , k_class_key ASC
+	</select>
+	<select id="mesUserDAO.eifnullist" parameterClass="mesUserVO" resultClass="mesUserVO">
+		/* mesUserDAO.eifnullist */
+		select 
+		k_env_name AS envName, 
+		k_env_value AS envVal
+		from k_env
+	</select>
+	
+	
+	
+	<!--기업정보  -->
+	<update id="mesUserDAO.updateEnv"  parameterClass="mesUserVO"  >
+		/* mesUserDAO.updateEnv */
+		<![CDATA[
+			update  k_env
+			set k_env_value = #envVal#
+			where k_env_name = #envName#
+		]]>
+	</update>
+	<insert id="mesUserDAO.mesUserLevelInsert"  parameterClass="mesUserVO"  >
+		/* mesUserDAO.mesUserLevelInsert */
+		insert into k_class(
+			k_class_key,
+			k_class_rank,
+			k_class_name
+			) values (
+				(select ifnull(MAX(k_class_key), 0) + 1
+				 from k_class as aa)
+				, #kClassRank#
+				, #kClassName#
+			)
+	</insert>
+	<select id="mesUserDAO.selectIclassInfo" parameterClass="mesUserVO" resultClass="mesUserVO">
+		/* mesUserDAO.selectIclassInfo */
+		select 
+			k_class_key AS kClassKey, 
+			k_class_rank AS kClassRank, 
+			k_class_name AS kClassName
+		from  k_class
+		where  k_class_key = #kClassKey#
+	</select>
+	<update id="mesUserDAO.mesUserLevelUpdate"  parameterClass="mesUserVO"  >
+		/* mesUserDAO.mesUserLevelUpdate */
+		<![CDATA[
+			update  k_class
+			set k_class_rank = #kClassRank#,
+			k_class_name = #kClassName#
+			where k_class_key = #kClassKey#
+		]]>
+	</update>
+			
+	<delete id="mesUserDAO.mesUserLevelDelete" parameterClass="mesUserVO">
+		/* mesUserDAO.mesUserLevelDelete */
+		DELETE	FROM	k_class
+		WHERE 1=1
+		AND k_class_key = #kClassKey#	
+	</delete>	
+	
+	 	<!-- 직원신청 승인 : 리스트 -->
+	 	
+	<select id="mesUserDAO.selectUseReuestList"  parameterClass="mesUserVO" resultClass="mesUserVO">
+		/* mesUserDAO.selectUseReuestList */
+		SELECT
+			k_staff_request_key 	AS mesUserRequestKey
+		,	k_class_name 			AS kClassName
+		,	POSITION_NAME 		AS kPositionName
+		,	k_sector_name 			AS kSectorName
+		,	k_staff_num 			AS mesUserNum
+		,	k_staff_id 				AS mesUserId
+		,	k_staff_name 			AS mesUserName
+		,	k_staff_email 			AS mesUserEmail
+		,	k_staff_comment 		AS mesUserComment
+		,	k_staff_state_flag 		AS mesUserStateFlag
+		,	k_staff_mobile1 		AS mesUserMobile1
+		,	k_staff_mobile2 		AS mesUserMobile2
+		,	k_staff_mobile3 		AS mesUserMobile3
+		,	k_staff_imagefile 		AS mesUserImagefile
+		FROM
+			k_staff_request s 
+		LEFT JOIN k_class c ON (s.k_class_key = c.k_class_key)
+		LEFT JOIN K_POSITION p ON (s.k_position_key = p.POSITION_NUM)
+		LEFT JOIN k_sector t ON (s.k_sector_key = t.k_sector_key)
+		WHERE 1=1
+		ORDER BY k_staff_state_flag, k_class_rank, POSITION_rank, k_staff_name
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	
+	<select id="mesUserDAO.selectUseReuestListCount" parameterClass="mesUserVO" resultClass="int">
+		SELECT
+			COUNT(s.k_staff_request_key)
+		FROM
+			k_staff_request s 
+		LEFT JOIN k_class c ON (s.k_class_key = c.k_class_key)
+		LEFT JOIN K_POSITION p ON (s.k_position_key = p.POSITION_NUM)
+		LEFT JOIN k_sector t ON (s.k_sector_key = t.k_sector_key)
+		WHERE 1=1
+	</select>
+	
+	<!-- 직원신청 승인 : 세부정보 조회 -->
+	<select id="mesUserDAO.mesUserRegInfo"  parameterClass="mesUserVO" resultClass="mesUserVO">
+		/* mesUserDAO.mesUserRegInfo */
+		SELECT
+			k_staff_request_key AS mesUserRequestKey,
+			k_class_name AS kClassName,
+			t.k_sector_name AS kSectorName,
+			POSITION_NAME AS kPositionName,
+			k_staff_num AS mesUserNum,
+			k_staff_id AS mesUserId,
+			k_staff_name AS mesUserName,
+			k_staff_password AS mesUserPassword,
+			k_staff_birthday AS mesUserBirthday,
+			if(k_Staff_birthday_flag = 'T','양력', '음력') AS mesUserBirthdayFlag,
+			k_staff_email AS mesUserEmail,
+			k_staff_messenger AS mesUserMessenger,
+			k_staff_post1 AS mesUserPost1,
+			k_staff_post2 AS mesUserPost2,
+			k_staff_address1 AS mesUserAddress1,
+			k_staff_address2 AS mesUserAddress2,
+			k_staff_telephone1 AS mesUserTelephone1,
+			k_staff_telephone2 AS mesUserTelephone2,
+			k_staff_telephone3 AS mesUserTelephone3,
+			k_staff_mobile1 AS mesUserMobile1,
+			k_staff_mobile2 AS mesUserMobile2,
+			k_staff_mobile3 AS mesUserMobile3,
+			k_staff_homepage AS mesUserHomepage,
+			k_staff_comment AS mesUserComment,
+			k_staff_state_flag AS mesUserStateFlag,
+			k_staff_imagefile  AS mesUserImagefile
+		FROM
+			k_staff_request s 
+		LEFT JOIN  k_class c
+			ON s.k_class_key = c.k_class_key
+		LEFT JOIN  K_POSITION p
+			ON  s.k_position_key = p.POSITION_NUM
+		LEFT JOIN  k_sector t
+			ON s.k_sector_key = t.k_sector_key
+		WHERE 1=1 
+		AND k_staff_request_key = #mesUserRequestKey#
+	</select>
+	<!-- 직원신청 승인 : 삭제 -->
+	<delete id="mesUserDAO.mesUserRegDelete" parameterClass="mesUserVO">
+		/* mesUserDAO.mesUserRegDelete */
+		DELETE FROM
+			k_staff_request
+		WHERE
+			k_staff_request_key = #mesUserRequestKey#
+	</delete>
+	
+	<!-- 직원신청 승인 : 스텝 테이블에 정보 인서트 -->
+	<insert id="mesUserDAO.mesUserRegApprovalInsert" parameterClass="mesUserVO">
+		/* mesUserDAO.mesUserRegApprovalInsert */
+		INSERT INTO
+			k_staff (
+				k_staff_key,
+				k_class_key,
+				k_position_key,
+				k_staff_id,
+				k_staff_name,
+				k_staff_password,
+				k_staff_birthday,
+				k_staff_birthday_flag,
+				k_staff_email,
+				k_staff_messenger,
+				k_staff_post1,
+				k_staff_post2,
+				k_staff_address1,
+				k_staff_address2,
+				k_staff_telephone1,
+				k_staff_telephone2,
+				k_staff_telephone3,
+				k_staff_mobile1,
+				k_staff_mobile2,
+				k_staff_mobile3,
+				k_staff_homepage,
+				k_staff_comment,
+				k_staff_state_flag,
+				k_staff_imagefile,
+				k_staff_sign_image,
+				k_staff_num,
+				k_mail_use,
+				k_sector_key
+			)
+		SELECT
+			(
+				SELECT
+					COALESCE(MAX(k_staff_key) + 1, 1)
+				FROM
+					k_staff as aa
+			),
+			k_class_key,
+			k_position_key,
+			k_staff_id,
+			k_staff_name,
+			k_staff_password,
+			k_staff_birthday,
+			k_staff_birthday_flag,
+			k_staff_email,
+			k_staff_messenger,
+			k_staff_post1,
+			k_staff_post2,
+			k_staff_address1,
+			k_staff_address2,
+			k_staff_telephone1,
+			k_staff_telephone2,
+			k_staff_telephone3,
+			k_staff_mobile1,
+			k_staff_mobile2,
+			k_staff_mobile3,
+			k_staff_homepage,
+			k_staff_comment,
+			k_staff_state_flag,
+			k_staff_imagefile,
+			k_staff_sign_image,
+			k_staff_num,
+			k_mail_use,
+			k_sector_key
+		FROM
+			k_staff_request
+		WHERE
+			k_staff_request_key = #mesUserRequestKey#
+	</insert>
+	<select id="mesUserDAO.mesCheckId" parameterClass="String" resultClass="int">
+	<![CDATA[ 
+		/* mesUserDAO.mesCheckId */
+		SELECT	SUM(cnt)
+		FROM	(
+				SELECT	COUNT (k_staff_id) AS cnt
+				FROM	k_staff_request k
+				WHERE	k.k_staff_id = #id#
+				UNION ALL
+				SELECT	COUNT(k_staff_id) AS cnt
+				FROM	k_staff a
+				WHERE	a.k_staff_id = #id#
+				) ci
+	]]>
+	</select>
+		<insert id="mesUserDAO.mesUserInsert" parameterClass="mesUserVO">
+	/* mesUserDAO.mesUserInsert */		
+		INSERT INTO
+			k_staff_request (
+				k_staff_request_key,
+				k_class_key,
+				k_position_key,
+				k_staff_id,
+				k_staff_name,
+				k_staff_password,
+				k_staff_birthday,
+				k_staff_birthday_flag,
+				k_staff_email,
+				k_staff_messenger,
+				k_staff_post1,
+				k_staff_post2,
+				k_staff_address1,
+				k_staff_address2,
+				k_staff_telephone1,
+				k_staff_telephone2,
+				k_staff_telephone3,
+				k_staff_mobile1,
+				k_staff_mobile2,
+				k_staff_mobile3,
+				k_staff_homepage,
+				k_staff_comment,
+				k_staff_state_flag,
+				k_staff_imagefile,
+				k_staff_sign_image,
+				k_staff_num,
+				k_mail_use,
+				k_sector_key
+			)
+		VALUES
+			(
+				(SELECT 
+					ifnull(MAX(k_staff_request_key ),0)+1
+				FROM 
+					k_staff_request as a),	
+				#kClassKey#,
+				#kPositionKey#,
+				#mesUserId#,
+				#mesUserName#,
+				#mesUserPassword#,
+				#mesUserBirthday#,
+				#mesUserBirthdayFlag#,
+				#mesUserEmail#,
+				#mesUserMessenger#,
+				#mesUserPost1#,
+				#mesUserPost2#,
+				#mesUserAddress1#,
+				#mesUserAddress2#,
+				#mesUserTelephone1#,
+				#mesUserTelephone2#,
+				#mesUserTelephone3#,
+				#mesUserMobile1#,
+				#mesUserMobile2#,
+				#mesUserMobile3#,
+				#mesUserHomepage#,
+				#mesUserComment#,
+				#mesUserStateFlag#,
+				#mesUserImagefile#,
+				#mesUserSignImage#,
+				#mesUserNum#,
+				#kMailUse#,
+				#kClassKey#
+			)
+	</insert>
+	
+	<update id="mesUserDAO.mesUserInfoUpdate"  parameterClass="mesUserVO"  >
+		/* mesUserDAO.mesUserInfoUpdate */
+		UPDATE
+			k_staff
+		SET
+			k_class_key = #kClassKey#,
+			k_position_key = #kPositionKey#,
+			k_staff_num = #mesUserNum#,
+			k_staff_name = #mesUserName#,
+			k_staff_birthday = #mesUserBirthday#,
+			k_staff_birthday_flag = #mesUserBirthdayFlag#,
+			k_staff_email = #mesUserEmail#,
+			k_staff_messenger = #mesUserMessenger#,
+			k_staff_post1 = #mesUserPost1#,
+			k_staff_post2 = #mesUserPost2#,
+			k_staff_address1 = #mesUserAddress1#,	
+			k_staff_address2 = #mesUserAddress2#,
+			k_staff_telephone1 = #mesUserTelephone1#,
+			k_staff_telephone2 = #mesUserTelephone2#,
+			k_staff_telephone3 = #mesUserTelephone3#,
+			k_staff_mobile1 = #mesUserMobile1#,
+			k_staff_mobile2 = #mesUserMobile2#,
+			k_staff_mobile3 = #mesUserMobile3#,
+			k_staff_state_flag = #mesUserStateFlag#,
+			k_staff_auth_c = #mesUserAuthConfirmFlag#,
+			k_staff_auth_w = #mesUserAuthWriteFlag#,
+			k_staff_auth_m = #mesUserAuthModifyFlag#,
+			k_staff_auth_d = #mesUserAuthDelFlag#,
+			k_staff_auth_close = #mesUserAuthCloseFlag#
+		WHERE
+			k_staff_key = #mesUserKey#
+	</update>
+	
+	<delete id="mesUserDAO.deleteUser"  parameterClass="mesUserVO">
+		/* mesUserDAO.deleteUser */
+		UPDATE
+			k_staff
+		SET
+			k_staff_state_flag = '99999'
+		WHERE 1=1
+		AND k_staff_key = #mesUserKey#
+<!-- 		DELETE FROM -->
+<!-- 			k_staff -->
+<!-- 		WHERE -->
+<!-- 			k_staff_key = #mesUserKey# -->
+	</delete>
+	
+	<insert id="mesUserDAO.mesUserMenuAuthUpdate" parameterClass="mesUserVO">
+		/* mesUserDAO.mesUserMenuAuthUpdate */
+		insert into k_menu_auth(
+			k_menu_auth_key
+			, k_staff_key
+			, k_menu_key
+			, k_menu_auth_flag
+			, k_menu_auth_c
+			, k_menu_auth_m
+			, k_menu_auth_d
+			, k_menu_auth_w
+		) values (
+			#kMenuAuthKey#
+			, #mesUserKey#
+			, #kMenuKey#
+			, #kMenuAuthFlag#
+			, #kMenuAuthC#
+			, #kMenuAuthM#
+			, #kMenuAuthD#
+			, #kMenuAuthW#
+		)
+	</insert>
+	
+	<insert id="mesUserDAO.mesUserMenuAuthUpdate222" parameterClass="mesUserVO">
+		/* mesUserDAO.mesUserMenuAuthUpdate222 */
+		<selectKey type="pre" keyProperty="kMenuAuthKey">
+			SELECT IFNULL(MAX(k_menu_auth_key), 0) + 1 FROM k_menu_auth
+		</selectKey>
+		insert into k_menu_auth(
+		      k_menu_auth_key
+			, k_staff_key
+			, k_menu_key
+			, k_menu_auth_flag
+			, k_menu_auth_c
+			, k_menu_auth_m
+			, k_menu_auth_d
+			, k_menu_auth_w
+			, k_class_key
+		)
+		SELECT 
+				#kMenuAuthKey#
+			,	k_staff_key
+			,	#kMenuKey#
+			,	#kMenuAuthFlag#
+			,	#kMenuAuthC#
+			,	#kMenuAuthM#
+			,	#kMenuAuthD#
+			,	#kMenuAuthW#
+			,	#kClassKey#
+		FROM 
+			k_staff 
+		WHERE 1=1
+		AND k_class_key = #kClassKey#
+	</insert>
+	
+	<insert id="mesUserDAO.mesUserMenuAuthUpdate2" parameterClass="mesUserVO">
+		/* mesUserDAO.mesUserMenuAuthUpdate2 */
+		insert into k_menu_auth(k_menu_auth_key
+			, k_staff_key
+			, k_menu_key
+			, k_menu_auth_flag
+			, k_menu_auth_c
+			, k_menu_auth_m
+			, k_menu_auth_d
+			, k_menu_auth_w
+		) values (
+			#kMenuAuthKey#
+			, #mesUserKey#
+			, #kMenuKey#
+			, #kMenuAuthFlag#
+			, #kMenuAuthC#
+			, #kMenuAuthM#
+			, #kMenuAuthD#
+			, #kMenuAuthW#
+		)
+	</insert>
+		<select id="mesUserDAO.mesUserMenuAuthMaxCnt" resultClass="int">
+		/* mesUserDAO.mesUserMenuAuthMaxCnt */
+		select coalesce(max(k_menu_auth_key), 0)+1 from k_menu_auth
+	</select>
+	
+	<delete id="mesUserDAO.deleteUserMenuAuth"  parameterClass="mesUserVO">
+		/* mesUserDAO.deleteUserMenuAuth */
+		DELETE	FROM	k_menu_auth
+		WHERE 1=1
+			AND k_staff_key = #mesUserKey#
+	</delete>	
+	
+	<delete id="mesUserDAO.deleteUserMenuAuth222"  parameterClass="mesUserVO">
+		/* mesUserDAO.deleteUserMenuAuth222 */
+		DELETE	FROM	k_menu_auth
+		WHERE 1=1
+		AND k_class_key = #kClassKey#
+<!-- 		AND k_class_key != 0 -->
+	</delete>	
+	
+	
+	<insert id="mesUserDAO.insertOfficer" parameterClass="mesUserVO">
+		/* mesUserDAO.insertOfficer */
+		INSERT INTO e_officer (
+		
+		e_officer_key,
+		e_officer_item_key,
+		e_officer_item_name,
+		e_officer_staff_key,
+		e_officer_staff_name
+		
+		)VALUES(
+		
+		(SELECT ifnull(MAX(e_officer_key), 0) + 1 FROM e_officer as aa),
+		#eItemKey#,
+		#eItemName#,
+		#kStaffKey#,
+		#kStaffName#
+		
+		)
+	</insert>
+	
+	<update id="mesUserDAO.updateItemGubun"  parameterClass="mesUserVO"  >
+		/* mesUserDAO.updateItemGubun */
+		UPDATE
+			k_staff
+		SET
+			k_staff_item_gubun = #eAllChk#
+		WHERE
+			k_staff_key = #kStaffKey#
+	</update>
+	
+	
+	<select id="mesUserDAO.selectOfficerItemList" parameterClass="mesUserVO" resultClass="mesUserVO">
+		/* mesUserDAO.selectOfficerItemList */
+		SELECT
+			a.e_officer_key			AS		eOfficerKey,
+			a.e_officer_item_key	AS		eItemKey,
+			a.e_officer_item_name	AS		eItemName,
+			a.e_officer_staff_key	AS		kStaffKey,
+			a.e_officer_staff_name	AS		kStaffName,
+			d.path		AS		eItemCateName
+		FROM
+			e_officer a
+			LEFT OUTER JOIN s_item b ON(a.e_officer_item_key = b.s_item_key)
+			LEFT OUTER JOIN s_item_cate c ON(b.s_item_cate_key = c.s_item_cate_key)
+			LEFT JOIN 	(
+				SELECT	  s_item_cate_key
+						, s_item_cate_skey
+						, s_item_cate_ukey
+						, s_item_cate_name
+						, s_item_cate_eng_name
+						, SUBSTR(SYS_CONNECT_BY_PATH(s_item_cate_name,'>'), 2) AS path
+				FROM	s_item_cate
+				START WITH s_item_cate_ukey = 0
+				CONNECT BY PRIOR s_item_cate_key = s_item_cate_ukey
+				ORDER SIBLINGS BY s_item_cate_key
+				) AS d
+	            ON (b.s_item_cate_key = d.s_item_cate_key)     
+			
+		WHERE 1=1
+		AND a.e_officer_staff_key = #kStaffKey#
+		ORDER BY a.e_officer_key
+			
+	</select>
+	
+	
+	<select id="mesUserDAO.selectOfficerItemListCnt" parameterClass="mesUserVO" resultClass="int">
+		/* mesUserDAO.selectOfficerItemListCnt */
+		SELECT COUNT(*) FROM(
+			SELECT
+				a.e_officer_key			AS		eOfficerKey,
+				a.e_officer_item_key	AS		eItemKey,
+				a.e_officer_item_name	AS		eItemName,
+				a.e_officer_staff_key	AS		kStaffKey,
+				a.e_officer_staff_name	AS		kStaffName,
+				c.s_item_cate_name		AS		eItemCateName
+			FROM
+				e_officer a
+				LEFT OUTER JOIN s_item b ON(a.e_officer_item_key = b.s_item_key)
+				LEFT OUTER JOIN s_item_cate c ON(b.s_item_cate_key = c.s_item_cate_key)
+			WHERE 1=1
+			AND a.e_officer_staff_key = #kStaffKey#
+		)WHERE 1=1
+			
+	</select>
+	
+	<delete id="mesUserDAO.deleteOfficer"  parameterClass="mesUserVO">
+		/* mesUserDAO.deleteOfficer */
+		DELETE	FROM	
+			e_officer
+		WHERE 
+			e_officer_staff_key = #kStaffKey#
+	</delete>	
+	
+	<select id="mesUserDAO.envList" parameterClass="mesUserVO" resultClass="mesUserVO">
+		/* mesUserDAO.envList */
+		select 
+		k_env_name AS envName, 
+		k_env_value AS envVal
+		from k_env
+	</select>
+	
+	<update id="mesUserDAO.updateUserInfoPwd" parameterClass="mesUserVO">
+		/* mesUserDAO.updateUserInfoPwd */
+		UPDATE
+			k_staff
+		SET
+			k_staff_password = #chPassword2#
+		WHERE
+			k_staff_key = #mesUserKey#
+	</update>
+	  
+	 
+	
+	<update id="mesUserDAO.updateSetCount" parameterClass="mesUserVO">
+		/* mesUserDAO.updateSetCount */
+		UPDATE
+			k_staff
+		SET
+			k_staff_count = null
+		WHERE
+			k_staff_key = #mesUserKey#
+	</update>
+	
+	<update id="mesUserDAO.updateSetPass" parameterClass="mesUserVO">
+		/* mesUserDAO.updateSetPass */
+		UPDATE
+			k_staff
+		SET
+			k_staff_password = #mesUserPassword#
+		WHERE
+			k_staff_key = #mesUserKey#
+	</update>
+	
+	<update id="mesUserDAO.mesUserInfoUpdateNew"  parameterClass="mesUserVO"  >
+		/* mesUserDAO.mesUserInfoUpdateNew */
+		UPDATE
+			k_staff
+		SET
+			k_class_key = #kClassKey#,
+			k_position_key = #kPositionKey#,
+			k_staff_num = #mesUserNum#,
+			k_staff_name = #mesUserName#,
+			k_staff_birthday = #mesUserBirthday#,
+			k_staff_birthday_flag = #mesUserBirthdayFlag#,
+			k_staff_email = #mesUserEmail#,
+			k_staff_messenger = #mesUserMessenger#,
+			k_staff_post1 = #mesUserPost1#,
+			k_staff_post2 = #mesUserPost2#,
+			k_staff_address1 = #mesUserAddress1#,	
+			k_staff_address2 = #mesUserAddress2#,
+			k_staff_telephone1 = #mesUserTelephone1#,
+			k_staff_telephone2 = #mesUserTelephone2#,
+			k_staff_telephone3 = #mesUserTelephone3#,
+			k_staff_mobile1 = #mesUserMobile1#,
+			k_staff_mobile2 = #mesUserMobile2#,
+			k_staff_mobile3 = #mesUserMobile3#,
+			k_staff_state_flag = #mesUserStateFlag#,
+			k_sector_key = #kSectorKey#,
+			k_staff_auth_c = #mesUserAuthConfirmFlag#,
+			k_staff_auth_w = #mesUserAuthWriteFlag#,
+			k_staff_auth_m = #mesUserAuthModifyFlag#,
+			k_staff_auth_d = #mesUserAuthDelFlag#,
+			k_staff_auth_close = #mesUserAuthCloseFlag#
+		WHERE
+			k_staff_key = #mesUserKey#
+	</update>
+	
+	
+	<delete id="mesUserDAO.databaseAllTruncate"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate */
+			 /* 결재 정보 */	
+			 TRUNCATE TABLE S_SIGN;
+			 TRUNCATE TABLE S_SIGN_ITEM;
+			 TRUNCATE TABLE S_SIGN_PATH;
+			 
+			 /* 정보관리대장 정보 */	
+			 TRUNCATE TABLE A_ASSET;
+			 TRUNCATE TABLE A_ASSET_LICENSE;
+			 
+			 TRUNCATE TABLE A_ASSET_SW;
+			 TRUNCATE TABLE A_ASSET_SW_LOG;
+			 
+			 /* 자산 사용(반입,반출) */
+			 TRUNCATE TABLE E_ENTRY;
+			 TRUNCATE TABLE E_ENTRY_ITEM;
+			 /*임시장비 반입,반출 */
+			 TRUNCATE TABLE E_EQUIPMENT_IN;
+			 TRUNCATE TABLE E_EQUIPMENT_IN_ITEM;
+			 
+			 /*부품교체 */
+			 TRUNCATE TABLE E_REPLACEMENT;
+			 TRUNCATE TABLE E_REPLACEMENT_ITEM;
+			  
+			 /*문제관리 */
+			 TRUNCATE TABLE I_BLUE_ISSUE;
+			 TRUNCATE TABLE I_BLUE_ISSUE_ASSET;
+			 
+			 /*SR관리 */
+			 TRUNCATE TABLE I_BLUE_SR;
+			 TRUNCATE TABLE I_BLUE_SR_ASSET;
+			 
+			 /*변경관리 */
+			 TRUNCATE TABLE I_CHANGE;
+			 TRUNCATE TABLE I_CHANGE_ASSET;
+			 TRUNCATE TABLE I_CHANGE_DETALI;
+			 TRUNCATE TABLE I_CHANGE_FILE;
+			 
+			  /*장애관리 */
+			 TRUNCATE TABLE I_ISSUE;
+			 TRUNCATE TABLE I_ISSUE_ASSET;
+			 TRUNCATE TABLE I_ISSUE_DETALI;
+			 TRUNCATE TABLE I_ISSUE_FILE;
+			 TRUNCATE TABLE I_ISSUE_NOTES;
+			 TRUNCATE TABLE I_ISSUE_HANDLER;
+			 
+			 /* 점검관리 */
+			 TRUNCATE TABLE INSPECTION;
+			 TRUNCATE TABLE INSPECTION_FILE;
+			 TRUNCATE TABLE INSPECTION_RESULT;
+			 
+			  /*변경관리 */
+			 TRUNCATE TABLE I_CHANGE;
+			 TRUNCATE TABLE I_CHANGE_ASSET;
+			 TRUNCATE TABLE I_CHANGE_DETALI;
+			 TRUNCATE TABLE I_CHANGE_FILE;
+			 
+			  /*프로젝트관리 */
+			 TRUNCATE TABLE P_PROJECT;
+			 TRUNCATE TABLE P_PROJECT_ITEM;
+			 
+			  /*산출물관리 */
+			 TRUNCATE TABLE P_Deliverable;
+			 TRUNCATE TABLE P_Deliverable_file;
+			 
+			  /*보고서관리 */
+			 TRUNCATE TABLE P_Report;
+			 TRUNCATE TABLE P_Report_file;
+			 
+			   /* 담당자관리 */
+			 TRUNCATE TABLE CONTACT;
+			 
+			    /* 결재 테이블 */
+			 TRUNCATE TABLE S_SIGN;
+			 TRUNCATE TABLE S_SIGN_ITEM;
+			 TRUNCATE TABLE S_SIGN_PATH;
+		     /* 사용 로그 */
+			 TRUNCATE TABLE Log;
+			 TRUNCATE TABLE k_menu_log;
+			  /* 파일  로그 */
+			 TRUNCATE TABLE comtecopseq;
+			 TRUNCATE TABLE comtnfile;
+			 TRUNCATE TABLE comtnfiledetail;
+	</delete>
+	
+	
+	
+	<select id="mesUserDAO.selectUserffPopList" parameterClass="mesUserVO" resultClass="mesUserVO">
+		/* mesUserDAO.selectUserffPopList */
+		SELECT
+			k_staff_key 		AS mesUserKey
+		,	k_class_name 		AS kClassName
+		,	POSITION_NAME 	AS kPositionName
+		,	k_sector_name 		AS kSectorName
+		,	k_staff_num 		AS mesUserNum
+		,	k_staff_id 			AS mesUserId
+		,	k_staff_name 		AS mesUserName
+		,	k_staff_email 		AS mesUserEmail
+		,	k_staff_comment 	AS mesUserComment
+		,	CONCAT(k_staff_mobile1, '-' , k_staff_mobile2, '-', k_staff_mobile3) AS mesUserTelephone1
+		,	CASE k_staff_state_flag 
+				WHEN 1 THEN '재직'
+				WHEN 2 THEN '휴직'
+				WHEN 3 THEN '정직'
+				WHEN 4 THEN '퇴직'
+				END AS mesUserStateFlag
+		,	k_staff_imagefile AS mesUserImagefile
+		,	s.k_staff_count		AS count
+		FROM
+			k_staff s 
+		LEFT JOIN k_class c ON s.k_class_key = c.k_class_key
+		LEFT JOIN K_POSITION p ON s.k_position_key = p.POSITION_NUM
+		LEFT JOIN k_sector t ON s.k_sector_key = t.k_sector_key
+		WHERE 1=1
+		AND s.k_staff_state_flag != '2' 		/* 퇴사 */
+		AND s.k_staff_state_flag != '99999' 	/* 삭제 처리시 상태 */
+		AND s.k_staff_key != 1 	 
+		<isNotEmpty property="mesUserMaster">
+			AND s.k_staff_id != #mesUserMaster#
+		</isNotEmpty>
+		<isNotEmpty property="searchWord">
+			AND LOWER(k_staff_name) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+		</isNotEmpty>
+		 
+		ORDER BY k_staff_state_flag, k_class_rank, POSITION_rank, k_staff_id
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+		
+	<select id="mesUserDAO.selectUserPopCount" parameterClass="mesUserVO" resultClass="int">
+		/* mesUserDAO.selectUserPopCount*/
+		SELECT
+			COUNT(k_staff_key)
+		FROM
+			k_staff s 
+		LEFT JOIN k_class c ON s.k_class_key = c.k_class_key
+		LEFT JOIN K_POSITION p ON s.k_position_key = p.POSITION_NUM
+		LEFT JOIN k_sector t ON s.k_sector_key = t.k_sector_key
+		WHERE 1=1
+		AND s.k_staff_state_flag != '2' 		/* 퇴사 */
+		AND s.k_staff_state_flag != '99999' 	/* 삭제 처리시 상태 */
+		AND s.k_staff_key != 1 	 
+		<isNotEmpty property="mesUserMaster">
+			AND s.k_staff_id != #mesUserMaster#
+		</isNotEmpty>
+		<isNotEmpty property="searchWord">
+			AND LOWER(k_staff_name) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+		</isNotEmpty>
+	</select>
+	
+	<delete id="mesUserDAO.databaseAllTruncate1"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate1 */
+			 /* 결재 정보 */	
+			 TRUNCATE TABLE S_SIGN;
+			 TRUNCATE TABLE S_SIGN_ITEM;
+			 TRUNCATE TABLE S_SIGN_PATH;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate2"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate2 */
+			/* 정보관리대장 정보1 */	
+			DELETE FROM A_ASSET;
+			ALTER TABLE A_ASSET AUTO_INCREMENT = 1;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate3"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate3 */
+			 /* 자산 사용(반입,반출) */
+			 TRUNCATE TABLE E_ENTRY;
+			 TRUNCATE TABLE E_ENTRY_ITEM;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate4"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate4 */
+			  /*부품교체 */
+			 TRUNCATE TABLE E_REPLACEMENT;
+			 TRUNCATE TABLE E_REPLACEMENT_ITEM;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate5"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate5 */
+			   /*문제관리 */
+			 TRUNCATE TABLE I_BLUE_ISSUE;
+			 TRUNCATE TABLE I_BLUE_ISSUE_ASSET;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate6"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate6 */
+			 /*임시장비 반입,반출 */
+			 TRUNCATE TABLE E_EQUIPMENT_IN;
+			 TRUNCATE TABLE E_EQUIPMENT_IN_ITEM;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate7"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate7 */
+			  /*SR관리 */
+			 TRUNCATE TABLE I_BLUE_SR;
+			 TRUNCATE TABLE I_BLUE_SR_ASSET;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate8"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate8 */
+			  /*변경관리 */
+			 TRUNCATE TABLE I_CHANGE;
+			 TRUNCATE TABLE I_CHANGE_ASSET;
+			 TRUNCATE TABLE I_CHANGE_DETALI;
+			 TRUNCATE TABLE I_CHANGE_FILE;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate9"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate9 */			 
+			  /*프로젝트관리 */
+			 TRUNCATE TABLE P_PROJECT;
+			 TRUNCATE TABLE P_PROJECT_ITEM;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate10"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate10 */ 
+			/*산출물관리 */
+			 TRUNCATE TABLE P_Deliverable;
+			 TRUNCATE TABLE P_Deliverable_file;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate11"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate11 */			 
+			  /*보고서관리 */
+			 TRUNCATE TABLE P_Report;
+			 TRUNCATE TABLE P_Report_file;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate12"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate12 */			 
+			   /* 담당자관리 */
+			 TRUNCATE TABLE CONTACT;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate13"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate13 */			 
+			    /* 결재 테이블 */
+			 TRUNCATE TABLE S_SIGN;
+			 TRUNCATE TABLE S_SIGN_ITEM;
+			 TRUNCATE TABLE S_SIGN_PATH;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate14"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate14 */
+		     /* 사용 로그 */
+			 TRUNCATE TABLE Log;
+			 TRUNCATE TABLE k_menu_log;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate15"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate15 */
+			  /* 파일  로그 */
+			 TRUNCATE TABLE comtecopseq;
+			 TRUNCATE TABLE comtnfile;
+			 TRUNCATE TABLE comtnfiledetail;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate16"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate16 */			 
+			  /*장애관리 */
+			 TRUNCATE TABLE I_ISSUE;
+			 TRUNCATE TABLE I_ISSUE_ASSET;
+			 TRUNCATE TABLE I_ISSUE_DETALI;
+			 TRUNCATE TABLE I_ISSUE_FILE;
+			 TRUNCATE TABLE I_ISSUE_NOTES;
+			 TRUNCATE TABLE I_ISSUE_HANDLER;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate17"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate17 */			 
+			 /* 점검관리 */
+			 TRUNCATE TABLE INSPECTION;
+			 TRUNCATE TABLE INSPECTION_FILE;
+			 TRUNCATE TABLE INSPECTION_RESULT;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate18"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate18 */
+			 /* 정보관리대장2 */
+			 TRUNCATE TABLE A_ASSET_SW;
+			 TRUNCATE TABLE A_ASSET_SW_LOG;
+	</delete>
+	<delete id="mesUserDAO.databaseAllTruncate19"  parameterClass="mesUserVO">
+		/* mesUserDAO.databaseAllTruncate19 */
+			/* 정보관리대장 정보3 */	
+			 TRUNCATE TABLE A_ASSET_LICENSE;
+			/* 파일관련 추가된 테이블 */	
+			 TRUNCATE TABLE A_ASSET_SW_FILE;
+			 TRUNCATE TABLE I_BLUE_SR_FILE;
+			 TRUNCATE TABLE I_ISSUE_FILEINFO;
+	</delete>
+	
+	
+</sqlMap>

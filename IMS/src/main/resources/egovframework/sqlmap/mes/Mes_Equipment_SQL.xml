@@ -1,0 +1,735 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap>
+	<typeAlias alias="mesEquipmentVO" type="egovframework.rndp.mes.equipment.service.MesEquipmentVO" />
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	
+	<insert id="mesEquipmentDAO.insertInfoEquipment" parameterClass="mesEquipmentVO">
+	 <selectKey type="post" keyProperty="eEquipmentInKey" >
+        SELECT LAST_INSERT_ID() AS eEquipmentInKey
+	  </selectKey>
+		/* mesEquipmentDAO.insertInfoEquipment */
+		INSERT INTO E_EQUIPMENT_IN (
+				  eEntryImporter,
+				  eEntryImportDate,
+				  eEntryNote,
+				  eSignStatus,
+				  kStaffName,
+				  kStaffKey,
+				  eStatus,
+				  wDate,
+				  eEntryImporterOrg,
+				  eEntryLocation,
+				  sSignStatus
+				) VALUES (
+				  #eEntryImporter#,
+				  #eEntryImportDate#,
+				  #eEntryNote#,
+				  #eSignStatus#,
+				  #kStaffName#,
+				  #kStaffKey#,
+				  #eStatus#,
+				  #eEntryWdate#,
+				  #eEntryImporterOrg#,
+				  #eEntryLocation#,
+				  #sSignStatus#
+				);
+
+	</insert>
+
+	<insert id="mesEquipmentDAO.insertEquipmentRowInfo" parameterClass="mesEquipmentVO">
+		/* mesEquipmentDAO.insertEquipmentRowInfo */
+		INSERT INTO E_EQUIPMENT_IN_ITEM (
+					  eEquipmentInKey,
+					  eAssetPurpose,
+					  eAssetTypeName,
+					  eAssetType,
+					  eAssetName,
+					  eAssetMaker,
+					  eAssetModel,
+					  eAssetSNumber,
+					  eAssetNetworkType,
+					  eAssetHostName,
+					  eAssetIp,
+					  eAssetOs,
+					  eAssetDeviceType,
+					  eSignStatus,
+					  eStatus
+					) VALUES (
+					  #eEquipmentInKey#,
+					  #eAssetPurpose#,
+					  #eAssetTypeName#,
+					  #eAssetType#,
+					  #eAssetName#,
+					  #eAssetMaker#,
+					  #eAssetModel#,
+					  #eAssetSNumber#,
+					  #eAssetNetworkType#,
+					  #eAssetHostName#,
+					  #eAssetIp#,
+					  #eAssetOs#,
+					  #eAssetDeviceType#,
+					  #eSignStatus#,
+					  #eStatus#
+					);
+
+	</insert>
+
+
+
+
+	<select id="mesEquipmentDAO.selectEquipmentList" parameterClass="mesEquipmentVO" resultClass="mesEquipmentVO">
+		/* mesEquipmentDAO.selectEquipmentList */
+		SELECT
+			  eeii.eEquipmentInKey,
+			  eeii.eAssetPurpose,
+			  eeii.eAssetTypeName,
+			  eeii.eAssetType,
+			  eeii.eAssetName,
+			  eeii.eAssetMaker,
+			  eeii.eAssetModel,
+			  eeii.eAssetSNumber,
+			  eeii.eAssetNetworkType,
+			  eeii.eAssetHostName,
+			  eeii.eAssetIp,
+			  eeii.eAssetOs,
+			  eeii.eAssetDeviceType,
+			  eeii.eEquipmentOutKey,
+			  eeii.eStatus AS eItemStatus,
+			  eei.eEntryImporter,
+			  eei.eEntryImportDate,
+			  eei.eEntryNote,
+			  eei.eSignStatus,
+			  eei.kStaffName,
+			  eei.kStaffKey,
+			  eei.eEntryLocation,
+			  eei.eEntryImporterOrg,
+			  DATE_FORMAT(eei.wDate, '%Y-%m-%d') AS  eEntryWdate,
+			  DATE_FORMAT(eei.wDate, '%Y-%m-%d')  AS eSearchWord9, 
+			   CASE 
+			    WHEN eei.eStatus = '반출등록완료' THEN eei.eStatus
+			    WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '반입등록'
+			    WHEN eei.sSignStatus NOT IN ('제외', '승인') THEN '등록대기'
+			    ELSE eei.eStatus
+			  END AS eStatus,
+			  CASE 
+		        WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		        ELSE eei.sSignStatus
+			    END AS sSignStatus,
+			    IF(
+					(SELECT COUNT(*) 
+					FROM S_SIGN_ITEM AS ssi 
+					WHERE ssi.SIGN_TABLE_NUM = eei.eEquipmentInKey and ssi.SIGN_TABLE_NAME = 'E_EQUIPMENT_IN'
+					AND ssi.SIGN_DECISON = '결재대기'
+					AND ssi.SIGN_STAFF_NUM = #kStaffKey#
+				) > 0, 'Y', 'N') AS eViewGubun,
+			  eeii.eStatus AS eItemStatus ,
+			  eeii.eEntryExporterDate  ,
+		      eeii.eExitExporter ,
+		      eeii.eEquipmentItemKey,
+		      IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress  
+			FROM
+			  E_EQUIPMENT_IN_ITEM AS eeii
+			  LEFT JOIN E_EQUIPMENT_IN AS eei  ON eeii.eEquipmentInKey = eei.eEquipmentInKey
+			  LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = eei.eEquipmentInKey AND s.SIGN_TABLE_NAME = 'E_EQUIPMENT_IN')
+		WHERE 1=1 AND eei.eStatus != '삭제'
+		<isNotEmpty property="eSearchWord1">
+			AND LOWER(eeii.eAssetName) LIKE CONCAT('%',LOWER(#eSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord2">
+			AND LOWER(eeii.eAssetModel) LIKE CONCAT('%',LOWER(#eSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord3">
+			AND LOWER(eeii.eAssetMaker) LIKE CONCAT('%',LOWER(#eSearchWord3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord4">
+			AND LOWER(eei.eEntryImporter) LIKE CONCAT('%',LOWER(#eSearchWord4#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord5">
+			AND LOWER(eei.eEntryNote) LIKE CONCAT('%',LOWER(#eSearchWord5#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord6">
+			AND LOWER(eeii.eExitExporter) LIKE CONCAT('%',LOWER(#eSearchWord6#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTopStartDate">
+	    	AND DATE_FORMAT(eei.eEntryImportDate, '%Y-%m-%d') >= DATE_FORMAT(#eTopStartDate#, '%Y-%m-%d')
+		</isNotEmpty>
+		<isNotEmpty property="eTopEndDate">
+			AND DATE_FORMAT(#eTopEndDate#, '%Y-%m-%d') >= DATE_FORMAT(eei.eEntryImportDate, '%Y-%m-%d')
+		</isNotEmpty>
+	 
+		ORDER BY eeii.eEquipmentInKey DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	<select id="mesEquipmentDAO.selectEquipmentListCnt" parameterClass="mesEquipmentVO" resultClass="int">
+		/* mesEquipmentDAO.selectEquipmentListCnt */
+		SELECT
+			 COUNT(eeii.eEquipmentInKey) 
+		FROM
+		  E_EQUIPMENT_IN_ITEM AS eeii
+		  LEFT JOIN E_EQUIPMENT_IN AS eei  ON eeii.eEquipmentInKey = eei.eEquipmentInKey
+			  
+		WHERE 1=1 AND eei.eStatus != '삭제'
+		<isNotEmpty property="eSearchWord1">
+			AND LOWER(eeii.eAssetName) LIKE CONCAT('%',LOWER(#eSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord2">
+			AND LOWER(eeii.eAssetModel) LIKE CONCAT('%',LOWER(#eSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord3">
+			AND LOWER(eeii.eAssetMaker) LIKE CONCAT('%',LOWER(#eSearchWord3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord4">
+			AND LOWER(eei.eEntryImporter) LIKE CONCAT('%',LOWER(#eSearchWord4#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord5">
+			AND LOWER(eei.eEntryNote) LIKE CONCAT('%',LOWER(#eSearchWord5#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord6">
+			AND LOWER(eeii.eExitExporter) LIKE CONCAT('%',LOWER(#eSearchWord6#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTopStartDate">
+	    	AND DATE_FORMAT(eei.eEntryImportDate, '%Y-%m-%d') >= DATE_FORMAT(#eTopStartDate#, '%Y-%m-%d')
+		</isNotEmpty>
+		<isNotEmpty property="eTopEndDate">
+			AND DATE_FORMAT(#eTopEndDate#, '%Y-%m-%d') >= DATE_FORMAT(eei.eEntryImportDate, '%Y-%m-%d')
+		</isNotEmpty>
+	 
+	 
+	</select>
+
+	<select id="mesEquipmentDAO.selectEquipmentExcelList" parameterClass="mesEquipmentVO" resultClass="mesEquipmentVO">
+		/* mesEquipmentDAO.selectEquipmentExcelList */
+		SELECT
+			  eeii.eEquipmentInKey,
+			  eeii.eAssetPurpose,
+			  eeii.eAssetTypeName,
+			  eeii.eAssetType,
+			  eeii.eAssetName,
+			  eeii.eAssetMaker,
+			  eeii.eAssetModel,
+			  eeii.eAssetSNumber,
+			  eeii.eAssetNetworkType,
+			  eeii.eAssetHostName,
+			  eeii.eAssetIp,
+			  eeii.eAssetOs,
+			  eeii.eAssetDeviceType,
+			  eeii.eEquipmentOutKey,
+			  eeii.eStatus AS eItemStatus,
+			  eei.eEntryImporter,
+			  eei.eEntryImportDate,
+			  eei.eEntryNote,
+			  eei.eSignStatus,
+			  eei.kStaffName,
+			  eei.kStaffKey,
+		      eei.eEntryLocation,
+			  eei.eEntryImporterOrg,
+			  DATE_FORMAT(eei.wDate, '%Y-%m-%d') AS  eEntryWdate,
+			  DATE_FORMAT(eei.wDate, '%Y-%m-%d')  AS eSearchWord9, 
+			   CASE 
+			    WHEN eei.eStatus = '반출등록완료' THEN eei.eStatus
+			    WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '반입등록'
+			    WHEN eei.sSignStatus NOT IN ('제외', '승인') THEN '등록대기'
+			    ELSE eei.eStatus
+			  END AS eStatus,
+			  CASE 
+		        WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		        ELSE eei.sSignStatus
+			    END AS sSignStatus,
+			  eeii.eStatus AS eItemStatus ,
+			  eeii.eEntryExporterDate  ,
+		      eeii.eExitExporter ,
+		      eeii.eEquipmentItemKey 
+			FROM
+			  E_EQUIPMENT_IN_ITEM AS eeii
+			  LEFT JOIN E_EQUIPMENT_IN AS eei  ON eeii.eEquipmentInKey = eei.eEquipmentInKey
+			  LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = eei.eEquipmentInKey AND s.SIGN_TABLE_NAME = 'E_EQUIPMENT_IN')
+		WHERE 1=1 AND eei.eStatus != '삭제'
+		<isNotEmpty property="eSearchWord1">
+			AND LOWER(eeii.eAssetName) LIKE CONCAT('%',LOWER(#eSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord2">
+			AND LOWER(eeii.eAssetModel) LIKE CONCAT('%',LOWER(#eSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord3">
+			AND LOWER(eeii.eAssetMaker) LIKE CONCAT('%',LOWER(#eSearchWord3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord4">
+			AND LOWER(eei.eEntryImporter) LIKE CONCAT('%',LOWER(#eSearchWord4#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord5">
+			AND LOWER(eei.eEntryNote) LIKE CONCAT('%',LOWER(#eSearchWord5#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord6">
+			AND LOWER(eeii.eExitExporter) LIKE CONCAT('%',LOWER(#eSearchWord6#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTopStartDate">
+	    	AND DATE_FORMAT(eei.eEntryImportDate, '%Y-%m-%d') >= DATE_FORMAT(#eTopStartDate#, '%Y-%m-%d')
+		</isNotEmpty>
+		<isNotEmpty property="eTopEndDate">
+			AND DATE_FORMAT(#eTopEndDate#, '%Y-%m-%d') >= DATE_FORMAT(eei.eEntryImportDate, '%Y-%m-%d')
+		</isNotEmpty>
+	 
+	 
+		ORDER BY eei.eEntryImportDate DESC, eeii.eEquipmentInKey DESC
+		LIMIT 730
+	</select>
+
+	
+	<select id="mesEquipmentDAO.selectEquipmentRowItemList" parameterClass="mesEquipmentVO" resultClass="mesEquipmentVO">
+		/* mesEquipmentDAO.selectEquipmentRowItemList */
+		SELECT
+			  eeii.eEquipmentInKey,
+			  eeii.eAssetPurpose,
+			  eeii.eAssetTypeName,
+			  eeii.eAssetType,
+			  eeii.eAssetName,
+			  eeii.eAssetMaker,
+			  eeii.eAssetModel,
+			  eeii.eAssetSNumber,
+			  eeii.eAssetNetworkType,
+			  eeii.eAssetHostName,
+			  eeii.eAssetIp,
+			  eeii.eAssetOs,
+			  eeii.eAssetDeviceType,
+			  eeii.eSignStatus,
+			  eeii.eStatus,
+			  eeii.eEquipmentOutKey,
+			  eei.eEntryImporter,
+			  eei.eEntryImportDate,
+			  eei.eEntryNote,
+			  eei.eSignStatus,
+			  eei.kStaffName,
+			  eei.kStaffKey,
+			  eei.eStatus,
+		      eei.eEntryLocation,
+			  eei.eEntryImporterOrg,
+			  DATE_FORMAT(eei.wDate, '%Y-%m-%d') AS  eEntryWdate
+			FROM
+			  E_EQUIPMENT_IN_ITEM AS eeii
+			  LEFT JOIN E_EQUIPMENT_IN AS eei  ON (eeii.eEquipmentInKey = eei.eEquipmentInKey)
+		WHERE 1=1 AND eeii.eEquipmentInKey =#eEquipmentInKey#
+	 
+	</select>
+	
+	
+	
+	<select id="mesEquipmentDAO.selectEquipmentInfo" parameterClass="mesEquipmentVO" resultClass="mesEquipmentVO">
+		/* mesEquipmentDAO.selectEquipmentInfo */
+		SELECT
+			  eei.eEquipmentInKey,
+			  eei.eEntryImporter,
+			  eei.eEntryImportDate,
+			  eei.eEntryNote,
+			  eei.eSignStatus,
+			  eei.kStaffName,
+			  eei.kStaffKey,
+			  eei.eStatus,
+			  eei.sSignStatus,
+			  eei.eEntryLocation,
+			  eei.eEntryImporterOrg,
+			  DATE_FORMAT(eei.wDate, '%Y-%m-%d') AS  eEntryWdate,
+			  IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress,
+		      DATE_FORMAT(eei.wDate, '%Y-%m-%d')  AS eSearchWord9
+			FROM
+			   E_EQUIPMENT_IN AS eei   
+			  LEFT JOIN S_SIGN AS s ON(s.SIGN_TABLE_NUM = eei.eEquipmentInKey  and s.SIGN_TABLE_NAME = 'E_EQUIPMENT_IN')
+			WHERE 1=1 AND eei.eEquipmentInKey  = #eEquipmentInKey#
+		  LIMIT 1
+	</select>
+
+	<update id="mesEquipmentDAO.updateEquipmentStatus" parameterClass="mesEquipmentVO" >
+		/* mesEquipmentDAO.updateEquipmentStatus */
+		UPDATE E_EQUIPMENT_IN SET eStatus = #eStatus# WHERE eEquipmentInKey  = #eEquipmentInKey#
+	</update>
+
+	<update id="mesEquipmentDAO.updateEquipmentInfo" parameterClass="mesEquipmentVO" >
+		/* mesEquipmentDAO.updateEquipmentInfo */
+		UPDATE E_EQUIPMENT_IN SET 
+				  eEntryImporter = #eEntryImporter#,
+				  eEntryImportDate =#eEntryImportDate#,
+				  eEntryNote = #eEntryNote#,
+				  eEntryLocation = #eEntryLocation#,
+				  eEntryImporterOrg = #eEntryImporterOrg#,
+				  wDate = #eEntryWdate#,
+				  eSignStatus =#eSignStatus# ,
+				  eStatus = #eStatus#
+		WHERE eEquipmentInKey  = #eEquipmentInKey#
+	</update>
+
+	<delete id="mesEquipmentDAO.deleteEquipmentRowInfo" parameterClass="mesEquipmentVO" >
+		/* mesEquipmentDAO.deleteEquipmentRowInfo */
+		DELETE FROM  E_EQUIPMENT_IN_ITEM  WHERE eEquipmentInKey  = #eEquipmentInKey#
+	</delete>
+	
+	
+	<select id="mesEquipmentDAO.selectEquipmentPopList" parameterClass="mesEquipmentVO" resultClass="mesEquipmentVO">
+		/* mesEquipmentDAO.selectEquipmentPopList */
+		SELECT
+			  eeii.eEquipmentInKey,
+			  eeii.eAssetPurpose,
+			  eeii.eAssetTypeName,
+			  eeii.eAssetType,
+			  eeii.eAssetName,
+			  eeii.eAssetMaker,
+			  eeii.eAssetModel,
+			  eeii.eAssetSNumber,
+			  eeii.eAssetNetworkType,
+			  eeii.eAssetHostName,
+			  eeii.eAssetIp,
+			  eeii.eAssetOs,
+			  eeii.eAssetDeviceType,
+			  eeii.eSignStatus,
+			  eeii.eStatus,
+			  eeii.eEquipmentOutKey,
+			  eei.eEntryImporter,
+			  eei.eEntryImportDate,
+			  eei.eEntryNote,
+			  eei.eSignStatus,
+			  eei.kStaffName,
+			  eei.kStaffKey,
+			  eei.eStatus,
+			  eeii.eStatus AS eItemStatus, 
+			  eeii.eEquipmentItemKey  
+			FROM
+			  E_EQUIPMENT_IN_ITEM AS eeii
+			  LEFT JOIN E_EQUIPMENT_IN AS eei  ON eeii.eEquipmentInKey = eei.eEquipmentInKey
+			  
+		WHERE 1=1 AND eei.eStatus != '삭제' AND eeii.eStatus  = '반입완료'
+		<isNotEmpty property="eSearchWord1">
+			AND LOWER(eeii.eAssetModel) LIKE CONCAT('%',LOWER(#eSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord2">
+			AND LOWER(eeii.eAssetName) LIKE CONCAT('%',LOWER(#eSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord3">
+			AND LOWER(eeii.eAssetHostName) LIKE CONCAT('%',LOWER(#eSearchWord3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord4">
+			AND LOWER(eeii.eAssetIp) LIKE CONCAT('%',LOWER(#eSearchWord4#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord5">
+			AND LOWER(eeii.eAssetOs) LIKE CONCAT('%',LOWER(#eSearchWord5#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTopStartDate">
+	    	AND DATE_FORMAT(eei.eEntryImportDate, '%Y-%m-%d') >= DATE_FORMAT(#eTopStartDate#, '%Y-%m-%d')
+		</isNotEmpty>
+		<isNotEmpty property="eTopEndDate">
+			AND DATE_FORMAT(#eTopEndDate#, '%Y-%m-%d') >= DATE_FORMAT(eei.eEntryImportDate, '%Y-%m-%d')
+		</isNotEmpty>
+	 
+		ORDER BY eei.eEntryImportDate DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	<select id="mesEquipmentDAO.selectEquipmentPopListCnt" parameterClass="mesEquipmentVO" resultClass="int">
+		/* mesEquipmentDAO.selectEquipmentPopListCnt */
+		SELECT
+			 COUNT(eeii.eEquipmentInKey) 
+		FROM
+		  E_EQUIPMENT_IN_ITEM AS eeii
+		  LEFT JOIN E_EQUIPMENT_IN AS eei  ON eeii.eEquipmentInKey = eei.eEquipmentInKey
+			  
+		WHERE 1=1 AND eei.eStatus != '삭제' AND eeii.eStatus  = '반입완료'
+		<isNotEmpty property="eSearchWord1">
+			AND LOWER(eeii.eAssetModel) LIKE CONCAT('%',LOWER(#eSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord2">
+			AND LOWER(eeii.eAssetName) LIKE CONCAT('%',LOWER(#eSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord3">
+			AND LOWER(eeii.eAssetHostName) LIKE CONCAT('%',LOWER(#eSearchWord3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord4">
+			AND LOWER(eeii.eAssetIp) LIKE CONCAT('%',LOWER(#eSearchWord4#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord5">
+			AND LOWER(eeii.eAssetOs) LIKE CONCAT('%',LOWER(#eSearchWord5#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTopStartDate">
+	    	AND DATE_FORMAT(eei.eEntryImportDate, '%Y-%m-%d') >= DATE_FORMAT(#eTopStartDate#, '%Y-%m-%d')
+		</isNotEmpty>
+		<isNotEmpty property="eTopEndDate">
+			AND DATE_FORMAT(#eTopEndDate#, '%Y-%m-%d') >= DATE_FORMAT(eei.eEntryImportDate, '%Y-%m-%d')
+		</isNotEmpty>
+	 
+	</select>
+	<select id="mesEquipmentDAO.selectEquipmentInfoList" parameterClass="java.util.Map" resultClass="mesEquipmentVO">
+		/* mesEquipmentDAO.selectEquipmentInfoList */
+		SELECT
+			  eeii.eEquipmentInKey,
+			  eeii.eAssetPurpose,
+			  eeii.eAssetTypeName,
+			  eeii.eAssetType,
+			  eeii.eAssetName,
+			  eeii.eAssetMaker,
+			  eeii.eAssetModel,
+			  eeii.eAssetSNumber,
+			  eeii.eAssetNetworkType,
+			  eeii.eAssetHostName,
+			  eeii.eAssetIp,
+			  eeii.eAssetOs,
+			  eeii.eAssetDeviceType,
+			  eeii.eSignStatus,
+			  eeii.eStatus,
+			  eeii.eEquipmentOutKey,
+			  eei.eEntryImporter,
+			  eei.eEntryImportDate,
+			  eei.eEntryNote,
+			  eei.eSignStatus,
+			  eei.kStaffName,
+			  eei.kStaffKey,
+			  eei.eStatus,
+			  eeii.eStatus AS eItemStatus, 
+			  eeii.eEquipmentItemKey  
+			FROM
+			  E_EQUIPMENT_IN_ITEM AS eeii
+			  LEFT JOIN E_EQUIPMENT_IN AS eei  ON eeii.eEquipmentInKey = eei.eEquipmentInKey
+		WHERE 1=1
+		 AND eeii.eEquipmentItemKey
+		 <iterate prepend="IN" property="keyList" open="(" close=")" conjunction=","> 
+		 	#keyList[]# 
+		 </iterate>
+        ORDER BY eeii.eEquipmentItemKey DESC
+	</select>
+
+	<insert id="mesEquipmentDAO.insertEquipmentOutInfo" parameterClass="mesEquipmentVO">
+	 <selectKey type="post" keyProperty="eEquipmentOutKey" >
+        SELECT LAST_INSERT_ID() AS eEquipmentOutKey
+	  </selectKey>
+		/* mesEquipmentDAO.insertEquipmentOutInfo */
+		INSERT INTO E_EQUIPMENT_OUT (
+				  eExitExporter,
+				  eEntryExporterDate,
+				  eEntryNote,
+				  eSignStatus,
+				  kStaffName,
+				  kStaffKey,
+				  eStatus
+				) VALUES (
+				  #eExitExporter#,
+				  #eEntryExporterDate#,
+				  #eEntryNote#,
+				  #eSignStatus#,
+				  #kStaffName#,
+				  #kStaffKey#,
+				  #eStatus#
+				);
+	</insert>
+
+
+	<update id="mesEquipmentDAO.updateOutInfoEquipmentItem" parameterClass="mesEquipmentVO" >
+		/* mesEquipmentDAO.updateOutInfoEquipmentItem */
+		UPDATE E_EQUIPMENT_IN_ITEM SET
+		 		  eEquipmentOutKey = #eEquipmentOutKey#,
+		 		  eEntryExporterDate = #eEntryExporterDate#,
+		 		  eExitExporter = #eExitExporter#,
+ 				  eSignStatus =#eSignStatus#,
+				  eStatus = #eStatus#
+		WHERE eEquipmentItemKey  = #eEquipmentItemKey#
+	</update>
+	
+ 
+	<select id="mesEquipmentDAO.selectEquipmentOutList" parameterClass="mesEquipmentVO" resultClass="mesEquipmentVO">
+		/* mesEquipmentDAO.selectEquipmentOutList */
+		SELECT
+			  eeii.eEquipmentInKey,
+			  eeii.eAssetPurpose,
+			  eeii.eAssetTypeName,
+			  eeii.eAssetType,
+			  eeii.eAssetName,
+			  eeii.eAssetMaker,
+			  eeii.eAssetModel,
+			  eeii.eAssetSNumber,
+			  eeii.eAssetNetworkType,
+			  eeii.eAssetHostName,
+			  eeii.eAssetIp,
+			  eeii.eAssetOs,
+			  eeii.eAssetDeviceType,
+			  eeii.eSignStatus,
+			  eeii.eStatus,
+			  eeii.eEquipmentOutKey,
+			  eei.eSignStatus,
+			  eei.kStaffName,
+			  eei.kStaffKey,
+			  eei.eStatus,
+			  eeii.eStatus AS eItemStatus ,
+			  eeii.eEntryExporterDate  ,
+		      eeii.eExitExporter,
+	          eeii.eEquipmentItemKey  
+			FROM
+			  E_EQUIPMENT_IN_ITEM AS eeii
+			  LEFT JOIN E_EQUIPMENT_OUT AS eei  ON eeii.eEquipmentOutKey = eei.eEquipmentOutKey
+			  
+		WHERE 1=1 AND eei.eStatus != '삭제' AND eeii.eEquipmentOutKey is not null
+		<isNotEmpty property="eSearchWord1">
+			AND LOWER(eeii.eAssetModel) LIKE CONCAT('%',LOWER(#eSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord2">
+			AND LOWER(eeii.eAssetName) LIKE CONCAT('%',LOWER(#eSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord3">
+			AND LOWER(eeii.eAssetMaker) LIKE CONCAT('%',LOWER(#eSearchWord3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord4">
+			AND LOWER(eeii.eAssetIp) LIKE CONCAT('%',LOWER(#eSearchWord4#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord5">
+			AND LOWER(eeii.eAssetOs) LIKE CONCAT('%',LOWER(#eSearchWord5#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTopStartDate">
+	    	AND DATE_FORMAT(eei.eEntryExporterDate, '%Y-%m-%d') >= DATE_FORMAT(#eTopStartDate#, '%Y-%m-%d')
+		</isNotEmpty>
+		<isNotEmpty property="eTopEndDate">
+			AND DATE_FORMAT(#eTopEndDate#, '%Y-%m-%d') >= DATE_FORMAT(eei.eEntryExporterDate, '%Y-%m-%d')
+		</isNotEmpty>
+	 
+		ORDER BY eeii.eEntryExporterDate DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="mesEquipmentDAO.selectEquipmentOutListCnt" parameterClass="mesEquipmentVO" resultClass="int">
+		/* mesEquipmentDAO.selectEquipmentOutListCnt */
+		SELECT
+			 COUNT(eeii.eEquipmentOutKey) 
+		FROM
+		  E_EQUIPMENT_IN_ITEM AS eeii
+		  LEFT JOIN E_EQUIPMENT_OUT AS eei  ON eeii.eEquipmentOutKey = eei.eEquipmentOutKey
+			  
+		WHERE 1=1 AND eei.eStatus != '삭제' AND eeii.eEquipmentOutKey is not null
+		<isNotEmpty property="eSearchWord1">
+			AND LOWER(eeii.eAssetModel) LIKE CONCAT('%',LOWER(#eSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord2">
+			AND LOWER(eeii.eAssetName) LIKE CONCAT('%',LOWER(#eSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord3">
+			AND LOWER(eeii.eAssetHostName) LIKE CONCAT('%',LOWER(#eSearchWord3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord4">
+			AND LOWER(eeii.eAssetIp) LIKE CONCAT('%',LOWER(#eSearchWord4#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWord5">
+			AND LOWER(eeii.eAssetOs) LIKE CONCAT('%',LOWER(#eSearchWord5#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTopStartDate">
+	    	AND DATE_FORMAT(eei.eEntryExporterDate, '%Y-%m-%d') >= DATE_FORMAT(#eTopStartDate#, '%Y-%m-%d')
+		</isNotEmpty>
+		<isNotEmpty property="eTopEndDate">
+			AND DATE_FORMAT(#eTopEndDate#, '%Y-%m-%d') >= DATE_FORMAT(eei.eEntryExporterDate, '%Y-%m-%d')
+		</isNotEmpty>
+	 
+	</select>
+ 
+	
+	<select id="mesEquipmentDAO.selectEquipmentOutInfo" parameterClass="mesEquipmentVO" resultClass="mesEquipmentVO">
+		/* mesEquipmentDAO.selectEquipmentOutInfo */
+		SELECT
+			  eeii.eEquipmentInKey,
+			  eeii.eAssetPurpose,
+			  eeii.eAssetTypeName,
+			  eeii.eAssetType,
+			  eeii.eAssetName,
+			  eeii.eAssetMaker,
+			  eeii.eAssetModel,
+			  eeii.eAssetSNumber,
+			  eeii.eAssetNetworkType,
+			  eeii.eAssetHostName,
+			  eeii.eAssetIp,
+			  eeii.eAssetOs,
+			  eeii.eAssetDeviceType,
+			  eeii.eSignStatus,
+			  eeii.eStatus,
+			  eeii.eEquipmentOutKey,
+			  eei.eSignStatus,
+			  eei.kStaffName,
+			  eei.kStaffKey,
+			  eei.eEntryNote,
+			  eei.eStatus,
+			  eeii.eStatus AS eItemStatus ,
+			  eeii.eEntryExporterDate  ,
+		      eeii.eExitExporter  
+			FROM
+			  E_EQUIPMENT_IN_ITEM AS eeii
+			  LEFT JOIN E_EQUIPMENT_OUT AS eei  ON eeii.eEquipmentOutKey = eei.eEquipmentOutKey
+			WHERE   eeii.eEquipmentOutKey = #eEquipmentOutKey#
+	 		Limit 1
+	</select>
+	
+	<select id="mesEquipmentDAO.selectEquipmentOutRowItemList" parameterClass="mesEquipmentVO" resultClass="mesEquipmentVO">
+		/* mesEquipmentDAO.selectEquipmentOutRowItemList */
+		SELECT
+			  eeii.eEquipmentInKey,
+			  eeii.eAssetPurpose,
+			  eeii.eAssetTypeName,
+			  eeii.eAssetType,
+			  eeii.eAssetName,
+			  eeii.eAssetMaker,
+			  eeii.eAssetModel,
+			  eeii.eAssetSNumber,
+			  eeii.eAssetNetworkType,
+			  eeii.eAssetHostName,
+			  eeii.eAssetIp,
+			  eeii.eAssetOs,
+			  eeii.eAssetDeviceType,
+			  eeii.eSignStatus,
+			  eeii.eStatus,
+			  eeii.eEquipmentOutKey,
+			  eei.eSignStatus,
+			  eei.kStaffName,
+			  eei.kStaffKey,
+			  eei.eStatus,
+			  eeii.eStatus AS eItemStatus ,
+			  eeii.eEntryExporterDate  ,
+		      eeii.eExitExporter ,
+		       eeii.eEquipmentItemKey   
+			FROM
+			  E_EQUIPMENT_IN_ITEM AS eeii
+			  LEFT JOIN E_EQUIPMENT_OUT AS eei  ON eeii.eEquipmentOutKey = eei.eEquipmentOutKey
+			WHERE   eeii.eEquipmentOutKey = #eEquipmentOutKey#
+	 
+	</select>
+	
+	<update id="mesEquipmentDAO.updateEquipmentOutStatus" parameterClass="mesEquipmentVO" >
+		/* mesEquipmentDAO.updateEquipmentOutStatus */
+		UPDATE E_EQUIPMENT_OUT SET eStatus = #eStatus# WHERE eEquipmentOutKey  = #eEquipmentOutKey#
+	</update>
+	
+	<update id="mesEquipmentDAO.updateEquipmentItemOutStatus" parameterClass="mesEquipmentVO" >
+		/* mesEquipmentDAO.updateEquipmentItemOutStatus */
+		UPDATE E_EQUIPMENT_IN_ITEM SET eStatus = '반입완료',eEntryExporterDate = NULL,eExitExporter=NULL
+		WHERE eEquipmentOutKey  = #eEquipmentOutKey#
+	</update>
+	
+	
+		<update id="mesEquipmentDAO.updateEquipmentOutInfo" parameterClass="mesEquipmentVO" >
+		/* mesEquipmentDAO.updateEquipmentOutInfo */
+		UPDATE E_EQUIPMENT_OUT SET 
+		 		  eExitExporter = #eExitExporter#,
+				  eEntryExporterDate =#eEntryExporterDate#,
+				  eEntryNote =#eEntryNote#,
+				  eSignStatus = #eSignStatus#,
+				  kStaffName =#kStaffName#,
+				  kStaffKey= #kStaffKey#,
+				  eStatus = #eStatus#
+		  WHERE eEquipmentOutKey  = #eEquipmentOutKey#
+	</update>
+	<update id="mesEquipmentDAO.updateImportInfo"    parameterClass="mesEquipmentVO">
+		/*mesAssetDAO.updateImportInfo*/
+				UPDATE E_EQUIPMENT_IN_ITEM
+			SET 
+			    eStatus = #eStatus#,
+			    eExitExporter = #eExitExporter#,
+			    eEntryExporterDate = #eEntryExporterDate# 
+			WHERE
+			    eEquipmentItemKey = #eEquipmentItemKey#
+	</update>
+	<update id="mesEquipmentDAO.updateEquipmentSingStatus"    parameterClass="mesEquipmentVO">
+		/*mesEquipmentDAO.updateEquipmentSingStatus*/
+				UPDATE E_EQUIPMENT_IN 
+			SET 
+			    sSignStatus = #sSignStatus#
+			WHERE
+			    eEquipmentInKey = #eEquipmentInKey#
+	</update>
+</sqlMap>

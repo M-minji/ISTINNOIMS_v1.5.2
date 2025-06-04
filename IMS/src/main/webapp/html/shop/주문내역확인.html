@@ -1,0 +1,580 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>게시물</title>
+
+
+		<style>
+			html {margin:0; padding:0;overflow-y:scroll;display:inline-block; width:100%; height:100%;}
+			body, p, ul, ol, li, dl, dt, dd, form, table, th, td, fieldset, input, textarea, select, button, 
+			pre {margin:0; padding:0; -webkit-text-size-adjust:none;} 
+			body, input, textarea, select, button {font-family:"Noto Sans KR","Malgun Gothic","맑은고딕","Nanum Gothic","나눔고딕","돋움","굴림";padding:0;margin:0;}
+
+			ul, li, ol{list-style:none;padding:0;margin:0;}
+			a{color:#333;text-decoration:none !important;cursor:pointer;font-size:1em;}
+
+			b{font-weight:400;}
+			/* 아이폰 가로모드 글자 크기 확대 방지: -webkit-text-size-adjust:none; */ 
+
+			header, footer, nav, aside, section, article {display:block;}
+			fieldset, img {border:0;}
+			img {-ms-interpolation-mode:bicubic !important; border:0;}
+			table {padding:0; border-spacing:0px; border:0; border-collapse:collapse; width:100%;}
+			
+
+			.order_send{width:80%; margin:0 auto; text-align:center; height:100%; padding-top:2em;}
+
+			/* 표 기본스타일 */
+			.lens_total, .glasses, .glasses_information{display:inline-block; width:100%;border-top:2px solid #666;border-bottom: 1px solid #ddd; margin-bottom: 0.5em;table-layout: auto;}
+			.lens_total table, .glasses table, .glasses_information table{width:100%;}
+			.lens_total th, .glasses th, .glasses_information th {border-right: 1px solid #c7c4c4;font-size:1em;height:38px;text-align: center;background-color:#f1f1f1;}
+			.lens_total tr, .glasses tr, .glasses_information tr {border-bottom: 1px solid #c7c4c4;border-left: 1px solid #c7c4c4;border-right: 1px solid #c7c4c4;}
+			.lens_total tr td, .glasses tr td, .glasses_information tr td {
+				padding:0em 0.2em;font-size:1em;font-weight:200;text-align:center;height:38px;border-right: 1px solid #ddd;border-left: 1px solid #ddd;
+			}
+			.lens_total td, .glasses td, .glasses_information td {text-align:left;height:25px;}
+			.lens_total table tbody tr td a, .glasses table tbody tr td a, .glasses_information table tbody tr td a{text-decoration:underline;}
+			.lens_total table tbody tr td input, .glasses table tbody tr td input, .glasses_information table tbody tr td input{width:97%; height:80%}
+			.lens_total table tbody tr td select, .glasses table tbody tr td select, .more_information table tbody tr td select, .glasses_information table tbody tr td select {width:98%; height:85%;}
+
+			
+				/* 색상 농도 돋보크리 */
+			.more_information{margin-bottom:0.5em;display:inline-block;width:100%;border-top:2px solid #666;border-bottom:1px solid #b7b7b7;text-align:left;table-layout: auto;}
+			.more_information th{font-size:1em;font-weight:200;text-align:left;padding-left:1em;background-color:#f1f1f1;border:1px solid #d7d7d7; height:38px;}
+			.more_information td{height:38px;padding-left:0.2em;text-align:left;border:1px solid #d7d7d7;}
+				
+
+			/* 첫번쨰박스 */
+			.glasses_lesn {display:inline-block; width:100%;border:2px solid #666; margin-bottom: 0.5em;background-color:#f1f1f1;padding:0.5em 0em;}
+			.glasses_lesn_left {float:left; padding-left:1.5em;line-height:2.5;}
+			.glasses_lesn_left li{display:inline-block;}
+			.glasses_lesn_left li span{font-weight:700;}
+			.glasses_lesn_right {float:right; padding-right:1.5em;}
+			.glasses_lesn_right li{display:inline-block; background-color:#333; padding:0.5em; }
+			.glasses_lesn_right li a{cursor:pointer; color:#fff;}
+
+
+			/* 금액 */
+			.order_price{width:100%; display:inline-block;height:100%;}
+			.order_price_right {float:right; padding-right:1.5em;}
+			.order_price_right li{display:inline-block; margin-left:0.2em;}
+			.order_price_right li span{font-weight:700; font-size:1.2em;}
+
+
+			/* 장바구니 */
+			.order_btn {width:100%; display:inline-block;height:100%;}
+			.order_btn_total {width:80%; margin:0 auto; height:100%;}
+			.order_btn_total li{display:inline-block; border-radius:3em; width:17%;background-color:#333;}
+			.order_btn_total li a{display:block; padding:0.8em 0em; color:#fff; font-weight:700;}
+
+
+
+
+
+		</style>
+
+
+
+	</head>
+	
+	<body>
+		
+		<div class="order_send">
+			<div class="glasses_lesn">
+				<ul class="glasses_lesn_left">
+					<li>
+						<input type="radio" name="gender" value="R+L" checked />
+						<span>R+L</span>
+					</li>
+					<li>
+						<input type="radio" name="gender" value="오른쪽"/>
+						<span>오른쪽</span>
+					</li>
+					<li>
+						<input type="radio" name="gender" value="왼쪽" checked />
+						<span>왼쪽</span>
+					</li>
+				</ul>
+				<ul class="glasses_lesn_right">
+					<li>
+						<a href="">안경렌즈 처방전 프린트하기</a>
+					</li>
+				</ul>
+			</div>
+			<div class="lens_total">
+				<table>
+					<thead>
+						<tr>
+							<th rowspan="2" scope="rowgroup"></th>
+							<th rowspan="2" scope="rowgroup">SPH</th>
+							<th rowspan="2" scope="rowgroup">CYL</th>
+							<th rowspan="2" scope="rowgroup">AXIS</th>
+							<th rowspan="2" scope="rowgroup">ADD</th>
+							<th colspan="2" scope="colgroup">프리즘</th>
+							<th colspan="1" scope="colgroup">중심이동 In/Out</th>
+						</tr>
+						<tr>
+							<th scope="col">Prism</th>
+							<th scope="col">Base</th>
+							<th scope="col">Decenter(mm)</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>R</td>
+							<td><input type="text"/></td>
+							<td><input type="text"/></td>
+							<td><input type="text"/></td>
+							<td>
+								<select name="ADD">
+									<option value="---">---</option>
+								  	<option value="일">1.00</option>
+								  	<option value="일점이오">1.25</option>
+								  	<option value="일점오영">1.50</option>
+								    <option value="일점칠오">1.75</option>
+								    <option value="이점영영">2.00</option>
+								    <option value="이점이오">2.25</option>
+								    <option value="이점오영">2.50</option>
+								    <option value="이점칠오">2.75</option>
+								    <option value="삼">3.00</option>
+								    <option value="삼점이오">3.25</option>
+								    <option value="삼정오영">3.50</option>
+								</select>
+							</td>
+							<td>
+								<select name="Prism">
+									<option value="---">---</option>
+								  	<option value="영점오영">0.50</option>
+								  	<option value="영점칠오">0.75</option>
+								  	<option value="일점영영">1.00</option>
+								  	<option value="일점이오">1.25</option>
+								  	<option value="일점오영">1.50</option>
+								    <option value="일점칠오">1.75</option>
+								    <option value="이점영영">2.00</option>
+								    <option value="이점이오">2.25</option>
+								    <option value="이점오영">2.50</option>
+								    <option value="이점칠오">2.75</option>
+								    <option value="삼">3.00</option>
+								    <option value="삼점이오">3.25</option>
+								    <option value="삼점오영">3.50</option>
+								    <option value="삼점칠오">3.75</option>
+								    <option value="사점영영">4.00</option>
+								    <option value="사점이오">4.25</option>
+								    <option value="사점오영">4.50</option>
+								    <option value="사점칠오">4.75</option>
+								    <option value="오점영영">5.00</option>
+								</select>
+							</td>
+							<td><input type="text"/></td>
+							<td><input type="text"/></td>					
+						</tr>
+					</tbody>
+					<tbody>
+						<tr>
+							<td>L</td>
+							<td><input type="text"/></td>
+							<td><input type="text"/></td>
+							<td><input type="text"/></td>
+							<td>
+								<select name="ADD">
+									<option value="---">---</option>
+								  	<option value="일">1.00</option>
+								  	<option value="일점이오">1.25</option>
+								  	<option value="일점오영">1.50</option>
+								    <option value="일점칠오">1.75</option>
+								    <option value="이점영영">2.00</option>
+								    <option value="이점이오">2.25</option>
+								    <option value="이점오영">2.50</option>
+								    <option value="이점칠오">2.75</option>
+								    <option value="삼">3.00</option>
+								    <option value="삼점이오">3.25</option>
+								    <option value="삼정오영">3.50</option>
+								</select>
+							</td>
+							<td>
+								<select name="Prism">
+									<option value="---">---</option>
+								  	<option value="영점오영">0.50</option>
+								  	<option value="영점칠오">0.75</option>
+								  	<option value="일점영영">1.00</option>
+								  	<option value="일점이오">1.25</option>
+								  	<option value="일점오영">1.50</option>
+								    <option value="일점칠오">1.75</option>
+								    <option value="이점영영">2.00</option>
+								    <option value="이점이오">2.25</option>
+								    <option value="이점오영">2.50</option>
+								    <option value="이점칠오">2.75</option>
+								    <option value="삼">3.00</option>
+								    <option value="삼점이오">3.25</option>
+								    <option value="삼점오영">3.50</option>
+								    <option value="삼점칠오">3.75</option>
+								    <option value="사점영영">4.00</option>
+								    <option value="사점이오">4.25</option>
+								    <option value="사점오영">4.50</option>
+								    <option value="사점칠오">4.75</option>
+								    <option value="오점영영">5.00</option>
+								</select>
+							</td>
+							<td><input type="text"/></td>
+							<td><input type="text"/></td>					
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="glasses">
+				<table>
+					<thead>
+						<tr>
+							<th rowspan="2" scope="rowgroup">BC</th>
+							<th rowspan="2" scope="rowgroup">직경(DIA)</th>
+							<th rowspan="2" scope="rowgroup">코팅</th>
+							<th rowspan="2" scope="rowgroup">착색/미러</th>
+							<th colspan="1" scope="colgroup">렌티큘라 0 mm</th>
+							<th colspan="1" scope="colgroup">UV코팅 <span>1.56, 1.50</span></th>
+							<th colspan="1" scope="colgroup">가변두께지정</th>
+						</tr>
+						<tr>
+							<th scope="col">가장자리얇음가공</th>
+							<th scope="col">UV4G(UV420)</th>
+							<th scope="col">원시두께지정</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								<select name="BC">
+									<option value="---">---</option>
+								  	<option value="이">2</option>
+								  	<option value="사">4</option>
+								  	<option value="오">5</option>
+								  	<option value="육">6</option>
+								  	<option value="칠">7</option>
+								    <option value="팔">8</option>
+								    <option value="점">.</option>
+								    <option value="커브가능">편광은 2 4 6 커브가능</option>
+								    <option value="점">.</option>
+								</select>
+							</td>
+							<td>
+								<select name="직경">
+									<option value="---">---</option>
+								  	<option value="직경자동제작">안경테정보로 직경 자동 제작</option>
+								  	<option value="점">.</option>
+								  	<option value="고객명">고객명 꼭 적어주세요</option>
+								</select>
+							</td>
+							<td>
+								<select name="코팅">
+									<option value="---">---</option>
+								  	<option value="b">b</option>
+								  	<option value="양면멀티">양면멀티</option>
+								  	<option value="내면멀티">내면멀티</option>
+								  	<option value="점">.</option>
+								  	<option value="양면멀티 초발수">양면멀티 초발수(2420)</option>
+								    <option value="내면멀티 초발수">내면멀티 초발수(2420)</option>
+								    <option value="점">.</option>
+								    <option value="노코팅">노코팅</option>
+								    <option value="일반하드">일반하드</option>
+								    <option value="점">.</option>
+								    <option value="미러는 초발수안됨">미러는 초발수안됨</option>
+								</select>
+							</td>
+							<td>
+								<select name="착색/미러">
+									<option value="---">---</option>
+								  	<option value="e">e</option>
+								  	<option value="단색 50 이상">단색 50% 이상(7260)</option>
+								  	<option value="단색50이하">단색 49% 이하(4400)</option>
+								  	<option value="점">.</option>
+								  	<option value="투톤50 이상">투톤 50% 이상(7260)</option>
+								    <option value="투톤50 이하">투톤 49% 이하(4400)</option>
+								    <option value="점">.</option>
+								    <option value="견본 착색">견본 착색(7260)</option>
+								    <option value="점">.</option>
+								    <option value="미러칼라는 뺵칼라금액 포함">미러가격은 빽칼라금액 포함입니다</option>
+								    <option value="뺵칼라선텍은 색상에서">빽칼라 선택은 색상에서 하세요</option>
+								    <option value="뺵칼라선택없음,그레이85%">빽칼라 선택 없으면 그레이 85%입니다</option>
+								    <option value="미러 15일">미러 15일</option>
+								    <option value="실버 반미러">실버 반미러만 7일(9130)</option>
+								    <option value="점">.</option>
+								    <option value="골드 미러">골드 미러(9900)</option>
+								    <option value="블루 미러">블루 미러(9900)</option>
+								    <option value="레드 미러">레드 미러(9900)</option>
+								    <option value="실버 미러">실버 미러(9900)</option>
+								    <option value="점">.</option>
+								    <option value="골드 미러">골드 반미러(9460)</option>
+								    <option value="블루 미러">블루 반미러(9460)</option>
+								    <option value="실버 미러">실버 반미러(9130)</option>
+								    <option value="점">.</option>
+								</select>
+							</td>
+							<td>
+								<select name="렌티튤라">
+									<option value="---">---</option>
+								</select>
+							</td>
+							<td>
+								<select name="uv코팅">
+									<option value="---">---</option>
+								  	<option value="영점오영">UV400(1870)</option>
+								</select>
+							</td>
+							<td>
+								<select name="가변두께지정">
+									<option value="---">---</option>
+								  	<option value="가변두께지정">가변두께지정</option>
+								  	<option value="가변4mm">가변4mm(3465)</option>
+								  	<option value="가변5mm">가변5mm(3465)</option>
+								  	<option value="가변6mm">가변6mm(3465)</option>
+								  	<option value="가변7mm">가변7mm(3465)</option>
+								    <option value="가변8mm">가변8mm(3465)</option>
+								    <option value="점">.</option>
+								    <option value="원시주문">원시주문 두께지정</option>
+								    <option value="일반두께가공">일반두께가공</option>
+								    <option value="최대얇게가공">최대얇게가공</option>
+								    <option value="칼날가공">칼날가공</option>
+								    <option value="점">.</option>
+								    <option value="고객명">고객명 꼭 적어주세요</option>
+								</select>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="more_information">
+				<table>
+					<tbody>
+						<tr>
+							<th>
+								<span>색상</span>
+							</th>
+							<td>
+								<select name="색상">
+									<option value="---">---</option>
+								  	<option value="영점오영">0.50</option>
+								  	<option value="영점칠오">0.75</option>
+								  	<option value="일점영영">1.00</option>
+								  	<option value="일점이오">1.25</option>
+								  	<option value="일점오영">1.50</option>
+								    <option value="일점칠오">1.75</option>
+								    <option value="이점영영">2.00</option>
+								    <option value="이점이오">2.25</option>
+								    <option value="이점오영">2.50</option>
+								    <option value="이점칠오">2.75</option>
+								    <option value="삼">3.00</option>
+								    <option value="삼점이오">3.25</option>
+								    <option value="삼점오영">3.50</option>
+								    <option value="삼점칠오">3.75</option>
+								    <option value="사점영영">4.00</option>
+								    <option value="사점이오">4.25</option>
+								    <option value="사점오영">4.50</option>
+								    <option value="사점칠오">4.75</option>
+								    <option value="오점영영">5.00</option>
+								</select>
+							</td>
+							<th>
+								<span>농도</span>
+							</th>
+							<td>
+								<select name="농도">
+									<option value="---">---</option>
+								  	<option value="영점오영">0.50</option>
+								  	<option value="영점칠오">0.75</option>
+								  	<option value="일점영영">1.00</option>
+								  	<option value="일점이오">1.25</option>
+								  	<option value="일점오영">1.50</option>
+								    <option value="일점칠오">1.75</option>
+								    <option value="이점영영">2.00</option>
+								    <option value="이점이오">2.25</option>
+								    <option value="이점오영">2.50</option>
+								    <option value="이점칠오">2.75</option>
+								    <option value="삼">3.00</option>
+								    <option value="삼점이오">3.25</option>
+								    <option value="삼점오영">3.50</option>
+								    <option value="삼점칠오">3.75</option>
+								    <option value="사점영영">4.00</option>
+								    <option value="사점이오">4.25</option>
+								    <option value="사점오영">4.50</option>
+								    <option value="사점칠오">4.75</option>
+								    <option value="오점영영">5.00</option>
+								</select>
+							</td>
+							<th>
+								<span>돋보크기</span>
+							</th>
+							<td>
+								<select name="돋보크기">
+									<option value="---">---</option>
+								  	<option value="영점오영">0.50</option>
+								  	<option value="영점칠오">0.75</option>
+								  	<option value="일점영영">1.00</option>
+								  	<option value="일점이오">1.25</option>
+								  	<option value="일점오영">1.50</option>
+								    <option value="일점칠오">1.75</option>
+								    <option value="이점영영">2.00</option>
+								    <option value="이점이오">2.25</option>
+								    <option value="이점오영">2.50</option>
+								    <option value="이점칠오">2.75</option>
+								    <option value="삼">3.00</option>
+								    <option value="삼점이오">3.25</option>
+								    <option value="삼점오영">3.50</option>
+								    <option value="삼점칠오">3.75</option>
+								    <option value="사점영영">4.00</option>
+								    <option value="사점이오">4.25</option>
+								    <option value="사점오영">4.50</option>
+								    <option value="사점칠오">4.75</option>
+								    <option value="오점영영">5.00</option>
+								</select>
+							</td>
+							<th>
+								<span>INSET</span>
+							</th>
+							<td>
+								<select name="INSET">
+									<option value="---">---</option>
+								  	<option value="영점오영">0.50</option>
+								  	<option value="영점칠오">0.75</option>
+								  	<option value="일점영영">1.00</option>
+								  	<option value="일점이오">1.25</option>
+								  	<option value="일점오영">1.50</option>
+								    <option value="일점칠오">1.75</option>
+								    <option value="이점영영">2.00</option>
+								    <option value="이점이오">2.25</option>
+								    <option value="이점오영">2.50</option>
+								    <option value="이점칠오">2.75</option>
+								    <option value="삼">3.00</option>
+								    <option value="삼점이오">3.25</option>
+								    <option value="삼점오영">3.50</option>
+								    <option value="삼점칠오">3.75</option>
+								    <option value="사점영영">4.00</option>
+								    <option value="사점이오">4.25</option>
+								    <option value="사점오영">4.50</option>
+								    <option value="사점칠오">4.75</option>
+								    <option value="오점영영">5.00</option>
+								</select>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="glasses_information">
+				<table>
+					<tbody class="glasses_information_one">
+						<tr>
+							<th colspan="5" scope="colgroup">안경테정보</th>
+							<th colspan="4" scope="colgroup">좌우/대각차이:0mm pd R/L차이:0mm 자동계산된 DIA:3mm</th>
+						</tr>
+						<tr>
+							<th>좌우</th>
+							<th>상하</th>
+							<th>대각(최대)</th>
+							<th>브리지</th>
+							<th>SEGHT(OH)</th>
+							<th>PD(R)</th>
+							<th>PD(L)</th>
+							<th>PD(R+L)</th>
+							<th>프레임 종류</th>
+						</tr>
+						<tr>
+							<td>
+								<input type="text"/>
+							</td>
+							<td>
+								<input type="text"/>
+							</td>
+							<td>
+								<input type="text"/>
+							</td>
+							<td>
+								<input type="text"/>
+							</td>
+							<td>
+								<input type="text"/>
+							</td>
+							<td>
+								<input type="text"/>
+							</td>
+							<td>
+								<input type="text"/>
+							</td>
+							<td>
+								<input type="text"/>
+							</td>
+							<td>
+								<select name="Prism">
+									<option value="---">---</option>
+								  	<option value="온테">온테</option>
+								  	<option value="무테">무테</option>
+								  	<option value="반무테">반무테</option>
+								</select>
+							</td>
+						</tr>					
+					</tbody>
+					
+					<tbody class="glasses_information_two">
+						<tr>
+							<th colspan="5" scope="colgroup">개인매개변수(고객의 안경착용시 측정 값) </th>
+							<th colspan="4" scope="colgroup"><a href="">룰러구매하러가기</a></th>
+						</tr>
+						<tr>
+							<th colspan="2">경사각</th>
+							<th colspan="2">안면각</th>
+							<th colspan="2">정간거리</th>
+							<th colspan="2">인셋량(INSET:mm)</th>
+							<th colspan="1">고객명/기타요청</th>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<input type="text"/>
+							</td>
+							<td colspan="2">
+								<input type="text"/>
+							</td>
+							<td colspan="2">
+								<input type="text"/>
+							</td>
+							<td colspan="2">
+								<input type="text"/>
+							</td>
+							<td colspan="1">
+								<textarea name="contents" cols="30">
+								 여기에 글을 입력해주세요.
+								</textarea>
+							</td>
+						</tr>					
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="order_price">
+				<ul class="order_price_right">
+					<li>
+						<span>금액</span>
+					</li>
+					<li>
+						<span>13,960</span>
+					</li>
+					<li>
+						<span>원</span>
+					</li>
+				</ul>
+			</div>
+			
+			<div class="order_btn">
+				<ul class="order_btn_total">
+					<li><a href="">장바구니</a></li>
+					<li><a href="">돌아가기</a></li>
+				</ul>
+			</div>
+		
+		</div>
+		
+		
+		
+		
+		
+	</body>
+</html>

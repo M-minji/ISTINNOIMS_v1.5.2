@@ -1,0 +1,1169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	<typeAlias alias="mesCommonGubunVO"        type="egovframework.rndp.mes.common.service.MesCommonGubunVO" />
+	<typeAlias alias="mesCommonItemVO"         type="egovframework.rndp.mes.common.service.MesCommonItemVO" />
+	<typeAlias alias="mesCommonCompanyVO"      type="egovframework.rndp.mes.common.service.MesCommonCompanyVO" />
+	<typeAlias alias="mesCommonBaljuVO"        type="egovframework.rndp.mes.common.service.MesCommonBaljuVO" />
+	<typeAlias alias="mesCommonEnvVO"          type="egovframework.rndp.mes.common.service.MesCommonEnvVO" />
+	<typeAlias alias="mesCommonApprovalVO"     type="egovframework.rndp.mes.common.service.MesCommonApprovalVO" />
+	<typeAlias alias="mesCommonUserVO"         type="egovframework.rndp.mes.common.service.MesCommonUserVO" />
+	<typeAlias alias="mesCommonProductionVO"   type="egovframework.rndp.mes.common.service.MesCommonProductionVO" />
+	
+	
+	
+	<select id="mesCommonDAO.selectMesGubunCodeList" parameterClass="mesCommonGubunVO" resultClass="mesCommonGubunVO">
+		/* mesCommonDAO.selectMesGubunCodeList */
+		/* 2020 07 28 공통영역으로 추출 */
+		SELECT  e_gubun_key	AS sGubunKey
+			  , e_gubun_name AS sGubunName 		
+	  	FROM 	e_gubun
+	  	<isNotEmpty property="sGubunCateKey">
+     		WHERE e_gubun_cate_key = #sGubunCateKey#   
+	  	</isNotEmpty>                   
+  		ORDER BY e_gubun_key
+	</select>	
+	
+	<select id="mesCommonDAO.selectMesItemCateList" parameterClass="mesCommonItemVO" resultClass="mesCommonItemVO">
+		/* mesCommonDAO.selectMesItemCateList */
+		/* 2020 07 29  공통영역으로 추출 */
+		SELECT * FROM 
+			(SELECT
+			     s.sItemCateName,
+			     s.sItemCateKey,
+			     s.sItemCateUkey,
+			     s.sItemCateEtc,
+			     fnc_item_cate(s.sItemCateKey) AS path,
+			     s.gbnCnt 
+			FROM (
+				    SELECT
+				        d.e_item_cate_name AS sItemCateName,
+						d.e_item_cate_key AS sItemCateKey,
+						d.e_item_cate_ukey AS sItemCateUkey,
+				        d.e_item_cate_etc as sItemCateEtc,
+				        (
+							SELECT COUNT(*)
+							FROM  e_item_cate aa
+							WHERE aa.e_item_cate_ukey = d.e_item_cate_key
+						) AS gbnCnt
+					FROM e_item_cate d
+				  )s
+				 WHERE 1=1  
+			) AS k
+			WHERE 1=1
+			<isEmpty property="popupGubun">
+				<isNotEmpty property="searchWord">
+					AND LOWER(k.path) LIKE CONCAT('%', #searchWord#, '%')
+				</isNotEmpty>
+			</isEmpty>
+			<isEqual property="pageGubun" compareValue="i">
+				AND k.path LIKE '자재%'
+			</isEqual>
+			<isEqual property="pageGubun" compareValue="p">
+				AND k.path LIKE '제품%'
+			</isEqual>
+			<isEmpty property="sItemCateKey">
+				<isEmpty property="popupGubun">
+					AND k.sItemCateUkey = '0'
+				</isEmpty>
+			</isEmpty>
+			<isNotEmpty property="sItemCateKey">
+				AND k.sItemCateUkey = #sItemCateKey#
+			</isNotEmpty>  
+		ORDER BY k.path 
+		<isEmpty property="popupGubun">
+			LIMIT #recordCountPerPage# OFFSET #firstIndex#
+		</isEmpty>
+	</select>
+
+	<select id="mesCommonDAO.selectPopupMesItemList" parameterClass="mesCommonItemVO" resultClass="mesCommonItemVO">
+		/* mesCommonDAO.selectPopupMesItemList */ 
+		/* 2020 07 29 공통영역으로 추출 */ 
+		SELECT e_item_key                      AS sItemKey, 
+		       e_item_cate_key                 AS sItemCateKey,
+		       e_item_gubun                    AS sItemGubun, 
+		       e_item_code                     AS sItemCode, 
+		       e_item_name                     AS sItemName, 
+		       e_item_inven                    AS sItemInven, 
+		       e_item_price                    AS sItemPrice, 
+		       e_item_standard                 AS sItemStandard,
+		       e_item_unit                     AS sItemUnit,
+		       ''                              AS sItemComPartNo,
+     		   IFNULL(fnc_inven(e_item_key),0) AS eInvenCnt,
+     		   fnc_item_cate(e_item_cate_key)  AS sItemCate
+		FROM   e_item AS i
+		WHERE 1=1
+		<isNotEmpty property="searchWord">
+			<isEqual property="searchType" compareValue="1">
+				AND	(LOWER(e_item_code) LIKE CONCAT('%', #searchWord#, '%')
+				 OR  LOWER(e_item_name) LIKE CONCAT('%', #searchWord#, '%')
+				)
+			</isEqual>
+			<isEqual property="searchType" compareValue="2">
+				AND	LOWER(e_item_name) LIKE CONCAT('%', #searchWord#, '%')
+			</isEqual>
+			<isEqual property="searchType" compareValue="3">
+				AND	LOWER(e_item_code) LIKE CONCAT('%', #searchWord#, '%')
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="searchType2">
+			<isNotEqual property="searchType2" compareValue="">
+				AND e_item_cate_key = #searchType2#
+			</isNotEqual>
+		</isNotEmpty>
+		<isEqual property="pageGubun" compareValue="p">
+			AND e_item_gubun LIKE '제품'
+		</isEqual>
+		<isEqual property="pageGubun" compareValue="i">
+			AND e_item_gubun LIKE '자재'
+		</isEqual>
+		ORDER BY e_item_name, e_item_key
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	
+	<select id="mesCommonDAO.selectPopupMesItemListCnt" parameterClass="mesCommonItemVO" resultClass="int">
+		/* mesCommonDAO.selectPopupMesItemListCnt */
+		/* 2020 07 29 공통영역으로 추출 */ 
+		SELECT COUNT(*)
+		FROM   e_item
+		WHERE 1=1
+		<isNotEmpty property="searchWord">
+			<isEqual property="searchType" compareValue="1">
+				AND	(LOWER(e_item_code) LIKE CONCAT('%', #searchWord#, '%')
+				 OR  LOWER(e_item_name) LIKE CONCAT('%', #searchWord#, '%')
+				)
+			</isEqual>
+			<isEqual property="searchType" compareValue="2">
+				AND	LOWER(e_item_name) LIKE CONCAT('%', #searchWord#, '%')
+			</isEqual>
+			<isEqual property="searchType" compareValue="3">
+				AND	LOWER(e_item_code) LIKE CONCAT('%', #searchWord#, '%')
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="searchType2">
+			<isNotEqual property="searchType2" compareValue="">
+				AND e_item_cate_key = #searchType2#
+			</isNotEqual>
+		</isNotEmpty>
+		<isEqual property="pageGubun" compareValue="p">
+			AND e_item_gubun LIKE '제품'
+		</isEqual>
+		<isEqual property="pageGubun" compareValue="i">
+			AND e_item_gubun LIKE '자재'
+		</isEqual>
+	</select>
+	
+	 
+	
+	<select id="mesCommonDAO.selectMesCompanyList" parameterClass="mesCommonCompanyVO" resultClass="mesCommonCompanyVO">
+		/* mesCommonDAO.selectMesCompanyList */
+		/* 2020 07 29 공통영역으로 추출 */
+		SELECT	  a.e_com_key	AS eComKey
+				, a.e_com_code 	AS eComCode
+				, a.e_com_name	AS eComName
+				, b.e_com_con_key	AS eComConKey
+				, a.e_com_brn as eComNum 
+				,  c.e_gubun_name	as eGubunName
+				, b.e_com_con_name  AS eComConName
+				, b.e_com_con_phone1 as eComConPhone1
+				, e_com_fax as eComFax
+				, e_com_phone as eComPhone
+				, b.e_com_con_email  AS eComConEmail
+				, a.e_bank  AS eBank
+				, a.e_bank_num  AS eBankNum
+				, a.e_bank_person  AS eBankPerson
+				, a.e_email  AS eEmail                        
+				, a.e_com_person  AS eComPerson
+				, a.e_com_post AS eComPost
+				,a.e_com_address AS eComAddress
+				,a.e_com_country AS eComCountry
+        		,b.e_com_con_phone2 as eComConPhone2
+        		, gubun.e_gubun_name  AS eComSend
+				, a.e_com_send  AS eComSendKey
+				, a.e_com_account  AS eComAccount
+				
+				
+		FROM 	e_company a
+				LEFT OUTER JOIN e_company_contact b
+					ON (a.e_com_key = b.e_com_key
+					AND b.e_com_con_daepyo = 'Y')
+				INNER JOIN e_gubun c
+					ON (c.e_gubun_key = a.e_com_gubun
+					AND c.e_gubun_cate_key = '1')
+				left join e_gubun as gubun
+				on gubun.e_gubun_key = a.e_com_send
+		WHERE	1=1	
+		
+			<isNotEmpty property="searchType1">
+				and c.e_gubun_key  = #searchType1#
+			</isNotEmpty>	
+			<isEqual property="searchType" compareValue="1">
+				AND ((LOWER(a.e_com_code) LIKE CONCAT ('%' , LOWER(#searchWord#) ,'%')
+				OR LOWER(a.e_com_name) LIKE CONCAT('%' , LOWER(#searchWord#) , '%') 
+				OR LOWER(a.e_com_person) LIKE CONCAT('%' , LOWER(#searchWord#) , '%')))
+			</isEqual>
+			<isEqual property="searchType" compareValue="2">
+				AND LOWER(a.e_com_code) LIKE CONCAT('%' , LOWER(#searchWord#) ,'%')				
+			</isEqual>
+			<isEqual property="searchType" compareValue="3">
+				AND LOWER(a.e_com_name) LIKE CONCAT('%' , LOWER(#searchWord#) ,'%')	
+			</isEqual>
+			<isEqual property="searchType" compareValue="4">
+				AND LOWER(a.e_com_person) LIKE CONCAT('%' , LOWER(#searchWord#) ,'%')		
+			</isEqual>
+				
+		<isNotEmpty property="pageGubun">
+			<isEqual property="pageGubun" compareValue="report">
+			AND a.e_com_key IN (SELECT
+									e_com_key
+								FROM
+									e_order_item AS a
+									LEFT JOIN e_order AS b
+									ON a.e_order_key = b.e_order_key
+								WHERE
+									e_chulgo_gubun = 'YY'
+								GROUP BY e_com_key)
+			</isEqual>
+		</isNotEmpty>
+				
+				
+		ORDER BY c.e_gubun_key, a.e_com_name
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="mesCommonDAO.selectMesCompanyListCnt" parameterClass="mesCommonCompanyVO" resultClass="int">
+		/* mesCommonDAO.selectMesCompanyListCnt */
+		SELECT	COUNT(a.e_com_key)	
+		FROM 	e_company a
+				LEFT OUTER JOIN e_company_contact b
+					ON (a.e_com_key = b.e_com_key
+					AND b.e_com_con_daepyo = 'Y')
+				INNER JOIN e_gubun c
+					ON (c.e_gubun_key = a.e_com_gubun
+					AND c.e_gubun_cate_key = '1')
+		WHERE	1=1			
+		<isNotEmpty property="searchType1">
+				and c.e_gubun_key  = #searchType1#
+			</isNotEmpty>	
+			<isEqual property="searchType" compareValue="1">
+				AND (LOWER(a.e_com_code) LIKE CONCAT ('%' , LOWER(#searchWord#) ,'%')
+				OR LOWER(a.e_com_name) LIKE CONCAT('%' , LOWER(#searchWord#) , '%') 
+				OR LOWER(a.e_com_person) LIKE CONCAT('%' , LOWER(#searchWord#) , '%'))
+			</isEqual>
+			<isEqual property="searchType" compareValue="2">
+				AND LOWER(a.e_com_code) LIKE CONCAT('%' , LOWER(#searchWord#) ,'%')				
+			</isEqual>
+			<isEqual property="searchType" compareValue="3">
+				AND LOWER(a.e_com_name) LIKE CONCAT('%' , LOWER(#searchWord#) ,'%')	
+			</isEqual>
+			<isEqual property="searchType" compareValue="4">
+				AND LOWER(a.e_com_person) LIKE CONCAT('%' , LOWER(#searchWord#) ,'%')		
+			</isEqual>
+			<isNotEmpty property="pageGubun">
+			<isEqual property="pageGubun" compareValue="report">
+			AND a.e_com_key IN (SELECT
+									e_com_key
+								FROM
+									e_order_item AS a
+									LEFT JOIN e_order AS b
+									ON a.e_order_key = b.e_order_key
+								WHERE
+									e_chulgo_gubun = 'YY'
+								GROUP BY e_com_key)
+			</isEqual>
+		</isNotEmpty>
+			
+	</select>
+
+	<select id="mesCommonDAO.selectApprovalStaffList" parameterClass="mesCommonBaljuVO" resultClass="mesCommonBaljuVO">
+		/* mesCommonDAO.selectApprovalStaffList */
+		/* 2020 07 29 공통이전 결재 승인권자 리스트  */
+		SELECT 
+				a.e_approval_key    		AS eApprovalKey   
+				,a.k_approval_staff_key     AS kApprovalStaffKey      
+				,a.k_staff_sn         		AS kStaffSn       
+				,a.e_approval_status  		AS eApprovalStatus
+				,a.e_memo             		AS eMemo          
+				,a.k_class_key        		AS kClassKey      
+				,a.POSITION_NUM     		AS kPositionKey   
+				,a.k_staff_name       		AS kStaffName     
+				,a.e_approval_gubun_key     AS eBaljuKey  
+				,b.k_class_name       		AS kClassName
+				,c.POSITION_NAME    		AS kPositionName
+		FROM e_approval a, k_class b, K_POSITION c
+		WHERE 
+			a.k_class_key = b.k_class_key
+			AND a.POSITION_NUM = c.POSITION_NUM
+			AND a.e_approval_gubun_key = #eBaljuKey#
+			AND a.e_approval_gubun = #eApprovalGubun#
+		ORDER BY a.k_staff_sn
+	</select>
+
+	
+	<select id="mesCommonDAO.cateListSerachType" parameterClass="mesCommonItemVO" resultClass="mesCommonItemVO">
+		/* mesCommonDAO.cateListSerachType */
+		/* 2020 07 29 공통이전 물품조회 리스트 (cateListSerachType2 에서  2 제거 ) */ 
+		SELECT *
+		FROM 
+			(SELECT
+			     s.sItemCateName,
+			     s.sItemCateKey,
+			     s.sItemCateUkey,
+			     s.level,
+			     CASE WHEN s.level = 3 THEN
+			     	CONCAT((SELECT aa.e_item_cate_name FROM e_item_cate aa WHERE s.tmpUkey = aa.e_item_cate_key),' > ',s.path)
+			     ELSE s.path END AS path
+			   FROM
+				  (
+				    SELECT
+					    CASE WHEN d.e_item_cate_ukey != 0 THEN CONCAT(d.e_item_cate_uname,' > ',d.e_item_cate_name)
+						    ELSE CONCAT(d.e_item_cate_name,'',d.e_item_cate_uname) END  AS path,
+				        d.e_item_cate_name AS sItemCateName,
+						d.e_item_cate_key AS sItemCateKey,
+						d.e_item_cate_ukey AS sItemCateUkey,
+				        d.e_item_cate_uname AS sItemCateUname,
+						func.level AS level,
+				        (SELECT e_item_cate_ukey as tmpKey FROM e_item_cate WHERE e_item_cate_key = d.e_item_cate_ukey) AS tmpUkey
+						FROM
+						(	
+					  		SELECT dept_connect_by_parent() AS id, @level as level
+					  		FROM  (
+					  		        SELECT  @start_with := 0,
+					  		                @id := @start_with,
+					  		                @level := 0
+					  		        ) vars, e_item_cate
+					  	 	WHERE   @id IS NOT NULL
+						) func	Join e_item_cate d 
+						ON func.id = d.e_item_cate_key	
+				  )s
+				 WHERE 1=1   
+				) AS k
+		WHERE 1=1
+		<isEqual property="pageGubun" compareValue="i">
+			AND k.path NOT LIKE 'Product%'
+		</isEqual>
+		<isEqual property="pageGubun" compareValue="p">
+			AND k.path NOT LIKE 'Material%'
+		</isEqual>  
+		ORDER BY k.path
+	</select>
+	 
+	<select id="mesCommonDAO.envList" parameterClass="mesCommonEnvVO" resultClass="mesCommonEnvVO" >
+		/* mesCommonDAO.envList */
+		/* 2020 07 29 공통이전 기업정보 리스트  */
+		select k_env_name name
+		     , k_env_value value
+		from k_env
+	</select> 
+	
+	<delete id="mesCommonDAO.deleteApproval" parameterClass="mesCommonApprovalVO">
+		/* mesCommonDAO.deleteApproval */
+		/* 2020 07 31 결재정보 삭제  */
+		DELETE 
+		FROM e_approval 
+		WHERE  e_approval_gubun_key = #eApprovalGubunKey#
+		and e_approval_gubun = #eApprovalGubun#
+	</delete>
+	
+	
+	
+	<select id="mesCommonDAO.selectPositionList"  parameterClass="mesCommonUserVO" resultClass="mesCommonUserVO">
+		/* mesCommonDAO.selectPositionList */
+		SELECT 
+			P.POSITION_NUM					AS kPositionKey
+		,	P.POSITION_NAME					AS kPositionName
+	    ,	COUNT(k_staff_key)				AS useCnt 
+	    FROM K_POSITION P
+	    LEFT JOIN k_staff K ON (P.POSITION_NUM = K.k_position_key)
+	    WHERE 1=1
+	    AND	IF(ISNULL(K.k_staff_name), true, K.k_staff_state_flag = 1)
+	    GROUP BY P.POSITION_NUM
+		ORDER BY getSectorPath(P.POSITION_NUM)
+	</select>
+		
+		
+
+	<insert id="mesCommonDAO.insertMesBaljuApproval" parameterClass="mesCommonBaljuVO">
+		/* mesCommonDAO.insertMesBaljuApproval */
+		/* 2020 07 31 모듈화를 위해 이전함 */
+	     INSERT INTO e_approval
+	      (
+	          e_approval_key
+	          , k_approval_staff_key
+	          , k_staff_sn
+	          , e_approval_status
+	          , e_memo
+	          , k_class_key     
+	          , POSITION_NUM 
+	          , k_staff_key 
+	          , k_staff_name    
+	          , e_approval_gubun_key
+	          , e_approval_gubun     
+	      )
+	      VALUES
+	      (
+	         (SELECT IFNULL(MAX(e_approval_key), 0) + 1 FROM e_approval AS aa)
+	          , #kApprovalStaffKey#
+	          , #kStaffSn#
+	          , #eApprovalStatus#
+	          , #eMemo#
+	          , #kClassKey#
+	          , #kPositionKey#
+	          , #kStaffKey#
+	          , #kStaffName#
+	          , #eBaljuKey#
+	          , #eApprovalGubun#
+	      )
+	</insert>
+	
+	
+	<select id="mesCommonDAO.selectProductionInfo" parameterClass="mesCommonProductionVO" resultClass="mesCommonProductionVO" >
+		/* mesCommonDAO.selectProductionInfo */
+		/* 2020 07 31 작업지시 상세 공통으로 이전 */
+		SELECT
+			p.e_prod_key as eProdKey,
+			p.e_prod_no as eProdNo,
+			DATE_FORMAT(p.e_prod_date, '%Y-%m-%d')           AS eProdDate,
+			DATE_FORMAT(p.e_prod_exp_date, '%Y-%m-%d')           AS eProdExpDate,
+			p.e_prod_cnt as eProdCnt,
+			packGubun.e_gubun_name as eProdPack,
+			p.e_prod_pack as eProdPackKey,
+			p.e_prod_brix as eProdBrix,
+			p.e_prod_ph as eProdPh,
+			p.e_prod_psu as eProdPsu,
+			p.e_item_key as eItemKey,
+			i.e_item_name as eItemName,
+			p.e_prodreq_key as eProdreqKey,
+			p.e_subalju_key as eSubaljuKey,
+			s.e_subalju_num as eSubaljuNum,
+			p.e_flag as eFlag,
+			p.e_item_cnt as eItemCnt,
+			p.e_fail_cnt as eFailCnt,
+			p.e_prod_pack_cnt as eProdPackCnt,
+			p.e_real_pack_cnt as eRealPackCnt
+		FROM
+			e_prod as p
+			LEFT JOIN e_item as i ON (p.e_item_key = i.e_item_key)
+			LEFT JOIN e_subalju as s ON (p.e_subalju_key = s.e_subalju_key)
+			LEFT JOIN e_gubun as packGubun ON (packGubun.e_gubun_key = p.e_prod_pack)
+		WHERE	1=1
+		AND p.e_prod_key = #eProdKey#
+	</select>
+
+	<select id="mesCommonDAO.selectProductionItemInfo" parameterClass="mesCommonProductionVO" resultClass="mesCommonProductionVO" >
+		/* mesCommonDAO.selectProductionItemInfo */
+		/*  2020 07 31 작업지시 아이템 상세 공통으로 이전  */
+		SELECT
+			prodI.e_prod_item_key as eProdItemKey,
+			prodI.e_prod_key as eProdKey,
+			prodI.e_item_key as eItemKey,
+			i.e_item_name as eItemName,
+			prodI.e_prod_item_maker as eProdItemMaker,
+			prodI.e_prod_item_per as eProdItemPer,
+			prodI.e_prod_item_cnt as eProdItemCnt,
+			prodI.e_prod_item_send as eProdItemSend,
+			prodI.e_prod_item_etc as eProdItemEtc,
+			IFNULL(inven.e_item_cnt,0) as eInvenCnt			
+		FROM
+			e_prod_item as prodI
+			LEFT JOIN e_prod as p ON (p.e_prod_key = prodI.e_prod_key)
+			LEFT JOIN e_item as i ON (i.e_item_key = prodI.e_item_key)
+			LEFT JOIN e_inventory_stat as inven ON (inven.e_item_key = prodI.e_item_key)
+		WHERE 
+			prodI.e_prod_key = #eProdKey#
+	</select>
+
+
+ 
+		
+	<select id="mesCommonDAO.inventoryListBacodePopList" parameterClass="mesCommonBaljuVO" resultClass="mesCommonBaljuVO">
+		/* mesCommonDAO.inventoryListBacodePopList */
+		/*  2020 08 01 품목조회 팝업 공통으로 이전  */
+		select 
+			tt.eInvenKey, 
+		    tt.eInKey, 
+		    tt.eInGubun, 
+		    tt.eItemKey, 
+		    tt.eItemCnt - ifnull(hh.eOutCnt,0) as eItemCnt, 
+		    tt.eOutKey, 
+		    tt.eOutGubun, 
+		    tt.eItemIndate,
+		    tt.eItemOutdate,
+		    tt.eBuyIpgoItemPlaceKey,
+		    tt.eBuyIpgoItemPlace,
+		    tt.eBuyIpgoItemNo,
+		    tt.sItemGubun,
+		    tt.sItemCateKey,
+		    tt.sItemInven,
+		    tt.sItemName,
+		    fnc_item_cate(tt.sItemCateKey) as sItemCate,
+		    tt.eItemStandard,
+		    tt.eItemUnit,
+		    tt.eBarcode,
+		    tt.eBarcodeSn
+		from
+		(SELECT inven.e_inven_key as eInvenKey, 
+		       inven.e_in_key as eInKey, 
+		       inven.e_in_gubun as eInGubun, 
+		       inven.e_item_key as eItemKey, 
+		       (inven.e_item_cnt) as eItemCnt, 
+		       inven.e_out_key as eOutKey, 
+		       inven.e_out_gubun as eOutGubun, 
+		       inven.e_out_cnt eOutCnt, 
+		       Date_format(inven.e_item_indate, '%Y-%m-%d') AS eItemIndate,
+		       Date_format(inven.e_item_outdate, '%Y-%m-%d')AS eItemOutdate,
+		       e_inven_place_key as eBuyIpgoItemPlaceKey,
+		       gubun.e_gubun_name as eBuyIpgoItemPlace,
+		       bii.e_buy_ipgo_item_no as eBuyIpgoItemNo,
+		       i.e_item_gubun as sItemGubun,
+		       i.e_item_inven as sItemInven,
+		       i.e_item_name as sItemName,
+		       i.e_item_cate_key as sItemCateKey,
+		       i.e_item_standard as eItemStandard,
+		       i.e_item_unit as eItemUnit,
+		       inven.e_barcode as eBarcode,
+		       inven.e_barcode_sn as eBarcodeSn
+		       
+		FROM   e_inventory as inven
+		left join e_buy_ipgo_item as bii
+		on inven.e_in_key = bii.e_buy_ipgo_item_key and inven.e_in_gubun = 'buy'
+		left join e_gubun as gubun
+		on gubun.e_gubun_key = e_inven_place_key
+		left join e_item as i
+		on i.e_item_key = inven.e_item_key
+		where inven.e_out_key is null ) as tt
+		
+		left join 
+		
+		(SELECT inven.e_inven_key as eInvenKey, 
+		       inven.e_item_key as eItemKey, 
+		       (inven.e_out_cnt) as eOutCnt, 
+		       e_inven_place_key as eBuyIpgoItemPlaceKey,
+		       inven.e_barcode as eBarcode,
+		       inven.e_barcode_sn as eBarcodeSn
+		FROM   e_inventory as inven
+		where inven.e_out_key is not null ) as hh
+		
+		on tt.eItemKey = hh.eItemKey
+		and tt.eBarcode = hh.eBarcode
+		
+		where 1=1
+		and (tt.eItemCnt - ifnull(hh.eOutCnt,0)) > 0
+		and tt.eItemKey = #eItemKey#
+		ORDER BY tt.eInvenKey asc
+				
+		LIMIT #recordCountPerPage# offset #firstIndex#
+	</select>
+	
+		 
+		
+	<select id="mesCommonDAO.inventoryListBacodePopListCnt" parameterClass="mesCommonBaljuVO" resultClass="int">
+		/* mesCommonDAO.inventoryListBacodePopListCnt */
+		/*  2020 08 01 품목조회 팝업 공통으로 이전  */
+		select count(*)
+		from (
+			select tt.eInvenKey, 
+			    tt.eInKey, 
+			    tt.eInGubun, 
+			    tt.eItemKey, 
+			    tt.eItemCnt - ifnull(hh.eOutCnt,0) as eItemCnt, 
+			    tt.eOutKey, 
+			    tt.eOutGubun, 
+			    tt.eItemIndate,
+			    tt.eItemOutdate,
+			    tt.eBuyIpgoItemPlaceKey,
+			    tt.eBuyIpgoItemPlace,
+			    tt.eBuyIpgoItemNo,
+			    tt.sItemGubun,
+			    tt.sItemCateKey,
+			    tt.sItemInven,
+			    tt.sItemName,
+			    fnc_item_cate(tt.sItemCateKey) as sItemCate,
+			    tt.eItemStandard,
+			    tt.eItemUnit,
+			    tt.eBarcode,
+			    tt.eBarcodeSn
+			from
+			(SELECT inven.e_inven_key as eInvenKey, 
+			       inven.e_in_key as eInKey, 
+			       inven.e_in_gubun as eInGubun, 
+			       inven.e_item_key as eItemKey, 
+			       (inven.e_item_cnt) as eItemCnt, 
+			       inven.e_out_key as eOutKey, 
+			       inven.e_out_gubun as eOutGubun, 
+			       inven.e_out_cnt eOutCnt, 
+			       Date_format(inven.e_item_indate, '%Y-%m-%d') AS eItemIndate,
+			       Date_format(inven.e_item_outdate, '%Y-%m-%d')AS eItemOutdate,
+			       e_inven_place_key as eBuyIpgoItemPlaceKey,
+			       gubun.e_gubun_name as eBuyIpgoItemPlace,
+			       bii.e_buy_ipgo_item_no as eBuyIpgoItemNo,
+			       i.e_item_gubun as sItemGubun,
+			       i.e_item_inven as sItemInven,
+			       i.e_item_name as sItemName,
+			       i.e_item_cate_key as sItemCateKey,
+			       i.e_item_standard as eItemStandard,
+			       i.e_item_unit as eItemUnit,
+			       inven.e_barcode as eBarcode,
+			       inven.e_barcode_sn as eBarcodeSn
+			       
+			FROM   e_inventory as inven
+			left join e_buy_ipgo_item as bii
+			on inven.e_in_key = bii.e_buy_ipgo_item_key and inven.e_in_gubun = 'buy'
+			left join e_gubun as gubun
+			on gubun.e_gubun_key = e_inven_place_key
+			left join e_item as i
+			on i.e_item_key = inven.e_item_key
+			where inven.e_out_key is null ) as tt
+			
+			left join 
+			
+			(SELECT inven.e_inven_key as eInvenKey, 
+			       inven.e_item_key as eItemKey, 
+			       (inven.e_out_cnt) as eOutCnt, 
+			       e_inven_place_key as eBuyIpgoItemPlaceKey,
+			       inven.e_barcode as eBarcode,
+			       inven.e_barcode_sn as eBarcodeSn
+			FROM   e_inventory as inven
+			where inven.e_out_key is not null ) as hh
+			
+			on tt.eItemKey = hh.eItemKey
+			and tt.eBarcode = hh.eBarcode
+			
+			where 1=1
+			and (tt.eItemCnt - ifnull(hh.eOutCnt,0)) > 0
+			and tt.eItemKey = #eItemKey#
+			
+		) as aaa
+	</select>
+	
+	
+
+	<insert id="mesCommonDAO.inventoryOutInsert" parameterClass="mesCommonBaljuVO">
+		/* mesCommonDAO.inventoryOutInsert */
+		/* 2020 08 01 모듈화를 위해 Balju 에서 이전 출고등록   */
+		INSERT INTO
+			e_inventory (
+				e_inven_key,
+				e_out_key,
+				e_out_gubun,
+				e_item_key,
+				e_out_cnt,
+				e_item_outdate,
+				e_inven_place_key,
+				e_barcode,
+				e_barcode_sn
+			)
+		VALUES
+			(
+				(SELECT	IFNULL(MAX(e_inven_key), 0) + 1 FROM e_inventory as aa),
+				#eOutKey#,
+				#eOutGubun#,
+				#eItemKey#,
+				#eOutCnt#,
+				NOW(),
+				#ePlaceKey#,
+				#eBarcode#,
+				#eBarcodeSn#
+			);
+	</insert>
+	
+	<insert id="mesCommonDAO.inventoryMinus" parameterClass="mesCommonBaljuVO">
+		/* mesCommonDAO.inventoryMinus */
+		/* 2020 08 01 모듈화를 위해 Balju 에서 이전  제품 재고 반영용 (-)  */
+		INSERT INTO e_inventory_stat
+		(
+		e_item_key, 
+		e_item_cnt)
+		VALUES
+		(
+		#eItemKey#,
+		#eItemCnt#
+		)
+		on DUPLICATE KEY UPDATE 
+		e_item_cnt = (e_item_cnt - #eItemCnt#)   
+	</insert>
+	
+	
+	<select id="mesCommonDAO.selectCateList" parameterClass="mesCommonItemVO" resultClass="mesCommonItemVO">
+		/* mesCommonDAO.selectCateList */
+		/* 2020 08 01 모듈화를 위해 mesItem 에서 이전  제품카테고리 리스트 조회  */
+		SELECT	  a.e_item_cate_key                                 
+				, a.e_item_cate_skey                                             
+				, a.e_item_cate_ukey                                             
+				, a.e_item_cate_name                                             
+				, a.e_item_cate_eng_name                                         
+				, a.path
+				, (SELECT 	COUNT(e_item_key) 
+				   FROM		e_item 
+				   WHERE 	e_item_cate_key = a.e_item_cate_key) 	as useCnt1 
+				, (SELECT	COUNT(e_item_cate_key) 
+				   FROM		e_item_cate 
+				   WHERE	e_item_cate_ukey = a.e_item_cate_key)	as useCnt2
+		FROM	(
+				SELECT	  e_item_cate_key
+						, e_item_cate_skey
+						, e_item_cate_ukey
+						, e_item_cate_name
+						, e_item_cate_eng_name
+						, SUBSTR(SYS_CONNECT_BY_PATH(e_item_cate_name,'>'), 2) AS path
+				FROM	e_item_cate
+				START WITH e_item_cate_ukey = 0
+				CONNECT BY PRIOR e_item_cate_key = e_item_cate_ukey
+				ORDER SIBLINGS BY e_item_cate_key
+				) a
+		WHERE 1=1
+		
+		AND e_item_cate_key NOT IN(SELECT e_item_cate_ukey
+										FROM e_item_cate
+										GROUP BY e_item_cate_ukey)
+										
+		<isNotEmpty property="pageGubun">
+			<isEqual property="pageGubun" compareValue="p">
+				AND a.path LIKE '%제품%'
+			</isEqual>
+			<isEqual property="pageGubun" compareValue="A">
+						AND (a.path LIKE  '%가전%' OR a.path LIKE  '%세트%')
+					</isEqual>
+					<isEqual property="pageGubun" compareValue="F">
+						AND (a.path LIKE  '%필름%' OR a.path LIKE  '%세트%')
+					</isEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="pageGubun2">
+			<isEqual property="pageGubun2" compareValue="1">		
+					AND  (a.path LIKE '%재료%' OR a.path LIKE '제품%' OR a.path LIKE '반제품%') AND a.e_item_cate_name NOT LIKE '%세트%'
+				</isEqual>
+				<isEqual property="pageGubun2" compareValue="2">		
+					AND  (a.path LIKE '%재료%' OR a.path LIKE '반제품%')
+				</isEqual>
+				<isEqual property="pageGubun2" compareValue="3">		
+					AND  (a.path LIKE '%재료%')
+				</isEqual>
+				<isEqual property="pageGubun2" compareValue="4">		
+					AND  (a.path LIKE '%반제품%')
+				</isEqual>
+				<isEqual property="pageGubun2" compareValue="5">		
+					AND  (a.path LIKE '제품%' OR a.path LIKE '%세트%')
+				</isEqual>
+		</isNotEmpty>
+	</select>
+
+	<select id="mesCommonDAO.selectBomInfoList" parameterClass="mesCommonItemVO" resultClass="mesCommonItemVO">
+		/* mesCommonDAO.selectBomInfoList */
+		/* 2020 08 01 모듈화를 위해 mesItem 에서 이전  BOM제품 리스트 조회  */
+		SELECT
+			i2.e_item_key AS sItemKey,
+			IFNULL(inven.eInvenKey,0) AS eInvenKey,
+			i2.e_item_cate_key AS sItemCateKey,
+			i2.e_item_code AS sItemCode,
+			i2.e_item_name AS sItemName,
+			i2.e_item_name AS eItemName,
+			i2.e_item_unit AS sItemUnit,
+			i2.e_item_standard AS sItemStandard,
+			i2.e_item_gubun AS sItemGubun,
+			i2.e_item_place_key AS sItemPlaceKey,
+			c.path AS sItemCateName,
+			b.e_bom_key AS eBomKey,
+			bi.e_bom_item_key AS eBomItemKey,
+			bi.e_sub_item_key AS eSubItemKey,
+			bi.e_sub_item_quantity AS eSubItemQuantity,
+			bi.e_sub_item_process AS eSubProcessKey,
+			procGubun.e_gubun_name AS eSubProcessName,
+			gubun.e_gubun_key AS eFacKey,
+			b2.e_process_key AS prok,
+			b2.e_process_name AS eProcessName,
+			bi.e_sub_item_process AS eFacName,
+			IFNULL(inven.eItemCnt,0) AS eItemCnt,
+			b2.e_check_key AS eSubCheckKey,
+			IFNULL(inven.eBuyIpgoItemPlace,'') AS eBuyIpgoItemPlace,
+			(CASE
+				 WHEN c.path LIKE  '%재료%' THEN '원자재'
+				 WHEN c.path LIKE  '반제품%' THEN '반제품'
+				 WHEN c.path LIKE  '제품%' THEN IF(c.path LIKE  '%세트%','세트','제품')
+			END) AS cateGubun,
+			c.path,
+			inven.sItemPrice
+		FROM
+			e_item AS i
+			INNER JOIN e_bom AS b
+			ON i.e_item_key = b.e_item_key
+			LEFT JOIN e_bom_item AS bi
+			ON b.e_bom_key = bi.e_bom_key
+			LEFT JOIN e_item AS i2
+			ON i2.e_item_key = bi.e_sub_item_key
+			LEFT JOIN e_item_cate AS cate
+			ON i2.e_item_cate_key = cate.e_item_cate_key
+			LEFT JOIN e_bom AS b2
+			ON i2.e_item_key = b2.e_item_key
+			LEFT JOIN e_gubun AS gubun
+			ON bi.e_sub_item_process = gubun.e_gubun_name
+
+			LEFT JOIN e_procese_item AS proci
+			ON bi.e_sub_item_process = proci.e_procese_item_key
+			LEFT JOIN e_gubun AS procGubun
+			ON proci.e_procese_item_process_key = procGubun.e_gubun_key
+			
+			LEFT JOIN (SELECT 
+								tt.eInvenKey,
+								tt.eItemKey,
+								TO_CHAR(IFNULL(tt.eItemCnt,0) - IFNULL(hh.eOutCnt,0)) AS eItemCnt,
+								tt.eBuyIpgoItemPlace,
+								tt.sItemPrice
+								
+							FROM 
+							(SELECT
+								inven.e_inven_key AS eInvenKey,
+								inven.e_item_key AS eItemKey,
+								SUM(inven.e_item_cnt) AS eItemCnt,
+								a.e_buy_ipgo_item_place_key AS eBuyIpgoItemPlaceKey,
+								SUM(inven.e_unit_price)/ COUNT(inven.e_unit_price) AS sItemPrice,
+								gubun.e_gubun_name AS eBuyIpgoItemPlace
+							FROM
+								e_inventory_buy AS inven
+								LEFT JOIN e_buy_ipgo_item AS a
+								ON inven.e_in_key = a.e_buy_ipgo_item_key
+								LEFT JOIN e_balju_item AS c
+								ON a.e_balju_item_key = c.e_balju_item_key
+								LEFT JOIN e_item AS i
+								ON inven.e_item_key = i.e_item_key
+								LEFT JOIN e_gubun AS gubun
+								ON a.e_buy_ipgo_item_place_key = gubun.e_gubun_key
+								
+							WHERE inven.e_out_key IS NULL 
+							GROUP BY i.e_item_key) AS tt,
+							
+							(SELECT
+								inven.e_item_key AS eItemKey,
+								SUM(inven.e_out_cnt) AS eOutCnt,
+								ipgo.e_buy_ipgo_item_place_key AS eBuyIpgoItemPlaceKey
+							FROM
+								e_inventory_buy AS inven
+								LEFT JOIN e_buy_chulgo_item AS a
+								ON inven.e_out_key = a.e_buy_chulgo_item_key
+								LEFT JOIN e_buy_chulgo AS b
+								ON a.e_buy_chulgo_key = b.e_buy_chulgo_key
+								LEFT JOIN e_inventory_buy AS inven2
+								ON a.e_inven_key = inven2.e_inven_key
+								LEFT JOIN e_buy_ipgo_item AS ipgo
+								ON inven2.e_in_key = ipgo.e_buy_ipgo_item_key
+								LEFT JOIN e_item AS i
+								ON i.e_item_key = inven.e_item_key
+						WHERE inven.e_out_key IS NOT NULL 
+						
+					GROUP BY inven.e_item_key) AS hh
+					
+					WHERE tt.eItemKey = hh.eItemKey(+)
+					AND IFNULL(tt.eItemCnt,0) - IFNULL(hh.eOutCnt,0) > 0) AS inven
+			ON i2.e_item_key = inven.eItemKey
+			
+			LEFT JOIN (
+				SELECT	  e_item_cate_key
+						, e_item_cate_skey
+						, e_item_cate_ukey
+						, e_item_cate_name
+						, e_item_cate_eng_name
+						, SUBSTR(SYS_CONNECT_BY_PATH(e_item_cate_name,'>'), 2) AS path
+				FROM	e_item_cate
+				START WITH e_item_cate_ukey = 0
+				CONNECT BY PRIOR e_item_cate_key = e_item_cate_ukey
+				ORDER SIBLINGS BY e_item_cate_key
+				) as c
+	            ON (i2.e_item_cate_key = c.e_item_cate_key)
+		WHERE i.e_item_key = #sItemKey#
+	</select>
+
+		
+	<select id="mesCommonDAO.selectMesItemInfo" parameterClass="mesCommonItemVO" resultClass="mesCommonItemVO">
+		/* mesCommonDAO.selectMesItemInfo */
+		/* 2020 08 01 모듈화를 위해 mesItem 에서 이전  제품정보 조회  */
+		SELECT	  e_item_key			AS sItemKey		
+				, i.e_item_cate_key     AS sItemCateKey 
+				, e_item_code			as sItemCode
+				, e_item_name			as sItemName
+				, e_item_eng_name		as sItemEngName
+				, e_item_box			as sItemBox
+				, e_item_inven			as sItemInven
+				, e_item_wdate          AS sItemWdate      
+				, e_item_udate          AS sItemUdate   
+				, e_item_unit          AS sItemUnit      
+				, e_item_standard          AS sItemStandard     
+				, e_item_standard_size1          AS sItemStandardSize1    
+				, e_item_standard_size2          AS sItemStandardSize2     
+				, e_item_standard_size3          AS sItemStandardSize3     
+				, c.path    AS sItemCateName             
+				,	CASE WHEN e_item_test_yn = 'Y' THEN '유'
+							WHEN e_item_test_yn = 'N' THEN '무'
+							ELSE '' END AS sItemTestYn        
+				, e_item_place_key as sItemPlaceKey
+				, e_item_price as sItemPrice 
+		FROM	e_item  i                               
+  				INNER JOIN 
+				(
+				SELECT	  e_item_cate_key
+						, e_item_cate_skey
+						, e_item_cate_ukey
+						, e_item_cate_name
+						, e_item_cate_eng_name
+						, SUBSTR(SYS_CONNECT_BY_PATH(e_item_cate_name,'>'), 2) AS path
+				FROM	e_item_cate
+				START WITH e_item_cate_ukey = 0
+				CONNECT BY PRIOR e_item_cate_key = e_item_cate_ukey
+				ORDER SIBLINGS BY e_item_cate_key
+				) c
+	            ON (i.e_item_cate_key = c.e_item_cate_key)					  			
+ 		WHERE	e_item_key = #sItemKey# 
+	</select>
+	
+	<insert id="mesCommonDAO.inventoryInInsert" parameterClass="mesCommonBaljuVO">
+		/* mesCommonDAO.inventoryInInsert */
+		/* 2020 08 03 모듈화를 위해 Balju 에서 이전  재고입력  */
+		INSERT INTO
+			e_inventory (
+				e_inven_key,
+				e_in_key,
+				e_in_gubun,
+				e_item_key,
+				e_item_cnt,
+				e_item_indate,
+				e_barcode,
+				e_barcode_sn,
+				e_inven_place_key
+			)
+		VALUES
+			(
+				(SELECT	IFNULL(MAX(e_inven_key), 0) + 1 FROM e_inventory as aa),
+				#eInKey#,
+				#eInGubun#,
+				#eItemKey#,
+				#eItemCnt#,
+				NOW(),
+				#eBarcode#,
+				#eBarcodeSn#,
+				#ePlaceKey#
+			);
+	</insert>
+	
+ 
+	<insert id="mesCommonDAO.inventoryPlus" parameterClass="mesCommonBaljuVO">
+		/* mesCommonDAO.inventoryPlus */
+		/* 2020 08 03 모듈화를 위해 Balju 에서 이전 제품 재고 반영용 (+)  */
+		INSERT INTO e_inventory_stat
+		(
+		e_item_key, 
+		e_item_cnt)
+		VALUES
+		(
+		#eItemKey#,
+		#eItemCnt#
+		)
+		on DUPLICATE KEY UPDATE 
+		e_item_cnt = (e_item_cnt + #eItemCnt#)   
+	</insert>
+
+	 
+	<select id="mesCommonDAO.inventoryList" parameterClass="mesCommonBaljuVO" resultClass="mesCommonBaljuVO">
+		/* mesCommonDAO.inventoryList */
+		/* 2020 08 03 모듈화를 위해 balju 에서 이전  제품재고  조회  */ 
+		select 
+			tt.eInvenKey, 
+		    tt.eInKey, 
+		    tt.eInGubun, 
+		    tt.eItemKey, 
+		    tt.eItemCnt - ifnull(hh.eOutCnt,0) as eItemCnt, 
+		    tt.eOutKey, 
+		    tt.eOutGubun, 
+		    tt.eItemIndate,
+		    tt.eItemOutdate,
+		    tt.eBuyIpgoItemPlaceKey,
+		    tt.eBuyIpgoItemPlace,
+		    tt.eBuyIpgoItemNo,
+		    tt.sItemGubun,
+		    tt.sItemCateKey,
+		    tt.sItemInven,
+		    tt.sItemName,
+		    fnc_item_cate(tt.sItemCateKey) as sItemCate,
+		    tt.eItemStandard,
+		    tt.eItemUnit
+		from
+		(SELECT inven.e_inven_key as eInvenKey, 
+		       inven.e_in_key as eInKey, 
+		       inven.e_in_gubun as eInGubun, 
+		       inven.e_item_key as eItemKey, 
+		       sum(inven.e_item_cnt) as eItemCnt, 
+		       inven.e_out_key as eOutKey, 
+		       inven.e_out_gubun as eOutGubun, 
+		       inven.e_out_cnt eOutCnt, 
+		       Date_format(inven.e_item_indate, '%Y-%m-%d') AS eItemIndate,
+		       Date_format(inven.e_item_outdate, '%Y-%m-%d')AS eItemOutdate,
+		       e_inven_place_key as eBuyIpgoItemPlaceKey,
+		       gubun.e_gubun_name as eBuyIpgoItemPlace,
+		       bii.e_buy_ipgo_item_no as eBuyIpgoItemNo,
+		       i.e_item_gubun as sItemGubun,
+		       i.e_item_inven as sItemInven,
+		       i.e_item_name as sItemName,
+		       i.e_item_cate_key as sItemCateKey,
+		       i.e_item_standard as eItemStandard,
+		       i.e_item_unit as eItemUnit
+		       
+		FROM   e_inventory as inven
+		left join e_buy_ipgo_item as bii
+		on inven.e_in_key = bii.e_buy_ipgo_item_key and inven.e_in_gubun = 'buy'
+		left join e_gubun as gubun
+		on gubun.e_gubun_key = e_inven_place_key
+		left join e_item as i
+		on i.e_item_key = inven.e_item_key
+		where inven.e_out_key is null
+		group by inven.e_item_key,e_inven_place_key) as tt
+		
+		left join 
+		
+		(SELECT inven.e_inven_key as eInvenKey, 
+		       inven.e_item_key as eItemKey, 
+		       sum(inven.e_out_cnt) as eOutCnt, 
+		       e_inven_place_key as eBuyIpgoItemPlaceKey
+		FROM   e_inventory as inven
+		where inven.e_out_key is not null
+		group by inven.e_item_key,e_inven_place_key) as hh
+		
+		on tt.eItemKey = hh.eItemKey
+		and tt.eBuyIpgoItemPlaceKey = hh.eBuyIpgoItemPlaceKey
+		
+		where 1=1
+		and (tt.eItemCnt - ifnull(hh.eOutCnt,0)) > 0
+		
+		
+		<isEqual property="pageGubun" compareValue="p">
+		and tt.sItemGubun like '제품'
+	</isEqual>
+	
+	<isEqual property="pageGubun" compareValue="i">
+		and tt.sItemGubun like '자재'
+	</isEqual>
+		
+		<isNotEmpty property="searchWord">
+			<isEqual property="searchType" compareValue="1">
+				AND (LOWER(tt.sItemName) LIKE CONCAT('%' , LOWER(#searchWord#) ,'%')
+				OR (LOWER(tt.eBuyIpgoItemPlace) LIKE CONCAT('%' , LOWER(#searchWord#) ,'%')))
+			</isEqual>
+			<isEqual property="searchType" compareValue="2">
+				AND LOWER(tt.sItemName) LIKE CONCAT('%' , LOWER(#searchWord#) ,'%')
+			</isEqual>
+			<isEqual property="searchType" compareValue="3">
+				AND LOWER(tt.eBuyIpgoItemPlace) LIKE CONCAT('%' , LOWER(#searchWord#) ,'%')
+			</isEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="searchType2">
+			<isNotEqual property="searchType2" compareValue="">
+				AND tt.sItemCateKey = #searchType2#
+			</isNotEqual>
+		</isNotEmpty>
+		
+		ORDER BY tt.eInvenKey DESC
+				
+		LIMIT #recordCountPerPage# offset #firstIndex#
+
+	</select>
+
+	<select id="mesCommonDAO.inventoryListCnt" parameterClass="mesCommonBaljuVO" resultClass="int">
+		/* mesCommonDAO.inventoryListCnt */
+		/* 2020 08 03 모듈화를 위해 balju 에서 이전  제품재고 개수 조회  */ 
+		SELECT COUNT(*)
+		FROM(
+		SELECT 
+			tt.eInvenKey, 
+		    tt.eInKey, 
+		    tt.eInGubun, 
+		    tt.eItemKey, 
+		    tt.eItemCnt - ifnull(hh.eOutCnt,0) as eItemCnt, 
+		    tt.eOutKey, 
+		    tt.eOutGubun, 
+		    tt.eItemIndate,
+		    tt.eItemOutdate,
+		    tt.eBuyIpgoItemPlaceKey,
+		    tt.eBuyIpgoItemPlace,
+		    tt.eBuyIpgoItemNo,
+		    tt.sItemGubun,
+		    tt.sItemCateKey,
+		    tt.sItemInven,
+		    tt.sItemName
+		from
+		(SELECT inven.e_inven_key as eInvenKey, 
+		       inven.e_in_key as eInKey, 
+		       inven.e_in_gubun as eInGubun, 
+		       inven.e_item_key as eItemKey, 
+		       sum(inven.e_item_cnt) as eItemCnt, 
+		       inven.e_out_key as eOutKey, 
+		       inven.e_out_gubun as eOutGubun, 
+		       inven.e_out_cnt eOutCnt, 
+		       Date_format(inven.e_item_indate, '%Y-%m-%d') AS eItemIndate,
+		       Date_format(inven.e_item_outdate, '%Y-%m-%d')AS eItemOutdate,
+		       e_inven_place_key as eBuyIpgoItemPlaceKey,
+		       gubun.e_gubun_name as eBuyIpgoItemPlace,
+		       bii.e_buy_ipgo_item_no as eBuyIpgoItemNo,
+		       i.e_item_gubun as sItemGubun,
+		       i.e_item_inven as sItemInven,
+		       i.e_item_name as sItemName,
+		       i.e_item_cate_key as sItemCateKey
+		FROM   e_inventory as inven
+		left join e_buy_ipgo_item as bii
+		on inven.e_in_key = bii.e_buy_ipgo_item_key and inven.e_in_gubun = 'buy'
+		left join e_gubun as gubun
+		on gubun.e_gubun_key = e_inven_place_key
+		left join e_item as i
+		on i.e_item_key = inven.e_item_key
+		where inven.e_out_key is null
+		group by inven.e_item_key,e_inven_place_key) as tt
+		
+		left join 
+		
+		(SELECT inven.e_inven_key as eInvenKey, 
+		       inven.e_item_key as eItemKey, 
+		       sum(inven.e_out_cnt) as eOutCnt, 
+		       e_inven_place_key as eBuyIpgoItemPlaceKey
+		FROM   e_inventory as inven
+		where inven.e_out_key is not null
+		group by inven.e_item_key,e_inven_place_key) as hh
+		
+		on tt.eItemKey = hh.eItemKey
+		and tt.eBuyIpgoItemPlaceKey = hh.eBuyIpgoItemPlaceKey
+		
+		where 1=1
+		and (tt.eItemCnt - ifnull(hh.eOutCnt,0)) > 0
+		
+		
+		<isEqual property="pageGubun" compareValue="p">
+		and tt.sItemGubun like '제품'
+	</isEqual>
+	
+	<isEqual property="pageGubun" compareValue="i">
+		and tt.sItemGubun like '자재'
+	</isEqual>
+		
+		<isNotEmpty property="searchWord">
+			<isEqual property="searchType" compareValue="1">
+				AND (LOWER(tt.sItemName) LIKE CONCAT('%' , LOWER(#searchWord#) ,'%')
+				OR (LOWER(tt.eBuyIpgoItemPlace) LIKE CONCAT('%' , LOWER(#searchWord#) ,'%')))
+			</isEqual>
+			<isEqual property="searchType" compareValue="2">
+				AND LOWER(tt.sItemName) LIKE CONCAT('%' , LOWER(#searchWord#) ,'%')
+			</isEqual>
+			<isEqual property="searchType" compareValue="3">
+				AND LOWER(tt.eBuyIpgoItemPlace) LIKE CONCAT('%' , LOWER(#searchWord#) ,'%')
+			</isEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="searchType2">
+			<isNotEqual property="searchType2" compareValue="">
+				AND tt.sItemCateKey = #searchType2#
+			</isNotEqual>
+		</isNotEmpty>
+		
+		) as aaa
+
+	</select>
+	 
+	
+</sqlMap>

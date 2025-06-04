@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	<typeAlias alias="mesContactVO" type="egovframework.rndp.mes.contact.service.MesContactVO" />
+
+	<insert id="mesContactDAO.mesContactInsert" parameterClass="mesContactVO">
+		/* mesContactDAO.mesContactInsert */
+		INSERT INTO CONTACT
+		( 
+			eAgencyName
+			, eDepartmentName
+			, eContactName
+			, ePhoneNumber
+			, eEmail
+			, eNotes
+		)
+		VALUES(
+		  #eAgencyName#
+		, #eDepartmentName#
+		, #eContactName#
+		, #ePhoneNumber#
+		, #eEmail#
+		, #eNotes#
+		);
+	</insert>
+	 
+	 
+	<select id="mesContactDAO.mesContactInfoList" parameterClass="mesContactVO" resultClass="mesContactVO">
+		/* mesContactDAO.mesContactInfoList */
+		SELECT
+			  CONTACT_NUM AS eContactNum
+			, new_special(eAgencyName) AS eAgencyName 
+			, new_special(eDepartmentName) AS eDepartmentName
+			, new_special(eContactName) AS eContactName
+			, new_special(ePhoneNumber) AS ePhoneNumber
+			, new_special(eEmail) AS eEmail
+			, new_special(eNotes) AS eNotes
+		FROM
+			CONTACT 
+		WHERE 1=1
+		<isNotEmpty property="searchWord">
+			AND LOWER(eContactName) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+		</isNotEmpty>
+		ORDER BY eContactName DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="mesContactDAO.mesContactInfoListCnt" parameterClass="mesContactVO" resultClass="int">
+		/* mesContactDAO.mesContactInfoListCnt */
+		SELECT
+			COUNT(*)
+		FROM
+			CONTACT 
+		WHERE 1=1
+		<isNotEmpty property="searchWord">
+			AND LOWER(eContactName) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+		</isNotEmpty>
+	</select>
+	 
+	<select id="mesContactDAO.mesContactInfo" parameterClass="mesContactVO" resultClass="mesContactVO">
+		/* mesContactDAO.mesContactInfo */
+		SELECT
+			  CONTACT_NUM AS eContactNum
+			, new_special(eAgencyName) AS eAgencyName 
+			, new_special(eDepartmentName) AS eDepartmentName
+			, new_special(eContactName) AS eContactName
+			, new_special(ePhoneNumber) AS ePhoneNumber
+			, new_special(eEmail) AS eEmail
+			, new_special(eNotes) AS eNotes
+		FROM   CONTACT 
+		WHERE 1=1
+	 	AND CONTACT_NUM = #eContactNum#
+	</select>
+	<delete id="mesGubunDAO.mesContactDelete" parameterClass="mesContactVO" >
+		/* mesGubunDAO.mesContactDelete*/
+		DELETE FROM  
+			CONTACT 
+		WHERE  CONTACT_NUM = #eContactNum#
+	</delete>
+	
+	<update id="mesGubunDAO.mesContactUpdate" parameterClass="mesContactVO" >
+		/* mesGubunDAO.mesContactUpdate */
+		UPDATE CONTACT SET
+			 eAgencyName =#eAgencyName#
+			, eDepartmentName =#eDepartmentName#
+			, eContactName =#eContactName#
+			, ePhoneNumber =#ePhoneNumber#
+			, eEmail =#eEmail#
+			, eNotes =#eNotes#
+		WHERE  CONTACT_NUM = #eContactNum#
+	</update>
+	
+	
+	
+</sqlMap>
+

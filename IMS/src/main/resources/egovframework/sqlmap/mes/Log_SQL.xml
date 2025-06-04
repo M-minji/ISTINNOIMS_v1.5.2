@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	<typeAlias alias="LogVO" type="egovframework.rndp.Log.service.LogVO" />
+	
+	<insert id="LogDAO.insertLog" parameterClass="LogVO">
+		<selectKey type="pre" keyProperty="key">
+			SELECT IFNULL(MAX(a.LogNum), 0) + 1 FROM Log a
+		</selectKey>
+		INSERT INTO Log (
+				LogNum
+			,	StaffKey
+			,	StaffName
+			,	StartDate
+			,	EndDate
+			,	Url
+			,	PageGubun
+			,	Gubun
+			,	Page
+			,	Minute
+			,	LogIp
+			,	RecptnDt
+			,	RecptnRsltCd
+			,	RecptnRslt
+		)VALUES(
+				#key#
+			,	#staffKey#
+			,	#staffName#
+			,	NOW()
+			,	NULL
+			,	#url#
+			,	#pageGubun#
+			,	#gubun#
+			,	IF(#page# = '' , '' , #page#)
+			,	NULL
+			,	IF(#logIp# = '' , '' , #logIp#)
+			,	IF(#recptnDt# = '' , NOW() , #recptnDt#)
+			,	IF(#recptnRsltCd# = '' , '' , #recptnRsltCd#)
+			,	IF(#recptnRslt# = '' , '' , #recptnRslt#)
+		)
+	</insert>
+	
+	<select id="LogDAO.selectMenu" parameterClass="LogVO" resultClass="LogVO" >
+		SELECT
+			k_menu_name				AS kMenuName
+		FROM k_menu
+		WHERE TRUE 
+		AND LOWER(k_menu_prog_src) LIKE CONCAT('%' , LOWER(#kMenuProgSrc#) ,'%')
+	</select>
+	
+	<select id="LogDAO.selectMenuZero" parameterClass="LogVO" resultClass="LogVO" >
+		SELECT
+			k_menu_name				AS kMenuName
+		FROM k_menu
+		WHERE TRUE 
+		AND LOWER(k_menu_prog_src) LIKE CONCAT('%' , LOWER(#kMenuProgSrc#) ,'%')
+		LIMIT 1
+	</select>
+	
+	<select id="LogDAO.selectLogNum" parameterClass="LogVO" resultClass="LogVO" >
+		SELECT 
+				lo1.LogNum		AS logNum
+			,	lo1.StartDate	AS startDate
+		FROM Log lo1
+		LEFT JOIN (
+					SELECT
+							lo2.StartDate		AS startDate
+					FROM Log lo2
+					WHERE TRUE 
+					AND lo2.StaffKey = #staffKey#
+					AND DATE_FORMAT(lo2.StartDate, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d')
+					ORDER BY lo2.StartDate DESC
+					LIMIT 1
+					)AS logSearch ON (lo1.StartDate = logSearch.startDate)
+		WHERE TRUE 
+		AND lo1.StartDate = logSearch.startDate
+	</select>
+	
+	<update id="LogDAO.updateLog" parameterClass="LogVO">
+		UPDATE
+			Log
+		SET
+				EndDate 	= NOW()
+			,	Minute 		= IF(TIMESTAMPDIFF(MINUTE, #startDate# , NOW()) = 0 , 1 , TIMESTAMPDIFF(MINUTE, #startDate# , NOW()))
+		WHERE
+			LogNum = #logNum#
+	</update>
+	
+	<update id="LogDAO.updateLogMinutes" parameterClass="LogVO">
+		UPDATE
+			Log
+		SET
+				EndDate = DATE_ADD(StartDate, INTERVAL 30 MINUTE)
+			,	Minute	= 30
+		WHERE TRUE 
+		<![CDATA[
+			AND TIMESTAMPDIFF(MINUTE,StartDate,NOW()) > 30
+		]]>
+		AND EndDate IS NULL
+	</update>
+	
+	<update id="LogDAO.updateLogMinutesSub" parameterClass="LogVO">
+		UPDATE
+			Log
+		SET
+				EndDate = DATE_ADD(StartDate, INTERVAL 30 MINUTE)
+			,	Minute	= 30
+		WHERE TRUE 
+		<![CDATA[
+			AND TIMESTAMPDIFF(MINUTE,StartDate,NOW()) > 30
+			AND Minute > 30
+		]]>
+	</update>
+	
+	<select id="LogDAO.selectLogList" parameterClass="LogVO" resultClass="LogVO">
+		/*LogDAO.selectLogList*/
+			SELECT
+				lo.LogNum				AS logNum
+			,	lo.StaffKey				AS staffKey
+			,	lo.StaffName 			AS staffName
+			,	lo.StartDate			AS startDate
+			,	lo.EndDate				AS endDate
+			,	lo.Url					AS url
+			,	lo.PageGubun			AS pageGubun
+			,	lo.Gubun				AS gubun
+			,	lo.Page					AS page
+			,	lo.Minute				AS minute
+			,	lo.LogIp				AS logIp
+			,	lo.RecptnDt				AS recptnDt
+			,	lo.RecptnRslt			AS recptnRslt
+			,	lo.StaffName 			AS staffName
+			FROM Log lo
+			WHERE TRUE
+			<isNotEmpty property="topStartDate">
+				<isNotEmpty property="topEndDate">
+		 		<![CDATA[
+		 		  AND DATE_FORMAT(lo.StartDate, '%Y-%m-%d') >= #topStartDate#
+		 		  AND DATE_FORMAT(lo.StartDate, '%Y-%m-%d') <= #topEndDate#
+		 		]]>
+				</isNotEmpty>
+			</isNotEmpty>
+			<isNotEmpty property="searchWord">	
+				<isEqual property="searchType" compareValue="1">
+				AND 
+				(
+					LOWER(lo.Url) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+					OR LOWER(lo.Page) LIKE CONCAT('%',LOWER(#searchWord#),'%') 
+					OR LOWER(lo.StaffName) LIKE CONCAT('%',LOWER(#searchWord#),'%') 
+				)
+				</isEqual>
+				<isEqual property="searchType" compareValue="2">
+					AND LOWER(lo.Url) LIKE CONCAT('%',LOWER(#searchWord#),'%')				
+				</isEqual>
+				<isEqual property="searchType" compareValue="3">
+					AND LOWER(lo.Page) LIKE CONCAT('%',LOWER(#searchWord#),'%')	
+				</isEqual>
+				<isEqual property="searchType" compareValue="4">
+					AND LOWER(lo.StaffName) LIKE CONCAT('%',LOWER(#searchWord#),'%')	
+				</isEqual>
+			</isNotEmpty>
+			ORDER BY lo.LogNum DESC
+			LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="LogDAO.selectLogListCnt" parameterClass="LogVO" resultClass="int">
+		/*LogDAO.selectLogListCnt*/
+		SELECT
+			COUNT(*)
+		FROM Log lo
+		WHERE TRUE
+		<isNotEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+	 		<![CDATA[
+	 		  AND DATE_FORMAT(lo.StartDate, '%Y-%m-%d') >= #topStartDate#
+	 		  AND DATE_FORMAT(lo.StartDate, '%Y-%m-%d') <= #topEndDate#
+	 		]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty property="searchWord">	
+			<isEqual property="searchType" compareValue="1">
+			AND 
+			(
+				LOWER(lo.Url) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				OR LOWER(lo.Page) LIKE CONCAT('%',LOWER(#searchWord#),'%') 
+				OR LOWER(lo.StaffName) LIKE CONCAT('%',LOWER(#searchWord#),'%') 
+			)
+			</isEqual>
+			<isEqual property="searchType" compareValue="2">
+				AND LOWER(lo.Url) LIKE CONCAT('%',LOWER(#searchWord#),'%')				
+			</isEqual>
+			<isEqual property="searchType" compareValue="3">
+				AND LOWER(lo.Page) LIKE CONCAT('%',LOWER(#searchWord#),'%')	
+			</isEqual>
+			<isEqual property="searchType" compareValue="4">
+				AND LOWER(lo.StaffName) LIKE CONCAT('%',LOWER(#searchWord#),'%')	
+			</isEqual>
+		</isNotEmpty>
+	</select>
+	
+	<select id="LogDAO.selectLogExcelList" parameterClass="LogVO" resultClass="LogVO">
+		/*LogDAO.selectLogExcelList*/
+		SELECT
+			lo.LogNum				AS logNum
+		,	lo.StaffKey				AS staffKey
+		,	lo.StartDate			AS startDate
+		,	lo.EndDate				AS endDate
+		,	lo.Url					AS url
+		,	lo.PageGubun			AS pageGubun
+		,	lo.Gubun				AS gubun
+		,	lo.Page					AS page
+		,	lo.Minute				AS minute
+		,	lo.LogIp				AS logIp
+		,	lo.RecptnDt				AS recptnDt
+		,	lo.RecptnRslt			AS recptnRslt
+		,	lo.StaffName 			AS staffName
+		FROM Log lo
+		WHERE TRUE
+		<isNotEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+	 		<![CDATA[
+	 		  AND DATE_FORMAT(lo.StartDate, '%Y-%m-%d') >= #topStartDate#
+	 		  AND DATE_FORMAT(lo.StartDate, '%Y-%m-%d') <= #topEndDate#
+	 		]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty property="searchWord">	
+			<isEqual property="searchType" compareValue="1">
+			AND 
+			(
+				LOWER(lo.Url) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				OR LOWER(lo.Page) LIKE CONCAT('%',LOWER(#searchWord#),'%') 
+				OR LOWER(lo.StaffName) LIKE CONCAT('%',LOWER(#searchWord#),'%') 
+			)
+			</isEqual>
+			<isEqual property="searchType" compareValue="2">
+				AND LOWER(lo.Url) LIKE CONCAT('%',LOWER(#searchWord#),'%')				
+			</isEqual>
+			<isEqual property="searchType" compareValue="3">
+				AND LOWER(lo.Page) LIKE CONCAT('%',LOWER(#searchWord#),'%')	
+			</isEqual>
+			<isEqual property="searchType" compareValue="4">
+				AND LOWER(lo.StaffName) LIKE CONCAT('%',LOWER(#searchWord#),'%')	
+			</isEqual>
+		</isNotEmpty>
+		ORDER BY lo.LogNum DESC
+	</select>
+</sqlMap>

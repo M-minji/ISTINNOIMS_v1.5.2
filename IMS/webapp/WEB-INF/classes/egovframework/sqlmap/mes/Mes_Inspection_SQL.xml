@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>	
+	<typeAlias alias="mesIVO" type="egovframework.rndp.mes.inspection.service.MesInspectionVO" />
+	
+	<insert id="mesInspectionDAO.eInspectionInfoInsert" parameterClass="mesIVO">
+		/* mesInspectionDAO.eInspectionInfoInsert */
+		  <selectKey type="post" keyProperty="eInspectionKey" >
+	        SELECT LAST_INSERT_ID() AS eInspectionKey
+		  </selectKey>
+		INSERT INTO INSPECTION
+		(	  eInspectionDate
+			, eRegistrant
+			, eStaffKey
+			, eInspectionTypeName
+			, eInspectionType
+			, eRegistrationDate
+			, eInspectionCycleName
+			, eInspectionCycle
+			, eRequester
+			, eOrganization
+			, eDepartment
+			, eInspector
+			, eInspectorOrg
+			, eInspectionResult
+			, eRemark
+			, eOther
+			, sSignStatus
+		    , kStaffKey
+		    , kStaffName
+		)
+		VALUES(
+			  #eInspectionDate#
+			, #eRegistrant#
+			, #eStaffKey#
+			, #eInspectionTypeName#
+			, #eInspectionType#
+			, #eRegistrationDate#
+			, #eInspectionCycleName#
+			, #eInspectionCycle#
+			, #eRequester#
+			, #eOrganization#
+			, #eDepartment#
+			, #eInspector#
+			, #eInspectorOrg#
+			, #eInspectionResult#
+			, #eRemark#
+			, #eOther#
+			, #sSignStatus#
+		    , #kStaffKey#
+		    , #kStaffName#
+			);
+	</insert>
+	<insert id="mesInspectionDAO.eInspectionFileInsert" parameterClass="mesIVO">
+		/* mesInspectionDAO.eInspectionFileInsert */
+		INSERT INTO INSPECTION_FILE
+			(
+				 INSPECTION_FILE_ID
+				 , INSPECTION_FILE_NAME
+				 , INSPECTION_FILE_EXT
+				 , INSPECTION_NUM
+		)
+		VALUES( #eFileID#, #eFileName#, #eFileExt#, #eInspectionKey#);
+	</insert>
+	
+	
+	<select id="mesInspectionDAO.mesInspectiontList" parameterClass="mesIVO" resultClass="mesIVO">
+		/* mesInspectionDAO.mesInspectiontList*/
+		SELECT 
+			  INSPECTION_NUM AS eInspectionKey
+			, eInspectionDate
+			, eRegistrant
+			, eStaffKey
+			, eInspectionTypeName
+			, eInspectionType
+			, eRegistrationDate
+			, eInspectionCycleName
+			, eInspectionCycle
+			, eRequester
+			, eOrganization
+			, eDepartment
+			, eInspector
+			, eInspectorOrg
+			, eInspectionResult
+			, eRemark AS eRemark
+			, eOther
+			, eStatus
+			,   CASE 
+		        WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		        ELSE sSignStatus
+		   		END AS sSignStatus,
+		   		IF(
+					(SELECT COUNT(*) 
+					FROM S_SIGN_ITEM AS ssi 
+					WHERE ssi.SIGN_TABLE_NUM = INSPECTION_NUM and ssi.SIGN_TABLE_NAME = 'INSPECTION'
+					AND ssi.SIGN_DECISON = '결재대기'
+					AND ssi.SIGN_STAFF_NUM = #kStaffKey#
+				) > 0, 'Y', 'N') AS eViewGubun
+		    , kStaffKey
+		    , kStaffName
+		    ,	IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		FROM INSPECTION
+		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = INSPECTION_NUM  AND	s.SIGN_TABLE_NAME = 'INSPECTION')
+		WHERE 1=1 AND eStatus != '삭제'
+		<isNotEmpty property="eTopStartDate">
+		    <isNotEmpty property="eTopEndDate">
+		   	  <![CDATA[
+		        AND (DATE_FORMAT(eInspectionDate, '%Y-%m-%d') >= #eTopStartDate# 
+		          OR DATE_FORMAT(eInspectionDate, '%Y-%m-%d') <= #eTopEndDate#)
+		         ]]>
+		    </isNotEmpty>
+		    <isEmpty property="topEndDate">
+		        AND DATE_FORMAT(eInspectionDate, '%Y-%m-%d') >= #eTopStartDate#
+		    </isEmpty>
+		</isNotEmpty>
+		<isNotEmpty property="eSearchTypeSet1">
+			AND LOWER(eInspectionTypeName) LIKE CONCAT('%',LOWER(#eSearchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchTypeSet2">
+			AND LOWER(eOrganization) LIKE CONCAT('%',LOWER(#eSearchTypeSet2#),'%')
+			
+		</isNotEmpty>
+		 
+		<isNotEmpty property="eSearchTypeSet3">
+			AND LOWER(eRegistrant) LIKE CONCAT('%',LOWER(#eSearchTypeSet3#),'%')
+		</isNotEmpty>
+		 
+		<isNotEmpty property="eSearchTypeSet4">
+			AND LOWER(eInspectionCycleName) LIKE CONCAT('%',LOWER(#eSearchTypeSet4#),'%')
+		</isNotEmpty>
+		 <isNotEmpty property="eSearchTypeSet5">
+		</isNotEmpty>
+		 
+        ORDER BY INSPECTION_NUM DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	<select id="mesInspectionDAO.mesInspectiontListCnt" parameterClass="mesIVO" resultClass="int">
+		/* mesInspectionDAO.mesInspectiontListCnt*/
+		SELECT 
+			  COUNT(INSPECTION_NUM)
+		FROM INSPECTION
+		WHERE 1=1 AND eStatus != '삭제'
+		<isNotEmpty property="eTopStartDate">
+		    <isNotEmpty property="eTopEndDate">
+		   	  <![CDATA[
+		        AND (DATE_FORMAT(eInspectionDate, '%Y-%m-%d') >= #eTopStartDate# 
+		          OR DATE_FORMAT(eInspectionDate, '%Y-%m-%d') <= #eTopEndDate#)
+		         ]]>
+		    </isNotEmpty>
+		    <isEmpty property="topEndDate">
+		        AND DATE_FORMAT(eInspectionDate, '%Y-%m-%d') >= #eTopStartDate#
+		    </isEmpty>
+		</isNotEmpty>
+		<isNotEmpty property="eSearchTypeSet1">
+			AND LOWER(eInspectionTypeName) LIKE CONCAT('%',LOWER(#eSearchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchTypeSet2">
+			AND LOWER(eOrganization) LIKE CONCAT('%',LOWER(#eSearchTypeSet2#),'%')
+			
+		</isNotEmpty>
+		 
+		<isNotEmpty property="eSearchTypeSet3">
+			AND LOWER(eRegistrant) LIKE CONCAT('%',LOWER(#eSearchTypeSet3#),'%')
+		</isNotEmpty>
+		 
+		<isNotEmpty property="eSearchTypeSet4">
+			AND LOWER(eInspectionCycleName) LIKE CONCAT('%',LOWER(#eSearchTypeSet4#),'%')
+		</isNotEmpty>
+		 <isNotEmpty property="eSearchTypeSet5">
+		</isNotEmpty>
+		 
+	</select>
+	
+	
+	<select id="mesInspectionDAO.mesInspectiontExcelList" parameterClass="mesIVO" resultClass="mesIVO">
+		/* mesInspectionDAO.mesInspectiontExcelList */
+		SELECT 
+			  INSPECTION_NUM AS eInspectionKey
+			, eInspectionDate
+			, eRegistrant
+			, eStaffKey
+			, eInspectionTypeName
+			, eInspectionType
+			, eRegistrationDate
+			, eInspectionCycleName
+			, eInspectionCycle
+			, eRequester
+			, eOrganization
+			, eDepartment
+			, eInspector
+			, eInspectorOrg
+			, eInspectionResult
+			, getContentLf(eRemark) AS eRemark
+			, eOther
+			, eStatus
+			,   CASE 
+		        WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		        ELSE sSignStatus
+		   		END AS sSignStatus
+		    , kStaffKey
+		    , kStaffName
+		    ,	IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		FROM INSPECTION
+		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = INSPECTION_NUM  AND	s.SIGN_TABLE_NAME = 'INSPECTION')
+		WHERE 1=1 AND eStatus != '삭제'
+		<isNotEmpty property="eTopStartDate">
+		    <isNotEmpty property="eTopEndDate">
+		   	  <![CDATA[
+		        AND (DATE_FORMAT(eInspectionDate, '%Y-%m-%d') >= #eTopStartDate# 
+		          OR DATE_FORMAT(eInspectionDate, '%Y-%m-%d') <= #eTopEndDate#)
+		         ]]>
+		    </isNotEmpty>
+		    <isEmpty property="topEndDate">
+		        AND DATE_FORMAT(eInspectionDate, '%Y-%m-%d') >= #eTopStartDate#
+		    </isEmpty>
+		</isNotEmpty>
+		<isNotEmpty property="eSearchTypeSet1">
+			AND LOWER(eInspectionTypeName) LIKE CONCAT('%',LOWER(#eSearchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchTypeSet2">
+			AND LOWER(eOrganization) LIKE CONCAT('%',LOWER(#eSearchTypeSet2#),'%')
+			
+		</isNotEmpty>
+		 
+		<isNotEmpty property="eSearchTypeSet3">
+			AND LOWER(eRegistrant) LIKE CONCAT('%',LOWER(#eSearchTypeSet3#),'%')
+		</isNotEmpty>
+		 
+		<isNotEmpty property="eSearchTypeSet4">
+			AND LOWER(eInspectionCycleName) LIKE CONCAT('%',LOWER(#eSearchTypeSet4#),'%')
+		</isNotEmpty>
+		 <isNotEmpty property="eSearchTypeSet5">
+		</isNotEmpty>
+		 
+        ORDER BY INSPECTION_NUM DESC
+        LIMIT 730
+	</select>
+	
+	<select id="mesInspectionDAO.eInspectionInfo" parameterClass="mesIVO" resultClass="mesIVO">
+		/* mesInspectionDAO.eInspectionInfo*/
+		SELECT 
+			  INSPECTION_NUM AS eInspectionKey
+			  , field_key AS eFieldKey
+			, eInspectionDate
+			, eRegistrant
+			, eStaffKey
+			, eInspectionTypeName
+			, eInspectionType
+			, eRegistrationDate
+			, eInspectionCycleName
+			, eInspectionCycle
+			, eRequester
+			, eOrganization
+			, eDepartment
+			, eInspector
+			, eInspectorOrg
+			, eInspectionResult
+			, eRemark
+			, eOther
+			, eStatus
+			,   CASE 
+		        WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		        ELSE sSignStatus
+		   		END AS sSignStatus
+		    , kStaffKey
+		    , kStaffName
+		    ,	IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		FROM INSPECTION
+		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = INSPECTION_NUM  AND	s.SIGN_TABLE_NAME = 'INSPECTION')
+		WHERE 1=1 AND INSPECTION_NUM = #eInspectionKey#
+		LIMIT 1
+	</select>
+	
+	<select id="mesInspectionDAO.eFileInfoList" parameterClass="mesIVO" resultClass="mesIVO">
+		/* mesInspectionDAO.eFileInfoList*/
+		SELECT 
+			 INSPECTION_FILE_ID AS eFileID
+			, INSPECTION_FILE_NAME AS eFileName
+			, INSPECTION_FILE_EXT AS eFileExt
+			, INSPECTION_NUM AS eInspectionKey
+			FROM INSPECTION_FILE
+		WHERE 1=1 AND INSPECTION_NUM = #eInspectionKey#
+	</select>
+	
+	<update id="mesInspectionDAO.eInspectionUpdate" parameterClass="mesIVO" >
+		/*mesInspectionDAO.eInspectionUpdate*/
+		UPDATE  INSPECTION  
+		SET   eStatus = #eStatus#
+		, field_key = #eFieldKey#
+		 WHERE INSPECTION_NUM = #eInspectionKey#
+	</update>
+	
+	<insert id="mesInspectionDAO.eInspectionResultInsert" parameterClass="mesIVO">
+		/* mesInspectionDAO.eInspectionResultInsert */
+		INSERT INTO INSPECTION_RESULT
+			(
+			INSPECTION_NUM
+			, eAssetKey
+			, eField1
+			, eField2
+			, eField3
+			, eField4
+			, eField5
+			, eItemInspectionDate
+			, eItemRemark
+			, eItemOther
+			)
+			VALUES(
+			 #eInspectionKey#
+			, #eAssetKey#
+			, #eField1#
+			, #eField2#
+			, #eField3#
+			, #eField4#
+			, #eField5#
+			, #eItemInspectionDate#
+			, #eItemRemark#
+			, #eItemOther#
+			);
+	</insert>
+		<select id="mesInspectionDAO.eResultInfoList" parameterClass="mesIVO" resultClass="mesIVO">
+		/* mesInspectionDAO.eResultInfoList */
+		SELECT 
+			  eIR.eAssetKey
+			, new_special(eIR.eField1) AS eField1
+			, new_special(eIR.eField2) AS eField2
+			, new_special(eIR.eField3) AS eField3
+			, new_special(eIR.eField4) AS eField4
+			, new_special(eIR.eField5) AS eField5
+			, new_special(eIR.eItemInspectionDate) AS eItemInspectionDate
+			, new_special(eIR.eItemRemark) AS eItemRemark
+			, new_special(eIR.eItemOther) AS  eItemOther
+		    ,	getContentLf(ASSET_TYPE_NAME)			AS eAssetType
+			,	getContentLf(aA.ASSET_NAME)				AS eAssetName
+	        ,	getContentLf(aA.ASSET_MAKER)				AS eAssetMaker
+	        ,	getContentLf(aA.ASSET_MODEL)				AS eAssetModel
+	        ,	getContentLf(aA.ASSET_MANUFACTURE_NUMBER)	AS eAssetManufactureNumber
+	        ,	getContentLf(aA.ASSET_FORM)				AS eAssetForm
+	        ,	getContentLf(aA.ASSET_INTRODUCER)			AS eAssetIntroducer
+	        ,	aA.ASSET_DATE								AS eAssetDate
+	        ,	FORMAT(aA.ASSET_COST, 0)					AS eAssetCost
+	        ,	aA.ASSET_IMAGE_ID								AS eAssetImage
+	        ,	aA.ASSET_ETC								AS eAssetEtc
+	        ,	getNameTxt(aA.ASSET_NUM) AS ePositionName1
+	        ,	aA.ASSET_DEVICE_TYPE AS eDeviceType
+			,	aA.ASSET_PURPOSE AS eAssetPurpose
+			,	aA.ASSET_NETWORK_TYPE AS eNetworkType
+			,	aA.ASSET_HOST AS eHostName
+			,	aA.ASSET_IP AS eIp
+			,	aA.ASSET_OS AS eOs
+		FROM INSPECTION_RESULT AS eIR
+		LEFT JOIN A_ASSET AS aA ON eIR.eAssetKey = aA.ASSET_NUM
+		WHERE 1=1 AND eIR.INSPECTION_NUM = #eInspectionKey#
+	</select>
+	<update id="mesInspectionDAO.eInspectionInfoDelete" parameterClass="mesIVO" >
+		/*mesInspectionDAO.eInspectionInfoDelete*/
+	 update INSPECTION set eStatus = #eStatus#  where  INSPECTION_NUM = #eInspectionKey#
+	</update>
+	<delete id="mesInspectionDAO.eInspectionFileDelete" parameterClass="mesIVO" >
+		/* mesInspectionDAO.eInspectionFileDelete*/
+		DELETE FROM INSPECTION_FILE WHERE INSPECTION_NUM = #eInspectionKey#
+	</delete>
+	<delete id="mesInspectionDAO.eInspectionAssetDelete" parameterClass="mesIVO">
+		/* mesInspectionDAO.eInspectionAssetDelete*/
+		DELETE FROM INSPECTION_RESULT WHERE INSPECTION_NUM = #eInspectionKey#
+	</delete>
+	<update id="mesInspectionDAO.eInspectionInfoUpdate" parameterClass="mesIVO" >
+		/*mesInspectionDAO.eInspectionInfoUpdate*/
+	UPDATE INSPECTION
+		SET 
+			  eInspectionDate = #eInspectionDate#
+			  , field_key = #eFieldKey#
+			, eInspectionTypeName = #eInspectionTypeName#
+			, eInspectionType = #eInspectionType#
+			, eRegistrationDate = #eRegistrationDate#
+			, eInspectionCycleName = #eInspectionCycleName#
+			, eInspectionCycle = #eInspectionCycle#
+			, eRequester = #eRequester#
+			, eOrganization = #eOrganization#
+			, eDepartment = #eDepartment#
+			, eInspector = #eInspector#
+			, eInspectorOrg = #eInspectorOrg#
+			, eInspectionResult = #eInspectionResult#
+			, eRemark = #eRemark#
+			, eOther = #eOther#
+			, sSignStatus = #sSignStatus#
+		WHERE INSPECTION_NUM = #eInspectionKey#
+	</update>
+	<update id="mesInspectionDAO.updateInspectionSingStatus" parameterClass="mesIVO" >
+		/*mesInspectionDAO.updateInspectionSingStatus*/
+		UPDATE INSPECTION
+		SET 
+			 sSignStatus = #sSignStatus#
+		WHERE INSPECTION_NUM = #eInspectionKey#
+	</update>
+	
+	<select id="mesInspectionDAO.selectFieldCount" parameterClass="mesIVO" resultClass="int">
+		/* mesInspectionDAO.selectFieldCount*/
+		SELECT
+			COUNT(field_key)
+		FROM
+			INSPECTION_RESULT_FIELD f
+		WHERE 1=1
+		AND (fstatus IS NULL OR fstatus != '삭제')
+		<isNotEmpty property="searchWord">
+			<isEqual property="searchType" compareValue="1">
+				AND	(
+			        LOWER(field_name) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField1) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField2) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField3) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField4) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField5) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+		        )
+			</isEqual>
+			<isEqual property="searchType" compareValue="2">
+				AND	LOWER(field_name) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			</isEqual>
+			<isEqual property="searchType" compareValue="3">
+				AND (
+			        LOWER(eField1) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField2) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField3) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField4) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField5) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			    )
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="eSearchTypeSet1">
+				AND	LOWER(field_name) LIKE CONCAT('%', LOWER(#eSearchTypeSet1#), '%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchTypeSet2">
+				AND (
+			        LOWER(eField1) LIKE CONCAT('%', LOWER(#eSearchTypeSet2#), '%')
+			        OR LOWER(eField2) LIKE CONCAT('%', LOWER(#eSearchTypeSet2#), '%')
+			        OR LOWER(eField3) LIKE CONCAT('%', LOWER(#eSearchTypeSet2#), '%')
+			        OR LOWER(eField4) LIKE CONCAT('%', LOWER(#eSearchTypeSet2#), '%')
+			        OR LOWER(eField5) LIKE CONCAT('%', LOWER(#eSearchTypeSet2#), '%')
+			    )
+		</isNotEmpty>
+	</select>
+	
+	<select id="mesInspectionDAO.selectFieldList" parameterClass="mesIVO" resultClass="mesIVO">
+		/* mesInspectionDAO.selectFieldList */
+		SELECT
+			field_key 		AS eFieldKey
+		,	field_name 		AS eFieldName
+		,	eField1 		AS eField1
+		,	eField2 		AS eField2
+		,	eField3 		AS eField3
+		,	eField4 		AS eField4
+		,	eField5 		AS eField5
+		,	k_staff_key 	AS kStaffKey
+		,	fstatus 	AS eFieldStatus
+		FROM
+			INSPECTION_RESULT_FIELD f
+		WHERE 1=1
+		AND (fstatus IS NULL OR fstatus != '삭제') 
+		<isNotEmpty property="searchWord">
+			<isEqual property="searchType" compareValue="1">
+				AND	(
+			        LOWER(field_name) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField1) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField2) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField3) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField4) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField5) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+		        )
+			</isEqual>
+			<isEqual property="searchType" compareValue="2">
+				AND	LOWER(field_name) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			</isEqual>
+			<isEqual property="searchType" compareValue="3">
+				AND (
+			        LOWER(eField1) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField2) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField3) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField4) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			        OR LOWER(eField5) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+			    )
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="eSearchTypeSet1">
+				AND	LOWER(field_name) LIKE CONCAT('%', LOWER(#eSearchTypeSet1#), '%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchTypeSet2">
+				AND (
+			        LOWER(eField1) LIKE CONCAT('%', LOWER(#eSearchTypeSet2#), '%')
+			        OR LOWER(eField2) LIKE CONCAT('%', LOWER(#eSearchTypeSet2#), '%')
+			        OR LOWER(eField3) LIKE CONCAT('%', LOWER(#eSearchTypeSet2#), '%')
+			        OR LOWER(eField4) LIKE CONCAT('%', LOWER(#eSearchTypeSet2#), '%')
+			        OR LOWER(eField5) LIKE CONCAT('%', LOWER(#eSearchTypeSet2#), '%')
+			    )
+		</isNotEmpty>
+		ORDER BY field_key DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<insert id="mesInspectionDAO.mesInspectionFieldInsert" parameterClass="mesIVO">
+		/* mesInspectionDAO.mesInspectionFieldInsert */
+		  <selectKey type="post" keyProperty="eFieldKey" >
+	        SELECT LAST_INSERT_ID() AS eFieldKey
+		  </selectKey>
+		INSERT INTO INSPECTION_RESULT_FIELD
+		(	  field_name
+			, eField1
+			, eField2
+			, eField3
+			, eField4
+			, eField5
+			, k_staff_key
+		)
+		VALUES(
+			  #eFieldName#
+			, #eField1#
+			, #eField2#
+			, #eField3#
+			, #eField4#
+			, #eField5#
+			, #kStaffKey#
+			);
+	</insert>
+	
+	<update id="mesInspectionDAO.mesInspectionFieldUpdate" parameterClass="mesIVO" >
+		/*mesInspectionDAO.mesInspectionFieldUpdate*/
+	 UPDATE INSPECTION_RESULT_FIELD 
+	 SET field_name = #eFieldName#  
+		 , eField1 = #eField1#
+		 , eField2 = #eField2#
+		 , eField3 = #eField3#
+		 , eField4 = #eField4#
+		 , eField5 = #eField5#
+		 , fstatus = #eFieldStatus#
+	 WHERE  field_key = #eFieldKey#
+	</update>
+	
+	<select id="mesInspectionDAO.selectFieldInfo" parameterClass="mesIVO" resultClass="mesIVO">
+		/* mesInspectionDAO.selectFieldInfo */
+		SELECT 
+			  field_key AS eFieldKey
+			, field_name AS eFieldName
+			, eField1
+			, eField2
+			, eField3
+			, eField4
+			, eField5
+			, k_staff_key AS kStaffKey
+			, fstatus AS eFieldStatus
+		FROM INSPECTION_RESULT_FIELD
+		WHERE 1=1 AND (fstatus IS NULL OR fstatus != '삭제') AND field_key = #eFieldKey#
+		</select>
+</sqlMap>

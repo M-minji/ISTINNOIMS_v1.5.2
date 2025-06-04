@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="adminVO" type="egovframework.rndp.admin.admin.service.AdminVO"/>
+	
+	
+	<resultMap id="admin" class="adminVO">
+		<result property="key" column="k_admin_key"/>
+		<result property="id" column="k_admin_id"/>
+		<result property="group" column="k_admin_group"/>
+		<result property="email" column="k_admin_email"/>
+		<result property="telephone" column="k_admin_telephone"/>
+		<result property="memo" column="k_admin_memo"/>
+		<result property="adminFlag" column="k_admin_flag"/>
+		<result property="name" column="k_admin_name"/>
+	</resultMap>
+	<select id="adminDAO.adminList" resultMap="admin">
+	/* adminDAO.adminList */
+		<![CDATA[
+			select 
+				a.k_admin_key
+				, a.k_admin_id
+				, a.k_admin_group
+				, a.k_admin_email
+				, a.k_admin_telephone
+				, a.k_admin_memo
+				, a.k_admin_flag
+				, a.k_admin_name
+			from k_admin a
+			WHERE  a.k_admin_key > 2
+			order by a.k_admin_flag desc, a.k_admin_id
+		]]>
+	</select>
+	
+	<resultMap id="adminInfoById" class="adminVO">
+		<result property="key" column="k_admin_key"/>
+		<result property="id" column="k_admin_id"/>
+		<result property="password" column="k_admin_password"/>
+		<result property="group" column="k_admin_group"/>
+		<result property="email" column="k_admin_email"/>
+		<result property="telephone" column="k_admin_telephone"/>
+		<result property="memo" column="k_admin_memo"/>
+		<result property="adminFlag" column="k_admin_flag"/>
+		<result property="name" column="k_admin_name"/>
+	</resultMap>
+	<select id="adminDAO.adminInfoById" parameterClass="adminVO" resultMap="adminInfoById">
+		<![CDATA[
+			/* adminDAO.adminInfoById */
+			select 
+				a.k_admin_key
+				, a.k_admin_id
+				, a.k_admin_password
+				, a.k_admin_group
+				, a.k_admin_email
+				, a.k_admin_telephone
+				, a.k_admin_memo
+				, a.k_admin_flag
+				, a.k_admin_name
+			from k_admin a
+			where 1=1
+			and  a.k_admin_id = #id#
+			and a.k_admin_password = #password#
+		]]>
+	</select>
+	
+	<select id="adminDAO.adminMaxCount" resultClass="int">
+		/* adminDAO.adminMaxCount */
+		select coalesce(max(k_admin_key), 0)+1 from k_admin
+	</select>
+	
+	<insert id="adminDAO.adminInsert" parameterClass="adminVO">
+		/* adminDAO.adminInsert */
+		<![CDATA[
+			insert into k_admin(k_admin_key
+				, k_admin_name
+				, k_admin_id
+				, k_admin_password
+				, k_admin_group
+				, k_admin_email
+				, k_admin_telephone
+				, k_admin_memo
+				, k_admin_flag
+			)values (
+				#key#
+				, #name#
+				, #id#
+				, #password#
+				, #group#
+				, #email#
+				, #telephone#
+				, #memo#
+				, #adminFlag#
+			)
+		]]>
+	</insert>
+	
+	<resultMap id="adminInfo" class="adminVO">
+		<result property="id" column="k_admin_id"/>
+		<result property="password" column="k_admin_password"/>
+		<result property="group" column="k_admin_group"/>
+		<result property="email" column="k_admin_email"/>
+		<result property="telephone" column="k_admin_telephone"/>
+		<result property="memo" column="k_admin_memo"/>
+		<result property="adminFlag" column="k_admin_flag"/>
+		<result property="name" column="k_admin_name"/>
+	</resultMap>
+	<select id="adminDAO.adminInfo" parameterClass="int" resultMap="adminInfo">
+		<![CDATA[
+		/* adminDAO.adminInfo */
+			select 
+				a.k_admin_id
+				, a.k_admin_password
+				, a.k_admin_group
+				, a.k_admin_email
+				, a.k_admin_telephone
+				, a.k_admin_memo
+				, a.k_admin_flag
+				, a.k_admin_name
+			from k_admin a
+			where 1=1
+			and a.k_admin_key = #key#
+		]]>
+	</select>
+	
+	<update id="adminDAO.adminUpdate" parameterClass="adminVO">
+		/* adminDAO.adminUpdate */
+		<![CDATA[
+			update k_admin set k_admin_id = #id#
+				, k_admin_group = #group#
+				, k_admin_email = #email#
+				, k_admin_telephone = #telephone#
+				, k_admin_memo = #memo#
+				, k_admin_flag = #adminFlag#
+			where k_admin_key = #key#
+		]]>
+	</update>
+	
+	<update id="adminDAO.adminUpdatePass" parameterClass="adminVO">
+		/* adminDAO.adminUpdatePass */
+		<![CDATA[
+			update k_admin set  k_admin_password = #newpassword#
+			where k_admin_key = #key#
+			and k_admin_password = #password#
+		]]>
+	</update>
+	
+	<select id="adminDAO.adminCntMenu" parameterClass="int" resultClass="int">
+		/* adminDAO.adminCntMenu */
+		<![CDATA[
+			select count(*) from k_menu where k_admin_key = #key#
+		]]>
+	</select>
+	
+	<delete id="adminDAO.adminDelete" parameterClass="int">
+		/* adminDAO.adminDelete */
+		delete from k_admin where k_admin_key = #key#
+	</delete>
+	
+	
+	<select id="adminDAO.adminIdKey" parameterClass="String" resultClass="int">
+	/* adminDAO.adminIdKey */
+		<![CDATA[
+			select k_admin_key from k_admin where k_admin_id = #adminId#
+		]]>
+	</select>
+	
+</sqlMap>

@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="EnvVO" type="egovframework.rndp.admin.env.service.EnvVO"/>
+	<typeAlias  alias="patentVO" type="egovframework.rndp.admin.env.service.EnvPatentVO"/>
+	<typeAlias  alias="historyVO" type="egovframework.rndp.admin.env.service.EnvHistoryVO"/>
+	<typeAlias  alias="recruitVO" type="egovframework.rndp.admin.env.service.EnvRecruitVO"/>
+	
+	<resultMap id="env" class="egovframework.rndp.admin.env.service.EnvVO">
+		<result property="name" column="k_env_name"/>
+		<result property="value" column="k_env_value"/>
+	</resultMap>
+	
+	<select id="envDAO.envList" parameterClass="EnvVO" resultMap="env" >
+		/* envDAO.envList */
+		<![CDATA[
+			select k_env_name, k_env_value 
+			from k_env
+		]]>
+	</select>
+	
+		
+	<update id="envDAO.updateEnv" >
+		/* envDAO.updateEnv */
+		<![CDATA[
+			update  k_env
+			set k_env_value = #value#
+			where k_env_name = #name#
+		]]>
+	</update>
+
+<!-- 특허관리 ==========================================================================	-->
+	
+	<resultMap id="envPatent" class="egovframework.rndp.admin.env.service.EnvPatentVO" >
+		<result property="key" column="k_envpatent_key"/>
+		<result property="rank" column="k_envpatent_rank"/>
+		<result property="title" column="k_envpatent_title"/>
+		<result property="number" column="k_envpatent_number"/>
+		<result property="nb" column="k_envpatent_nb"/>
+		<result property="date" column="k_envpatent_date"/>
+	</resultMap>
+	
+	<select id="envDAO.patentList" parameterClass="patentVO" resultMap="envPatent">
+		/* envDAO.patentList */
+		<![CDATA[
+			select 
+			    k_envpatent_key
+			   ,k_envpatent_rank
+			   ,k_envpatent_title
+			   ,case when k_envpatent_number='' then '-'			
+				 else k_envpatent_number
+				 end 	as  k_envpatent_number
+			   ,case when k_envpatent_date = '' then '-'				
+				 else substr(k_envpatent_date,1,4)||'.'||substr(k_envpatent_date,5,2)||'.'||substr(k_envpatent_date,7,2) 
+				 end 	as k_envpatent_date
+			   ,k_envpatent_nb 
+			from k_envpatent
+			order by k_envpatent_rank
+		]]>
+	</select>
+	
+	<select id="envDAO.getMaxRank" resultClass="int">
+		/* envDAO.getMaxRank */
+		<![CDATA[
+			select coalesce(max(k_envpatent_rank), 0) + 1 from k_envpatent
+		]]>
+	</select>
+	
+	<insert id="envDAO.patentInsert">
+		/* envDAO.patentInsert */
+		<![CDATA[
+			insert into k_envpatent(
+				k_envpatent_key, k_envpatent_rank, k_envpatent_title, k_envpatent_number,
+				k_envpatent_nb, k_envpatent_date) 
+				values (#key#,#rank#,#title#,#number#,#nb#,#date#)
+		]]>
+	</insert>
+	
+	<select id="envDAO.envPatentByInfo" parameterClass="int" resultMap="envPatent" >
+		/* envDAO.envPatentByInfo */
+		<![CDATA[
+			select 
+			 	 k_envpatent_key
+				,k_envpatent_rank
+				,k_envpatent_title
+				,k_envpatent_number
+				,k_envpatent_nb
+				,k_envpatent_date
+			from k_envpatent
+			where k_envpatent_key = #key#
+		]]>
+	</select>
+	
+	<update id="envDAO.envPatentUpt">
+		/* envDAO.envPatentUpt */
+		<![CDATA[
+			update  k_envpatent
+			set k_envpatent_key = #key#, k_envpatent_rank = #rank#, k_envpatent_title = #title#,
+				k_envpatent_number = #number#, k_envpatent_nb = #nb#, k_envpatent_date = #date#
+			where k_envpatent_key = #key#
+		]]>
+	</update>
+	
+	<select id="envDAO.patentOrderByRank" resultMap="envPatent">
+		/* envDAO.patentOrderByRank */
+		<![CDATA[
+			select 
+			 	 k_envpatent_key
+				,k_envpatent_rank
+				,k_envpatent_title
+				,k_envpatent_number
+				,k_envpatent_date
+				,k_envpatent_nb
+			from k_envpatent
+			order by k_envpatent_rank
+		]]>
+	</select>
+	
+	<select id="envDAO.patentByKeyTitle" resultMap="envPatent">
+		/* envDAO.patentByKeyTitle */
+		<![CDATA[
+			select 
+				 k_envpatent_key
+				,k_envpatent_rank
+				,k_envpatent_title
+				,k_envpatent_number
+				,k_envpatent_date
+				,k_envpatent_nb
+			from k_envpatent
+			where k_envpatent_rank = #rank#
+			and	  k_envpatent_title = #title#
+		]]>
+	</select>
+	
+	<update id="envDAO.movePatentUpt">
+		/* envDAO.movePatentUpt */
+		<![CDATA[
+			update k_envpatent
+			set	k_envpatent_rank = #strRank1#
+			where k_envpatent_rank= #strRank2#
+		]]>
+	</update>
+	
+	<update id="envDAO.uptStep">
+		update k_envpatent set k_envpatent_rank = k_envpatent_rank +#strRank1# where k_envpatent_rank >= #strRank2#
+	</update>
+	
+	<delete id="envDAO.envPatentDelete">
+		/* envDAO.envPatentDelete */
+		<![CDATA[
+			delete from k_envpatent
+			where k_envpatent_key = #key#
+		]]>
+	</delete>
+		
+<!-- 연혁관리 ==================================================================================	 -->
+
+	<resultMap id="envHistory" class="egovframework.rndp.admin.env.service.EnvHistoryVO" >
+		<result property="key" column="k_envhistory_key"/>
+		<result property="year" column="k_envhistory_yy"/>
+		<result property="month" column="k_envhistory_mm"/>
+		<result property="content" column="k_envhistory_content"/>
+		<result property="step" column="k_envhistory_step"/>
+		<result property="visible" column="k_envhistory_visible"/>
+	</resultMap>
+
+	<select id="envDAO.envHistoryList" parameterClass="historyVO" resultMap="envHistory">
+		/* envDAO.envHistoryList */
+		<![CDATA[ 
+			SELECT
+			    k_envhistory_key, k_envhistory_yy, k_envhistory_mm
+			   ,k_envhistory_content ,k_envhistory_visible, k_envhistory_step 
+			FROM k_envhistory 
+			ORDER BY k_envhistory_yy desc, k_envhistory_mm desc
+		]]>
+	</select>
+	
+	<select id="envDAO.envHistoryInfo" parameterClass="int" resultMap="envHistory">
+		/* envDAO.envHistoryInfo */
+		<![CDATA[
+			select
+				k_envhistory_key, k_envhistory_yy, k_envhistory_mm
+			   ,k_envhistory_content ,k_envhistory_visible, k_envhistory_step 
+			FROM k_envhistory
+			where k_envhistory_key=#key#
+		]]>
+	</select>
+	
+	<insert id="envDAO.insertEnvHistory">
+		<selectKey type="pre" keyProperty="key" resultClass="int">
+			select coalesce(max(k_envhistory_key), 0)+1 from k_envhistory
+	  	</selectKey>
+	  	
+		/* envDAO.insertEnvHistory */
+		<![CDATA[
+			insert into k_envhistory(
+			k_envhistory_key, k_envhistory_yy, k_envhistory_mm, k_envhistory_content,
+			k_envhistory_step, k_envhistory_visible) 
+			values (#key#,#year#,#month#,#content#,#key#,#visible#)
+		]]>
+	</insert>
+
+	<update id="envDAO.updateEnvHistory">
+		/* envDAO.updateEnvHistory */
+		<![CDATA[
+			update  k_envhistory
+			set k_envhistory_key = #key#, k_envhistory_yy = #year#, k_envhistory_mm = #month#,
+			 k_envhistory_content = #content#, k_envhistory_step = #key#, k_envhistory_visible = #visible#
+			where k_envhistory_key = #key#
+		]]>
+	</update>
+	
+	<update id="envDAO.uptHistoryVisible">
+		/* envDAO.uptHistoryVisible */
+		<![CDATA[
+			update k_envhistory
+			set k_envhistory_visible = #visible#
+			where k_envhistory_key = #key#
+		]]>
+	</update>
+	
+	<delete id="envDAO.deleteHistory">
+		/* envDAO.deleteHistory */
+		<![CDATA[
+			delete from k_envhistory
+			where k_envhistory_key = #key#
+		]]>
+	</delete>
+	
+	<resultMap id="historyYM" class="egovframework.rndp.admin.env.service.EnvHistoryVO" >
+		<result property="year" column="k_envhistory_yy"/>
+		<result property="month" column="k_envhistory_mm"/>
+	</resultMap>	
+	
+	<select id="envDAO.hisVisibleInfo" resultMap="envHistory" >
+		/* envDAO.hisVisibleInfo */
+		<![CDATA[
+			SELECT
+			  k_envhistory_key, k_envhistory_yy, 
+			  k_envhistory_mm, k_envhistory_content, 
+			  k_envhistory_visible, k_envhistory_step
+			FROM k_envhistory 
+			where k_envhistory_visible = 'T'
+			ORDER BY k_envhistory_yy desc, k_envhistory_mm desc
+		]]>
+	</select>
+	
+	<resultMap id="historyY" class="egovframework.rndp.admin.env.service.EnvHistoryVO" >
+		<result property="year" column="k_envhistory_yy"/>
+	</resultMap>	
+		
+	<select id="envDAO.getYearList" resultMap="historyY">
+		/* envDAO.getYearList */
+		<![CDATA[
+			SELECT 
+				distinct k_envhistory_yy 
+			FROM k_envhistory 
+			where k_envhistory_visible = 'T' 
+			ORDER BY k_envhistory_yy desc
+		]]>	
+	</select>
+	
+	<select id="envDAO.getMmList" resultMap="historyYM">
+		/* envDAO.getMmList */
+		<![CDATA[
+			SELECT 
+				k_envhistory_yy,  
+				k_envhistory_MM
+			FROM k_envhistory 
+			where k_envhistory_visible = 'T' 
+			ORDER BY k_envhistory_yy desc
+		]]>			
+	</select>
+
+<!-- 채용정보 ============================================================================	 -->
+
+	<resultMap id="envRecruit" class="egovframework.rndp.admin.env.service.EnvRecruitVO" >
+		<result property="key" column="k_recruit_key"/>
+		<result property="recruit1" column="k_recruit1"/>
+		<result property="recruit2" column="k_recruit2"/>
+		<result property="recruit3" column="k_recruit3"/>
+		<result property="handlingInfo" column="k_handling_info"/>
+		<result property="comEmail" column="k_comp_email"/>
+		<result property="comTel" column="k_comp_tel"/>
+		<result property="comFax" column="k_comp_fax"/>
+		<result property="comAddr" column="k_comp_addr"/>
+		<result property="startDate" column="k_startdate"/>
+		<result property="endDate" column="k_enddate"/>
+		<result property="fileName" column="k_filename"/>
+		<result property="visible" column="k_visible"/>
+ 		<result property="writeDate" column="k_writedate"/> 
+		<result property="eveyFlag" column="k_eveyflag"/>
+	</resultMap>
+	
+	<select id="envDAO.envRecruitList" parameterClass="recruitVO" resultMap="envRecruit">
+		/* envDAO.envRecruitList */
+		<![CDATA[
+			select 
+			   k_recruit_key, 
+			   k_recruit1, 
+			   k_recruit2,
+			   k_recruit3, 
+			   k_handling_info, 
+			   k_comp_email, 
+			   k_comp_tel, 
+			   k_comp_fax, 
+			   k_comp_addr, 
+			   k_startdate, 
+			   k_enddate,  
+			   k_filename, 
+			   k_visible, 
+			   k_writedate,
+			   coalesce(k_eveyflag,'F') AS k_eveyflag
+			from k_recruit 
+		]]>
+	</select>
+	
+	<select id="envDAO.recruitInfo" parameterClass="int" resultMap="envRecruit">
+		/* envDAO.recruitInfo */
+		<![CDATA[
+			select 
+			   k_recruit_key, 
+			   k_recruit1, 
+			   k_recruit2,
+			   k_recruit3, 
+			   k_handling_info, 
+			   k_comp_email, 
+			   k_comp_tel, 
+			   k_comp_fax, 
+			   k_comp_addr, 
+			   k_startdate, 
+			   k_enddate,  
+			   k_filename, 
+			   k_visible, 
+			   k_writedate,
+			   coalesce(k_eveyflag,'F') AS k_eveyflag
+			from k_recruit 
+			where k_recruit_key = #key#
+		]]>
+	</select>
+	
+	<insert id="envDAO.reecruitInsert">
+		/* envDAO.reecruitInsert */
+		<![CDATA[
+			insert into k_recruit(
+				k_recruit_key
+				, k_recruit1
+				, k_recruit2
+				, k_recruit3
+				, k_handling_info
+				, k_comp_email
+				, k_comp_tel
+				, k_comp_fax
+				, k_comp_addr
+				, k_startdate
+				, k_enddate
+				, k_writedate
+				, k_filename
+				, k_visible
+				, k_eveyflag 
+			)values (
+				#key#
+				, #recruit1#
+				, #recruit2#
+				, #recruit3#
+				, #handlingInfo#
+				, #comEmail#
+				, #comTel#
+				, #comFax#
+				, #comAddr#
+				, #startDate#
+				, #endDate#
+				, now()
+				, #fileName#
+				, 'F'
+				, #eveyFlag#
+			)
+		]]>
+	</insert>
+	
+	<update id="envDAO.recruitUpdate">
+		/* envDAO.recruitUpdate */
+		<![CDATA[
+			update k_recruit
+			set k_recruit1 = #recruit1#
+				, k_recruit2 = #recruit2#
+				, k_recruit3 = #recruit3#
+				, k_handling_info = #handlingInfo#
+				, k_comp_email = #comEmail#
+				, k_comp_tel = #comTel#
+				, k_comp_fax = #comFax#
+				, k_comp_addr = #comAddr#
+				, k_startdate = #startDate#
+				, k_enddate = #endDate#
+				, k_filename = #fileName#
+				, k_writedate = now()
+				, k_eveyflag = #eveyFlag#  
+			where k_recruit_key = #key#
+		]]>
+	</update>
+	
+	<update id="envDAO.recruitActiveUpt">
+		/* envDAO.recruitActiveUpt */
+		<![CDATA[
+			update k_recruit
+			set k_visible = #visible#
+			where k_recruit_key = #key#
+		]]>
+	</update>
+	
+	<delete id="envDAO.envRecruitDelete">
+		/* envDAO.envRecruitDelete */
+		<![CDATA[
+			delete from k_recruit 
+			where k_recruit_key = #key#
+		]]>
+	</delete>
+	
+	
+	
+	
+	<select id="envDAO.getFilePath" parameterClass="EnvVO" resultClass="String">
+		/* envDAO.getFilePath */
+		SELECT 
+			CONCAT(file_stre_cours, '/', stre_file_nm, '.', file_extsn) 			AS filePath
+		FROM comtnfiledetail
+        WHERE 1=1
+        AND atch_file_id = (SELECT k_env_value FROM k_env WHERE 1=1 AND k_env_name = #name#)
+	</select>
+</sqlMap>

@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap> 
+	<typeAlias alias="egovMap" 	type="egovframework.rte.psl.dataaccess.util.EgovMap" />
+	<typeAlias alias="mesSignVO" 	type="egovframework.rndp.mes.sign.service.MesSignVO" /> 
+	<typeAlias alias="kStaffVO" 	type="egovframework.rndp.mes.login.service.MesK_StaffVo" /> 
+	
+	<select id="mesSignDAO.selectPositionList" parameterClass="mesSignVO" resultClass="kStaffVO">
+		/* mesSignDAO.selectPositionList */
+		SELECT
+			POSITION_NUM			AS kPositionKey
+		,	POSITION_NAME			AS kPositionName
+		FROM K_POSITION
+	</select>
+
+	
+	<select id="mesSignDAO.selectStaffList" parameterClass="mesSignVO" resultClass="kStaffVO">
+	/* mesSignDAO.selectStaffList */
+		SELECT
+			staff.k_staff_key						AS kStaffKey
+		,	staff.k_staff_name						AS kStaffName
+		,	staff.k_staff_num						AS kStaffNum
+		,	staff.k_staff_id						AS kStaffId
+		,	cla.k_class_name						AS kClassName
+		,	IFNULL(cla.k_class_key, 0)				AS kClassKey
+		,	pos.POSITION_NAME						AS kPositionName
+		,	IFNULL(pos.POSITION_NUM, 0)			AS kPositionKey
+		FROM k_staff staff
+		LEFT JOIN k_class cla ON (staff.k_class_key = cla.k_class_key)
+		LEFT JOIN K_POSITION pos ON (staff.k_position_key = pos.POSITION_NUM)
+		LEFT JOiN k_menu_auth kma ON(  staff.k_staff_key  =  kma.k_staff_key 
+		<isNotEmpty property="kMenuKey">AND kma.k_menu_key = #kMenuKey#</isNotEmpty>)
+		WHERE 1=1 AND IFNULL(k_menu_auth_flag,'F') = 'T'
+		AND	k_staff_state_flag = '1'
+		AND staff.k_staff_key != #kStaffKey#
+		<isNotEmpty property="searchWord">
+			AND LOWER(staff.k_staff_name) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+		</isNotEmpty>
+		<isNotEqual property="kPositionKey" compareValue="0">
+			AND pos.POSITION_NUM = #kPositionKey#
+		</isNotEqual>
+		<isNotEmpty property="kStaffKey1">
+			AND staff.k_staff_key NOT IN ($kStaffKey1$)
+		</isNotEmpty>
+		GROUP BY staff.k_staff_key		
+		ORDER BY staff.k_staff_state_flag, pos.POSITION_NUM, cla.k_class_rank, pos.POSITION_RANK, staff.k_staff_id
+	</select>
+	
+	<select id="mesSignDAO.choiceStaffListSe" parameterClass="mesSignVO" resultClass="kStaffVO">
+	/* mesSignDAO.choiceStaffListSe */
+		SELECT
+			staff.k_staff_key						AS kStaffKey
+		,	staff.k_staff_name						AS kStaffName
+		,	staff.k_staff_num						AS kStaffNum
+		,	staff.k_staff_id						AS kStaffId
+		,	cla.k_class_name						AS kClassName
+		,	IFNULL(cla.k_class_key, 0)				AS kClassKey
+		,	pos.POSITION_NAME						AS kPositionName
+		,	IFNULL(pos.POSITION_NUM, 0)			AS kPositionKey
+		FROM k_staff staff
+		LEFT JOIN k_class cla ON (staff.k_class_key = cla.k_class_key)
+		LEFT JOIN K_POSITION pos ON (staff.k_position_key = pos.POSITION_NUM)
+		WHERE 1=1
+		AND	k_staff_state_flag = '1'
+		<isEqual property="kStaffKey1" compareValue="">
+			AND staff.k_staff_key IN ('0')
+			ORDER BY staff.k_staff_state_flag, pos.POSITION_NUM, cla.k_class_rank, pos.POSITION_RANK, staff.k_staff_id
+		</isEqual>
+		<isNotEqual property="kStaffKey1" compareValue="">
+			AND staff.k_staff_key IN ($kStaffKey1$)
+			ORDER BY FIELD (k_staff_key, $kStaffKey1$)
+		</isNotEqual>
+	</select>
+	
+	<select id="mesSignDAO.getMaxSignKey" parameterClass="mesSignVO" resultClass="String">
+		/* mesSignDAO.getMaxSignKey */
+		SELECT IFNULL(MAX(SIGN_NUM), 0) + 1 FROM S_SIGN
+	</select>
+	
+	<select id="mesSignDAO.getSignCount" parameterClass="mesSignVO" resultClass="String">
+		/* mesSignDAO.getSignCount */
+		SELECT 
+			COUNT(*)
+		FROM S_SIGN_ITEM 
+		WHERE 1=1
+		AND SIGN_NUM = #sSignKey#
+		AND SIGN_DECISON = '승인'
+	</select>
+	
+	<select id="mesSignDAO.getSignCountTwo" parameterClass="mesSignVO" resultClass="String">
+		/* mesSignDAO.getSignCountTwo */
+		SELECT 
+			COUNT(*)
+		FROM S_SIGN_ITEM 
+		WHERE 1=1
+		AND SIGN_TABLE_NUM = #sSignTableKey#
+		AND SIGN_TABLE_NAME = #sSignTableName#
+		AND (SIGN_DECISON = '승인' OR SIGN_DECISON = '전결')
+	</select>
+	
+	<insert id="mesSignDAO.insertSign" parameterClass="mesSignVO">
+		/* mesSignDAO.insertSign */
+		INSERT INTO S_SIGN(
+			SIGN_NUM
+		,	SIGN_TABLE_NUM
+		,	SIGN_TABLE_NAME
+		,	SIGN_START_DATE
+		)VALUES(
+			#sSignKey#
+		,	#sSignTableKey#
+		,	#sSignTableName#
+		,	NOW()
+		)
+	</insert>
+	
+	<insert id="mesSignDAO.insertSignItem" parameterClass="mesSignVO">
+		/* mesSignDAO.insertSignItem */
+		INSERT INTO S_SIGN_ITEM(
+			SIGN_NUM
+		,	SIGN_SEQUENCE
+		,	SIGN_TABLE_NUM
+		,	SIGN_TABLE_NAME
+		,	SIGN_STAFF_NUM
+		,	SIGN_STAFF_POSITION
+		,	SIGN_STAFF_NAME
+		,	SIGN_STAFF_GUBUN
+		)VALUES(
+			#sSignKey#
+		,	#sSignSequence#
+		,	#sSignTableKey#
+		,	#sSignTableName#
+		,	#sSignStaffKey#
+		,	#sSignStaffPosition#
+		,	#sSignStaffName#
+		,	#sSignStaffGubun#
+		)
+	</insert>
+	
+	<update id="mesSignDAO.updateSignStatus" parameterClass="mesSignVO">
+		/* mesSignDAO.updateSignStatus */
+		UPDATE S_SIGN_ITEM
+		SET
+			SIGN_DECISON = #sSignDecison#
+		,	SIGN_CONTENT = #sSignContent#
+		WHERE 1=1
+		AND SIGN_NUM = #sSignKey#
+		AND SIGN_STAFF_NUM = #sSignStaffKey#
+	</update>
+	<update id="mesSignDAO.updateSignStatusTwo" parameterClass="mesSignVO">
+		/* mesSignDAO.updateSignStatusTwo */
+		UPDATE S_SIGN_ITEM
+		SET
+			SIGN_DECISON = #sSignDecison#
+		,	SIGN_CONTENT = #sSignContent#
+		WHERE 1=1
+		AND SIGN_TABLE_NUM = #sSignTableKey#
+		AND SIGN_TABLE_NAME = #sSignTableName#
+		AND SIGN_STAFF_NUM = #sSignStaffKey#
+	</update>
+	<update id="mesSignDAO.eFinalApprovalUpdate" parameterClass="mesSignVO">
+		/* mesSignDAO.eFinalApprovalUpdate */
+		UPDATE S_SIGN_ITEM
+		SET
+			SIGN_DECISON = '전결'
+		,	SIGN_CONTENT = '결재자 승인처리'
+		WHERE 1=1
+		AND SIGN_TABLE_NUM = #sSignTableKey#
+		AND SIGN_TABLE_NAME = #sSignTableName#
+		AND SIGN_DECISON = '결재대기'
+	</update>
+	
+	<update id="mesSignDAO.resetSignStatus" parameterClass="mesSignVO">
+		/* mesSignDAO.resetSignStatus */
+		UPDATE S_SIGN_ITEM
+		SET
+			SIGN_DECISON = IF(SIGN_DECISON != '반려', '승인대기', SIGN_DECISON)
+		,	SIGN_CONTENT = IF(SIGN_DECISON != '반려', NULL, SIGN_CONTENT)
+		WHERE 1=1
+		AND SIGN_NUM = #sSignKey#
+	</update>
+	
+	<update id="mesSignDAO.resetSignStatusStart" parameterClass="mesSignVO">
+		/* mesSignDAO.resetSignStatusStart */
+		UPDATE S_SIGN_ITEM
+		SET
+			SIGN_DECISON = '결재대기'
+		,	SIGN_CONTENT = NULL
+		WHERE 1=1
+		AND SIGN_NUM = #sSignKey#
+	</update>
+	
+	<update id="mesSignDAO.updateSignProgress" parameterClass="mesSignVO">
+		/* mesSignDAO.updateSignProgress */
+		UPDATE S_SIGN S
+		SET
+			SIGN_END_DATE = IF(#sSignProgress# = (SELECT COUNT(*) FROM S_SIGN_ITEM SI WHERE 1=1 AND SI.SIGN_NUM = S.SIGN_NUM), NOW(), NULL)
+		,	SIGN_PROGRESS = #sSignProgress#
+		,	SIGN_PROGRESS_CNT = (SELECT COUNT(*) FROM S_SIGN_ITEM SI WHERE 1=1 AND SI.SIGN_NUM = S.SIGN_NUM)
+		WHERE 1=1
+		AND SIGN_NUM = #sSignKey#
+	</update>
+	<update id="mesSignDAO.updateSignProgressTwo" parameterClass="mesSignVO">
+		/* mesSignDAO.updateSignProgressTwo */
+		UPDATE S_SIGN S
+		SET
+			 SIGN_END_DATE = CASE 
+							        WHEN #sSignProgress# = '반려' THEN NOW()
+							        WHEN #sSignProgress# = (SELECT COUNT(*) FROM S_SIGN_ITEM SI WHERE SI.SIGN_NUM = S.SIGN_NUM) THEN NOW()
+							        ELSE NULL
+							    END
+		,	SIGN_PROGRESS = #sSignProgress#
+		,	SIGN_PROGRESS_CNT = (SELECT COUNT(*) FROM S_SIGN_ITEM SI WHERE 1=1 AND SI.SIGN_NUM = S.SIGN_NUM)
+		WHERE 1=1
+		AND SIGN_TABLE_NUM = #sSignTableKey#
+		AND SIGN_TABLE_NAME = #sSignTableName#
+	</update>
+	
+	<update id="mesSignDAO.updateSignRejectionReason" parameterClass="mesSignVO">
+		/* mesSignDAO.updateSignRejectionReason */
+		UPDATE S_SIGN_ITEM S
+		SET 
+			SIGN_CONTENT = #sSignContent#
+			, SIGN_DECISON = #sSignProgress#
+		WHERE 1=1
+		AND SIGN_TABLE_NUM = #sSignTableKey#
+		AND SIGN_TABLE_NAME = #sSignTableName#
+		AND SIGN_STAFF_NUM = #sSignStaffKey#
+	</update>
+	
+	<delete id="mesSignDAO.deleteSign" parameterClass="mesSignVO">
+		/* mesSignDAO.deleteSign */
+		DELETE FROM S_SIGN
+		WHERE 1=1
+		AND SIGN_NUM = #sSignKey#
+	</delete>
+	
+	<delete id="mesSignDAO.deleteSignItem" parameterClass="mesSignVO">
+		/* mesSignDAO.deleteSignItem */
+		DELETE FROM S_SIGN_ITEM
+		WHERE 1=1
+		AND SIGN_NUM = #sSignKey#
+	</delete>
+	
+	
+	<select id="mesSignDAO.selectSignList" parameterClass="mesSignVO" resultClass="mesSignVO">
+		/* mesSignDAO.selectSignList */
+		SELECT
+			SIGN_ITEM_NUM				AS sSignItemKey
+		,	SIGN_NUM					AS sSignKey
+		,	SIGN_SEQUENCE				AS sSignSequence
+		,	SIGN_TABLE_NUM				AS sSignTableKey
+		,	SIGN_TABLE_NAME				AS sSignTableName
+		,	SIGN_STAFF_NUM				AS sSignStaffKey
+		,	SIGN_STAFF_POSITION			AS sSignStaffPosition
+		,	SIGN_STAFF_NAME				AS sSignStaffName
+		,	SIGN_DECISON				AS sSignDecison
+		,	SIGN_CONTENT				AS sSignContent
+		,	SIGN_STAFF_GUBUN				AS sSignStaffGubun
+		FROM S_SIGN_ITEM
+		WHERE 1=1
+		AND SIGN_NUM = #sSignKey#
+		ORDER BY SIGN_SEQUENCE ASC
+	</select>
+	
+	<select id="mesSignDAO.selectSignListTwo" parameterClass="mesSignVO" resultClass="mesSignVO">
+		/* mesSignDAO.selectSignListTwo */
+		SELECT
+			ssi.SIGN_ITEM_NUM				AS sSignItemKey
+		,	ssi.SIGN_NUM					AS sSignKey
+		,	ssi.SIGN_SEQUENCE				AS sSignSequence
+		,	ssi.SIGN_TABLE_NUM				AS sSignTableKey
+		,	ssi.SIGN_TABLE_NAME				AS sSignTableName
+		,	ssi.SIGN_STAFF_NUM				AS sSignStaffKey
+		,	ssi.SIGN_STAFF_POSITION			AS sSignStaffPosition
+		,	ssi.SIGN_STAFF_NAME				AS sSignStaffName
+		,	ssi.SIGN_STAFF_GUBUN			AS sSignStaffGubun
+		,	ssi.SIGN_DECISON				AS sSignDecison
+		,	ssi.SIGN_CONTENT				AS sSignContent
+		,	ssi.SIGN_STAFF_GUBUN				AS sSignStaffGubun
+		,	cla.k_class_name						AS kClassName
+		,	pos.POSITION_NAME						AS kPositionName
+		FROM S_SIGN_ITEM AS ssi
+		LEFT JOIN  k_staff staff ON (staff.k_staff_key =ssi.SIGN_STAFF_NUM	)
+		LEFT JOIN k_class cla ON (staff.k_class_key = cla.k_class_key)
+		LEFT JOIN K_POSITION pos ON (staff.k_position_key = pos.POSITION_NUM)
+		WHERE 1=1
+		AND ssi.SIGN_TABLE_NUM = #sSignTableKey# AND ssi.SIGN_TABLE_NAME = #sSignTableName#
+		ORDER BY ssi.SIGN_SEQUENCE ASC
+	</select>
+	
+	<select id="mesSignDAO.selectSignInfo" parameterClass="mesSignVO" resultClass="mesSignVO">
+		/* mesSignDAO.selectSignInfo */
+		SELECT
+			SIGN_NUM					AS sSignKey
+		,	SIGN_TABLE_NUM				AS sSignTableKey
+		,	SIGN_TABLE_NAME				AS sSignTableName
+		FROM S_SIGN
+		WHERE 1=1
+		AND SIGN_NUM = #sSignKey#
+	</select>
+	
+	
+			
+	<select id="mesSignDAO.selectSignSubNum" parameterClass="mesSignVO" resultClass="int">
+		/* mesSignDAO.selectSignSubNum */
+		SELECT AUTO_INCREMENT
+		FROM information_schema.TABLES
+		WHERE TABLE_SCHEMA = 'IMS'
+		  AND TABLE_NAME = 'S_SIGN_PATH';
+	</select>
+	
+			
+	<insert id="mesSignDAO.signSubInsertPath" parameterClass="mesSignVO" >
+		/* mesSignDAO.signSubInsertPath */
+		INSERT INTO IMS.S_SIGN_PATH
+			( 
+				  S_SIGN_PATH_SUB_STAFF_KEY
+				, S_SIGN_PATH_SUB_GUBUN
+				, S_SIGN_PATH_SUBJECT
+				, S_SIGN_PATH_SEQUENCE
+				, STAFF_KEY
+				, S_SIGN_PATH_GROUP_NUM
+				
+			)VALUES(
+				 #sSingPathKey#
+				 , #sSingPathGubun#
+				 , #sSingPathSubject#
+				 , #sSignSubSequence#
+				 , #kStaffKey#
+				 , #sSingPathNum#
+			 );
+	</insert>
+	
+	
+	
+	<select id="mesSignDAO.selectPathList" parameterClass="mesSignVO" resultClass="mesSignVO">
+		/* mesSignDAO.selectPathList */
+		SELECT
+			ks.S_SIGN_PATH_SUB_STAFF_KEY 			AS sSingPathKey
+		,	ks.S_SIGN_PATH_GROUP_NUM 			AS sSingPathNum
+		,	ks.S_SIGN_PATH_SUBJECT		AS sSingPathSubject
+		FROM S_SIGN_PATH ks 
+		WHERE 1=1
+		AND ks.STAFF_KEY = #kStaffKey#
+		GROUP BY ks.S_SIGN_PATH_GROUP_NUM 
+	</select>
+	
+		<select id="mesSignDAO.seleteSignSelectPath" parameterClass="mesSignVO" resultClass="HashMap">
+		/* mesSignDAO.seleteSignSelectPath */
+		SELECT 
+				ksp.S_SIGN_PATH_SUB_STAFF_KEY 		AS sSingPathKey
+			,	ksp.S_SIGN_PATH_SUBJECT 			AS sSingPathSubject
+			,	ksp.S_SIGN_PATH_SUB_GUBUN				AS sSingPathGubun
+			,	kp.POSITION_NUM 				AS kPositionKey
+			,	kp.POSITION_NAME				AS kPositionName
+			,	k.k_staff_num					AS kStaffNum
+			,   k.k_staff_key 					AS kSignSubStaffKey 
+			,	k.k_staff_id					AS kStaffId
+			,	k.k_staff_name					AS kStaffName
+			,	kc.k_class_name					AS kClassName
+		FROM S_SIGN_PATH ksp 
+		LEFT JOIN k_staff k ON (k.k_staff_key = ksp.S_SIGN_PATH_SUB_STAFF_KEY)
+		LEFT JOIN K_POSITION kp ON (k.k_position_key = kp.POSITION_NUM)
+		LEFT JOIN k_class kc ON (kc.k_class_key = k.k_class_key)
+		LEFT JOiN k_menu_auth kma ON(  k.k_staff_key  =  kma.k_staff_key 
+			<isNotEmpty property="kMenuKey">AND kma.k_menu_key = #kMenuKey#</isNotEmpty>)
+		WHERE 1=1
+		AND ksp.S_SIGN_PATH_GROUP_NUM = #sSingPathNum#
+		<isNotEmpty property="kMenuKey"> AND IFNULL(k_menu_auth_flag,'F') = 'T'</isNotEmpty>
+		GROUP BY k.k_staff_key		
+		ORDER BY ksp.S_SIGN_PATH_SEQUENCE, FIELD(ksp.S_SIGN_PATH_SUB_GUBUN , 'R' , 'A')
+	</select>
+	
+	<delete id="mesSignDAO.signDeletePath" parameterClass="mesSignVO">
+		/* mesSignDAO.signDeletePath */
+		DELETE FROM S_SIGN_PATH WHERE S_SIGN_PATH_GROUP_NUM = #sSingPathNum#
+	</delete>
+	
+		
+	<delete id="mesSignDAO.deleteSignItemTwo" parameterClass="mesSignVO">
+		/* mesSignDAO.deleteSignItemTwo */
+		DELETE FROM S_SIGN_ITEM
+		WHERE SIGN_TABLE_NUM = #sSignTableKey# AND SIGN_TABLE_NAME = #sSignTableName#
+	</delete>
+	
+		
+	<delete id="mesSignDAO.deleteSignTwo" parameterClass="mesSignVO">
+		/* mesSignDAO.deleteSignItemTwo */
+		DELETE FROM S_SIGN
+		WHERE SIGN_TABLE_NUM = #sSignTableKey# AND SIGN_TABLE_NAME = #sSignTableName#
+	</delete>
+	<update id="mesSignDAO.updateSignStart" parameterClass="mesSignVO">
+		/*mesSignDAO.updateSignStart*/
+		UPDATE  S_SIGN
+		SET SIGN_START_DATE = NOW()
+		WHERE SIGN_TABLE_NUM = #sSignTableKey# AND SIGN_TABLE_NAME = #sSignTableName#
+	</update>
+	<select id="mesSignDAO.sSignStaffGubunCheck" parameterClass="mesSignVO" resultClass="String">
+		/* mesSignDAO.sSignStaffGubunCheck */
+		SELECT 
+			SIGN_STAFF_GUBUN
+		FROM S_SIGN_ITEM 
+		WHERE 1=1
+		AND SIGN_TABLE_NUM = #sSignTableKey#
+		AND SIGN_TABLE_NAME = #sSignTableName#
+		AND SIGN_STAFF_NUM = #sSignStaffKey#
+		LIMIT 1
+	</select>
+</sqlMap>

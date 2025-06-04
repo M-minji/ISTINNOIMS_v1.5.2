@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	<typeAlias alias="MesProjectVO" type="egovframework.rndp.mes.project.service.MesProjectVO" />
+	<insert id="mesProjectDAO.insertMesProject" parameterClass="mesProjectVO">
+		<selectKey type="pre" keyProperty="pProjectkey"  resultClass="String">
+			/* MIM pk */
+			SELECT IFNULL(MAX(P_PROJECT_NUM), 0) + 1 FROM P_PROJECT
+		</selectKey>
+		/* mesProjectDAO.insertMesProject */
+			INSERT INTO P_PROJECT
+			(
+				P_PROJECT_NUM    
+			,	P_PROJECT_COM   
+			,	P_PROJECT_SDATE 
+			,	P_PROJECT_EDATE 
+			,	P_INTRO_COM 
+			,	P_PROJECT_SPGUBUN
+			,	P_PROJECT_GUBUN 
+			,	P_PROJECT_TILTE
+			,	P_PROJECT_CONTENT
+			,	P_PROJECT_REQUEST
+			,	P_PROJECT_REDATE
+			,	P_PROJECT_WDATE
+			,	k_staff_name
+			)
+			VALUES
+			(
+				#pProjectkey#
+			,	#pComName#
+			,	IF(#pStartDate# = '' , null,#pStartDate#)
+			,	IF(#pEndDate# = '' , null,#pEndDate#)
+			,	#pItroCom#
+			,	#pGubunStep#
+			,	#pGubun#
+			,	#pTilte#
+			,	#pContent#
+			,	#kStaffName#
+			,	#pReDate#
+			, 	NOW()
+			,	#kStaffName#
+		)
+	</insert>
+	<select id="mesProjectDAO.selectMesProjectList" parameterClass="mesProjectVO" resultClass="mesProjectVO">
+		/* mesProjectDAO.selectMesProjectList */
+
+	SELECT
+	        pr.P_PROJECT_NUM  																																					AS pProjectkey
+	    ,   pr.P_PROJECT_COM 																																					AS pComName
+	    ,   DATE_FORMAT(pr.P_PROJECT_SDATE, '%Y-%m-%d')  																														AS pStartDate
+	    ,   DATE_FORMAT(pr.P_PROJECT_EDATE, '%Y-%m-%d') 																														AS pEndDate
+	    ,   pr.P_INTRO_COM 																																						AS pItroCom
+	    ,   pr.P_PROJECT_SPGUBUN 																																				AS pGubunStep
+	    ,   pr.P_PROJECT_GUBUN  																																				AS pGubun
+	    ,   pr.P_PROJECT_TILTE																																					AS pTilte
+	    ,   pr.P_PROJECT_CONTENT 																																				AS pContent
+	    ,   pr.P_PROJECT_REQUEST 																																				AS pRequest
+	    ,   pr.P_PROJECT_REDATE 																																				AS pReDate
+	    , 	DATE_FORMAT(pr.P_PROJECT_WDATE, '%Y-%m-%d')																															AS pWdate
+	    ,   pr.k_staff_name 																																					AS kStaffName
+		,	pr.SIGN_STATUS																																							AS sSignStatus
+		,	pr.SIGN_NUM																																								AS sSignKey
+		,	(SELECT S.SIGN_STAFF_NUM FROM S_SIGN_ITEM S WHERE 1=1 AND pr.SIGN_NUM = S.SIGN_NUM AND S.SIGN_DECISON = '결재대기' ORDER BY S.SIGN_SEQUENCE ASC LIMIT 1	) 			AS sSignStaffKey
+    FROM
+        P_PROJECT  pr
+    WHERE 
+        1=1
+        <isNotEmpty property="topStartDate">
+            <isNotEmpty property="topEndDate">
+                <![CDATA[
+                AND DATE_FORMAT(pr.P_PROJECT_SDATE, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+                ]]>
+            </isNotEmpty>
+        </isNotEmpty>
+        <isNotEmpty property="searchWord">
+            <isEqual property="searchType" compareValue="1">
+                <![CDATA[
+                AND (
+                    LOWER(pr.P_PROJECT_COM) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+                    OR LOWER(pr.P_PROJECT_SPGUBUN) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+                    OR LOWER(pr.P_PROJECT_GUBUN) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+                    OR LOWER(pr.k_staff_name) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+                    OR LOWER(pr.P_PROJECT_TILTE) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+                )
+                ]]>
+            </isEqual>
+            <isEqual property="searchType" compareValue="2">
+                AND LOWER(pr.P_PROJECT_COM) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+            </isEqual>
+            <isEqual property="searchType" compareValue="3">
+                AND LOWER(pr.P_PROJECT_SPGUBUN) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+            </isEqual>
+            <isEqual property="searchType" compareValue="4">
+                AND LOWER(pr.P_PROJECT_GUBUN) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+            </isEqual>
+            <isEqual property="searchType" compareValue="5">
+                AND LOWER(pr.k_staff_name) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+            </isEqual>
+        </isNotEmpty>
+   	 ORDER BY 
+    	    pr.P_PROJECT_NUM  DESC
+   	 LIMIT   #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	<select id="mesProjectDAO.selectMesProjectListCnt" parameterClass="mesProjectVO" resultClass="int">
+			/* mesProjectDAO.selectMesProjectListCnt */
+			SELECT
+				COUNT(*)
+			FROM   P_PROJECT pr
+	   		WHERE 1=1
+	        <isNotEmpty property="topStartDate">
+	            <isNotEmpty property="topEndDate">
+	                <![CDATA[
+	                AND DATE_FORMAT(pr.P_PROJECT_SDATE, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+	                ]]>
+	            </isNotEmpty>
+	        </isNotEmpty>
+	        <isNotEmpty property="searchWord">
+	            <isEqual property="searchType" compareValue="1">
+	                <![CDATA[
+	                AND (
+	                    LOWER(pr.P_PROJECT_COM) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+	                    OR LOWER(pr.P_PROJECT_SPGUBUN) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+	                    OR LOWER(pr.P_PROJECT_GUBUN) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+	                    OR LOWER(pr.k_staff_name) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+	                )
+	                ]]>
+	            </isEqual>
+	            <isEqual property="searchType" compareValue="2">
+	                AND LOWER(pr.P_PROJECT_COM) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+	            </isEqual>
+	            <isEqual property="searchType" compareValue="3">
+	                AND LOWER(pr.P_PROJECT_SPGUBUN) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+	            </isEqual>
+	            <isEqual property="searchType" compareValue="4">
+	                AND LOWER(pr.P_PROJECT_GUBUN) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+	            </isEqual>
+	            <isEqual property="searchType" compareValue="5">
+	                AND LOWER(pr.k_staff_name) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+	            </isEqual>
+	        </isNotEmpty>
+	    ORDER BY 
+	        pr.P_PROJECT_NUM  DESC
+	    LIMIT 
+	        #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+		
+	<select id="mesProjectDAO.selectProInfo" parameterClass="mesProjectVO" resultClass="mesProjectVO">
+		/* mesProjectDAO.selectProInfo */
+	SELECT
+	 	    pr.P_PROJECT_NUM  									AS pProjectkey
+        ,   pr.P_PROJECT_COM 									AS pComName
+        ,   DATE_FORMAT(pr.P_PROJECT_SDATE, '%Y-%m-%d')  		AS pStartDate
+        ,   DATE_FORMAT(pr.P_PROJECT_EDATE, '%Y-%m-%d') 		AS pEndDate
+        ,   pr.P_INTRO_COM 										AS pItroCom
+        ,   pr.P_PROJECT_SPGUBUN 								AS pGubunStep
+        ,   pr.P_PROJECT_GUBUN  								AS pGubun
+        ,   pr.P_PROJECT_TILTE									AS pTilte
+        ,   pr.P_PROJECT_CONTENT 								AS pContent
+        ,   pr.P_PROJECT_REQUEST 								AS pRequest
+        ,   DATE_FORMAT(pr.P_PROJECT_REDATE, '%Y-%m-%d') 		AS pReDate
+     	,   DATE_FORMAT(pr.P_PROJECT_WDATE, '%Y-%m-%d')			AS pWdate
+        ,   pr.k_staff_name 									AS kStaffName
+		,	pr.SIGN_STATUS									AS sSignStatus
+		,	pr.SIGN_NUM										AS sSignKey
+        ,	S.SIGN_STAFF_NUM								AS sSignStaffKey
+        ,	S.SIGN_STAFF_NAME								AS sSignStaffName
+    FROM
+        P_PROJECT  pr
+     LEFT JOIN S_SIGN_ITEM S ON(pr.SIGN_NUM = S.SIGN_NUM AND S.SIGN_DECISON = '결재대기')
+    WHERE 
+        1=1
+    AND pr.P_PROJECT_NUM  = #pProjectkey#
+		LIMIT 1
+   </select>	
+    <delete id="mesProjectDAO.deleteMesProject" parameterClass="mesProjectVO">
+		/* mesProjectDAO.deleteMesProjectt */
+		DELETE FROM P_PROJECT WHERE P_PROJECT_NUM = #pProjectkey#
+	</delete>
+	<update id="mesProjectDAO.updateMesProject" parameterClass="mesProjectVO">
+		/* mesProjectDAO.updateMesProject */
+		UPDATE
+			P_PROJECT
+		SET
+			P_PROJECT_NUM      					= #pProjectkey#,
+			P_PROJECT_COM    					= #pComName#,
+			P_PROJECT_SDATE  					= IF(#pStartDate# = '' , null,#pStartDate#),
+			P_PROJECT_EDATE						= IF(#pEndDate# = '' , null,#pEndDate#),
+			P_INTRO_COM  						= #pItroCom#,
+			P_PROJECT_SPGUBUN 					= #pGubunStep#,
+			P_PROJECT_GUBUN  					= #pGubun#,
+			P_PROJECT_TILTE 					= #pTilte#,
+			P_PROJECT_CONTENT 					= #pContent#,
+			P_PROJECT_REQUEST 					= #pRequest#,
+			P_PROJECT_REDATE 					= #pReDate#,
+			P_PROJECT_WDATE   					=  NOW()
+		WHERE 1=1
+		AND P_PROJECT_NUM = #pProjectkey#
+	</update>	
+	
+	<update id="mesProjectDAO.updateMesProjectProcess" parameterClass="mesProjectVO">
+		/* mesProjectDAO.updateMesProjectProcess */
+		UPDATE P_PROJECT
+		SET
+			SIGN_NUM			= #sSignKey#
+		,	SIGN_STATUS			= '처리등록'
+		WHERE 1=1
+		AND P_PROJECT_NUM = #pProjectkey#
+	</update>
+	
+	<update id="mesProjectDAO.requestProjectProcess" parameterClass="mesProjectVO">
+		/* mesProjectDAO.requestProjectProcess */
+		UPDATE P_PROJECT
+		SET
+			SIGN_STATUS	 = #sSignStatus#
+		WHERE 1=1
+		AND P_PROJECT_NUM = #pProjectkey#
+	</update>
+	
+	<update id="mesProjectDAO.updateProjectStatus" parameterClass="mesProjectVO">
+		/* mesProjectDAO.updateProjectStatus */
+		UPDATE P_PROJECT
+		SET
+			SIGN_STATUS	 = returnSignStatus(SIGN_NUM)
+		WHERE 1=1
+		AND P_PROJECT_NUM = #pProjectkey#
+	</update>
+	
+	<insert id="mesProjectDAO.mesProjectFile" parameterClass="mesProjectVO">
+		/* mesProjectDAO.mesProjectFile */
+		<selectKey type="pre" keyProperty="pProjectItemkey" resultClass="String">
+			/* pk */
+			SELECT IFNULL(MAX(P_PROJECT_ITEM_NUM), 0) + 1 FROM P_PROJECT_ITEM
+		</selectKey>
+		INSERT INTO P_PROJECT_ITEM 
+		(
+			P_PROJECT_ITEM_NUM
+		,	P_PROJECT_NUM
+		,	P_PROJECT_ITEM_FILENAME
+		,	P_PROJECT_ITEM_ETC
+		)
+		VALUES
+		(
+			#pProjectItemkey#
+		,	#pProjectkey#
+		,	#eAddFileId#
+		,	#pProjectItemEtc#
+		)
+	</insert> 
+	
+	<select id="mesProjectDAO.selectMesProjectFile" parameterClass="mesProjectVO" resultClass="mesProjectVO">
+		/* mesProjectDAO.selectMesProjectFile */
+		SELECT
+	        ppi.P_PROJECT_NUM 						AS pProjectkey,
+	        ppi.P_PROJECT_ITEM_NUM   				AS pProjectItemkey,
+	        ppi.P_PROJECT_ITEM_ETC        			AS pProjectItemEtc,
+	        ppi.P_PROJECT_ITEM_FILENAME        		AS atchFileId,
+	        b.orignl_file_nm        				AS eIMGregName,
+	        b.file_sn        						AS fileSn
+	    FROM
+	        P_PROJECT_ITEM ppi
+	    left join comtnfiledetail b on (ppi.P_PROJECT_ITEM_FILENAME = b.atch_file_id)
+	    WHERE 
+	        1=1
+	    AND ppi.P_PROJECT_NUM  = #pProjectkey#
+	</select>
+	
+	<delete id="mesProjectDAO.deleteMesProjectItem" parameterClass="mesProjectVO">
+		/* mesProjectDAO.deleteMesProjectItem */
+		DELETE FROM P_PROJECT_ITEM WHERE P_PROJECT_NUM = #pProjectkey#
+	</delete>
+	
+	
+	
+	
+	<insert id="mesProjectDAO.eMesInsertProjectInfo" parameterClass="mesProjectVO">
+		/* mesProjectDAO.eMesInsertProjectInfo */
+		 <selectKey type="post" keyProperty="eProjectNum" >
+	        SELECT LAST_INSERT_ID() AS eChangeKey
+	     </selectKey>
+		INSERT INTO P_PROJECT
+		(	 
+		    eProjectName, 
+		    eStartDate, 
+		    eEndDate, 
+		    eMainContractor, 
+		    eManager, 
+		    k_staff_name, 
+		    eManagerContact, 
+		    eManagerEmail, 
+		    eProjectPM, 
+		    ePMContact, 
+		    ePMEmail, 
+		    eRemarks, 
+		    P_PROJECT_WDATE, 
+		    P_PROJECT_WKey,
+		    P_PROJECT_WName, 
+		    eProjectStatus,
+		    sSignStatus 
+		)
+		VALUES(
+		   
+		    #eProjectName#, 
+		    #eStartDate#, 
+		    #eEndDate#, 
+		    #eMainContractor#, 
+		    #eManager#,
+		    #kStaffName#, 
+		    #eManagerContact#, 
+		    #eManagerEmail#, 
+		    #eProjectPM#, 
+		    #ePMContact#, 
+		    #ePMEmail#, 
+		    #eRemarks#, 
+		    #pWdate#, 
+		    #kStaffKey#, 
+		    #kStaffName#,
+			#eProjectStatus#,
+			#sSignStatus#
+		);
+	</insert>
+	
+	
+	
+	<select id="mesProjectDAO.mesProjectInfoList" parameterClass="mesProjectVO" resultClass="mesProjectVO">
+	/*mesProjectDAO.mesProjectInfoList*/
+			SELECT 
+			    P_PROJECT_NUM AS eProjectNum, 
+			    eProjectName, 
+			    eStartDate, 
+			    eEndDate, 
+			    eMainContractor, 
+			    eManager, 
+			    eManagerContact, 
+			    eManagerEmail, 
+			    eProjectPM, 
+			    ePMContact, 
+			    ePMEmail, 
+			    eRemarks, 
+			    eProjectStatus, 
+			    DATE_FORMAT(P_PROJECT_WDATE, '%Y-%m-%d') AS pWdate,
+			    P_PROJECT_WKey AS kStaffKey,
+		 		P_PROJECT_WName AS kStaffName,
+			    CASE 
+				  	WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+				  	ELSE sSignStatus
+				   	END AS sSignStatus,
+		   	 	IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress,
+		   	 	IF(
+					(SELECT COUNT(*) 
+					FROM S_SIGN_ITEM AS ssi 
+					WHERE ssi.SIGN_TABLE_NUM = eProjectNum and ssi.SIGN_TABLE_NAME = 'P_PROJECT'
+					AND ssi.SIGN_DECISON = '결재대기'
+					AND ssi.SIGN_STAFF_NUM = #kStaffKey#
+				) > 0, 'Y', 'N') AS eViewGubun
+			FROM P_PROJECT
+			LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = P_PROJECT_NUM  AND s.SIGN_TABLE_NAME = 'P_PROJECT')
+			WHERE 1=1 AND eProjectStatus != '삭제'
+				<isNotEmpty property="eStartDate">
+		             <![CDATA[
+		              AND (
+						    (LENGTH(#eStartDate#) = 4 AND (DATE_FORMAT(eStartDate, '%Y') = #eStartDate# OR DATE_FORMAT(eEndDate, '%Y') = #eStartDate#))
+						    OR
+						    (LENGTH(#eStartDate#) > 4 AND (DATE_FORMAT(eStartDate, '%Y-%m-%d') = #eStartDate# OR DATE_FORMAT(eEndDate, '%Y-%m-%d') = #eStartDate#))
+						)
+						]]>
+		         </isNotEmpty>
+		        <isNotEmpty property="eSearchWord1">
+		         AND LOWER(eProjectName) LIKE CONCAT('%',LOWER(#eSearchWord1#),'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="eSearchWord2">
+		         AND LOWER(eManager) LIKE CONCAT('%',LOWER(#eSearchWord2#),'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="eSearchWord3">
+		         AND LOWER(eProjectPM) LIKE CONCAT('%',LOWER(#eSearchWord3#),'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="eSearchWord4">
+		         AND LOWER(eProjectStatus) LIKE CONCAT('%',LOWER(#eSearchWord4#),'%')
+		        </isNotEmpty>
+		      
+			  	 ORDER BY  P_PROJECT_NUM  DESC
+   			LIMIT   #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	<select id="mesProjectDAO.mesProjectInfoListCnt" parameterClass="mesProjectVO" resultClass="int">
+	/*mesProjectDAO.mesProjectInfoListCnt*/
+			SELECT 
+			    COUNT(P_PROJECT_NUM)  
+			FROM P_PROJECT
+			
+			WHERE 1=1 AND eProjectStatus != '삭제'
+				 <isNotEmpty property="eStartDate">
+		             <![CDATA[
+		              AND (
+						    (LENGTH(#eStartDate#) = 4 AND (DATE_FORMAT(eStartDate, '%Y') = #eStartDate# OR DATE_FORMAT(eEndDate, '%Y') = #eStartDate#))
+						    OR
+						    (LENGTH(#eStartDate#) > 4 AND (DATE_FORMAT(eStartDate, '%Y-%m-%d') = #eStartDate# OR DATE_FORMAT(eEndDate, '%Y-%m-%d') = #eStartDate#))
+						)
+						]]>
+		         </isNotEmpty>
+		        <isNotEmpty property="eSearchWord1">
+		         AND LOWER(eProjectName) LIKE CONCAT('%',LOWER(#eSearchWord1#),'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="eSearchWord2">
+		         AND LOWER(eManager) LIKE CONCAT('%',LOWER(#eSearchWord2#),'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="eSearchWord3">
+		         AND LOWER(eProjectPM) LIKE CONCAT('%',LOWER(#eSearchWord3#),'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="eSearchWord4">
+		         AND LOWER(eProjectStatus) LIKE CONCAT('%',LOWER(#eSearchWord4#),'%')
+		        </isNotEmpty>
+	</select>
+	
+	
+	<select id="mesProjectDAO.selectProjectInfo" parameterClass="mesProjectVO" resultClass="mesProjectVO">
+	/* mesProjectDAO.selectProjectInfo */
+			SELECT 
+			    P_PROJECT_NUM AS eProjectNum, 
+			    eProjectName, 
+			    eStartDate, 
+			    eEndDate, 
+			    eMainContractor, 
+			    eManager, 
+			    eManagerContact, 
+			    eManagerEmail, 
+			    eProjectPM, 
+			    ePMContact, 
+			    ePMEmail, 
+			    eRemarks, 
+			    eProjectStatus,
+		        DATE_FORMAT(P_PROJECT_WDATE, '%Y-%m-%d') AS pWdate, 
+			    P_PROJECT_WKey AS kStaffKey,
+		 		P_PROJECT_WName AS kStaffName,
+			    CASE 
+				  	WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+				  	ELSE sSignStatus
+				   	END AS sSignStatus,
+		   	 	IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+			FROM P_PROJECT
+			LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = P_PROJECT_NUM  AND s.SIGN_TABLE_NAME = 'P_PROJECT')
+			WHERE P_PROJECT_NUM = #eProjectNum#
+	</select>
+	  <update id="mesProjectDAO.statusProjectInfo" parameterClass="mesProjectVO">
+		/* mesProjectDAO.statusProjectInfo */
+		update P_PROJECT SET eProjectStatus = #eProjectStatus#
+		 WHERE P_PROJECT_NUM = #eProjectNum#
+	</update>
+	
+	<update id="mesProjectDAO.updateProjectInfo" parameterClass="mesProjectVO">
+		/* mesProjectDAO.updateProjectInfo */
+		UPDATE P_PROJECT
+		SET
+		    eProjectName = #eProjectName#,
+		    eStartDate = #eStartDate#,
+		    eEndDate = #eEndDate#,
+		    eMainContractor = #eMainContractor#,
+		    eManager = #eManager#,
+		    eManagerContact = #eManagerContact#,
+		    eManagerEmail = #eManagerEmail#,
+		    eProjectPM = #eProjectPM#,
+		    ePMContact = #ePMContact#,
+		    ePMEmail = #ePMEmail#,
+		    eRemarks = #eRemarks#,
+		    sSignStatus = #sSignStatus#
+		WHERE
+		    P_PROJECT_NUM = #eProjectNum#;
+	</update>
+	<update id="mesProjectDAO.updateProjectSingStatus" parameterClass="mesProjectVO" >
+		/*mesProjectDAO.updateProjectSingStatus*/
+		UPDATE P_PROJECT
+		SET 
+			 sSignStatus = #sSignStatus#
+		WHERE P_PROJECT_NUM = #eProjectNum#
+	</update>
+	
+	<select id="mesProjectDAO.mesProjectExcelInfoList" parameterClass="mesProjectVO" resultClass="mesProjectVO">
+	/* mesProjectDAO.mesProjectExcelInfoList */
+			SELECT 
+			    P_PROJECT_NUM AS eProjectNum, 
+			    eProjectName, 
+			    eStartDate, 
+			    eEndDate, 
+			    eMainContractor, 
+			    eManager, 
+			    eManagerContact, 
+			    eManagerEmail, 
+			    eProjectPM, 
+			    ePMContact, 
+			    ePMEmail, 
+			    getContentLf(eRemarks) AS eRemarks, 
+			    eProjectStatus,
+			    DATE_FORMAT(P_PROJECT_WDATE, '%Y-%m-%d') AS pWdate,  
+			    P_PROJECT_WKey AS kStaffKey,
+		 		P_PROJECT_WName AS kStaffName,
+			    CASE 
+				  	WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+				  	ELSE sSignStatus
+				   	END AS sSignStatus,
+		   	 	IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+			FROM P_PROJECT
+			LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = P_PROJECT_NUM  AND s.SIGN_TABLE_NAME = 'P_PROJECT')
+			WHERE 1=1 AND eProjectStatus != '삭제'
+				<isNotEmpty property="eStartDate">
+			         AND (DATE_FORMAT(eStartDate, '%Y') = #eStartDate# OR DATE_FORMAT(eEndDate, '%Y') = DATE_FORMAT(#eStartDate#, '%Y') )  
+		         </isNotEmpty>
+		            
+		        <isNotEmpty property="eSearchWord1">
+		         AND LOWER(eProjectName) LIKE CONCAT('%',LOWER(#eSearchWord1#),'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="eSearchWord2">
+		         AND LOWER(eManager) LIKE CONCAT('%',LOWER(#eSearchWord2#),'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="eSearchWord3">
+		         AND LOWER(eProjectPM) LIKE CONCAT('%',LOWER(#eSearchWord3#),'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="eSearchWord4">
+		         AND LOWER(eProjectStatus) LIKE CONCAT('%',LOWER(#eSearchWord4#),'%')
+		        </isNotEmpty>
+		      
+			  	 ORDER BY  P_PROJECT_NUM  DESC
+		  	   LIMIT 250
+	</select>
+</sqlMap>

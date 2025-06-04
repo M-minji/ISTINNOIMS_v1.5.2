@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+	"-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+	"http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+	
+	<!-- 게시판 에디터 예외 -->
+	<definition name="seUpload/imgUploadForm" template="/WEB-INF/jsp/egovframework/rndp/seUpload/imgUploadForm.jsp"/>
+	
+	<!-- 엑셀 다운로드 예외 --> 
+	<definition name="intraPopup/intra/business/popup/excelDown" template="/WEB-INF/jsp/egovframework/rndp/intra/business/popup/excelDown.jsp"/>
+	<definition name="intra/sign/sign/excelDown" template="/WEB-INF/jsp/egovframework/rndp/intra/sign/excelDown.jsp"/>
+	
+	<!-- 우편번호 검색 예외 --> 
+	<definition name="member/kw_post" template="/WEB-INF/jsp/egovframework/rndp/member/kw_post.jsp"/>
+	
+	<!-- intranet start -->
+	<!-- 로그인 화면 예외 -->  
+	<definition name="intra/login/loginfrm.tiles" template="/WEB-INF/jsp/egovframework/rndp/intra/login/loginfrm.jsp"/>
+	<definition name="intra/main.tiles" template="/WEB-INF/jsp/template/intra/mainLayout.jsp">
+		<put-attribute name="header" value="/WEB-INF/jsp/template/intra/header.jsp"/>
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/intra/main.jsp"/>
+		<put-attribute name="footer" value="/WEB-INF/jsp/template/intra/footer.jsp"/>
+	</definition>  
+	
+   
+	<definition name="intra/*.tiles" extends="intraLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/intra/{1}.jsp" />
+	</definition>
+	
+	<definition name="intra/*/*.tiles" extends="intraLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/intra/{1}/{2}.jsp" />
+	</definition>
+	
+	<definition name="intra/*/*/*.tiles" extends="intraLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/intra/{1}/{2}/{3}.jsp" />
+	</definition>
+	
+	<definition name="intra/*/*/*/*.tiles" extends="intraLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/intra/{1}/{2}/{3}/{4}.jsp" />
+	</definition>  
+
+	
+	<!-- intranet end -->
+
+	
+	
+	 
+	<!-- admin start -->  
+	
+	<definition name="admin/login/loginfrm.tiles" template="/WEB-INF/jsp/egovframework/rndp/admin/login/login.jsp"/>
+	<definition name="adminLayTemplate" template="/WEB-INF/jsp/template/admin/mainLayout.jsp"> 
+		<put-attribute name="header"     value="/WEB-INF/jsp/template/admin/header.jsp"/>
+		<put-attribute name="subHeader"   value="/WEB-INF/jsp/template/admin/subHeader.jsp"/> 
+		<put-attribute name="content"    value=""/> 
+	</definition>
+	
+	<definition name="admin/*" extends="adminLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/admin/{1}.jsp" />
+	</definition>
+	
+	<definition name="admin/*/*" extends="adminLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/admin/{1}/{2}.jsp" />
+	</definition>
+	
+	<definition name="admin/*/*/*" extends="adminLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/admin/{1}/{2}/{3}.jsp" />
+	</definition>
+	
+	<definition name="admin/*/*/*/*" extends="adminLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/admin/{1}/{2}/{3}/{4}.jsp" />
+	</definition>
+	<!-- admin end -->
+	
+	
+	
+	
+	
+	<!-- admin popup start -->
+	<definition name="adminPopupTemplate" template="/WEB-INF/jsp/template/admin/popup.jsp"> 
+		<put-attribute name="content"    value=""/> 
+	</definition>
+	<definition name="adminPopup/*" extends="adminPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}.jsp" />
+	</definition>
+	<definition name="adminPopup/*/*" extends="adminPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}.jsp" />
+	</definition>
+	<definition name="adminPopup/*/*/*" extends="adminPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}/{3}.jsp" />
+	</definition>
+	<definition name="adminPopup/*/*/*/*" extends="adminPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}/{3}/{4}.jsp" />
+	</definition>
+	<definition name="adminPopup/*/*/*/*/*" extends="adminPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}/{3}/{4}/{5}.jsp" />
+	</definition>
+	<!-- admin popup end -->
+	
+	
+	
+
+
+
+	
+	<!-- intra popup start -->
+	<definition name="intraPopupTemplate" template="/WEB-INF/jsp/template/intra/popup.jsp"> 
+		<put-attribute name="content"    value=""/> 
+	</definition>
+	<definition name="intraPopup/*" extends="intraPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}.jsp" />
+	</definition>
+	<definition name="intraPopup/*/*" extends="intraPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}.jsp" />
+	</definition>
+	<definition name="intraPopup/*/*/*" extends="intraPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}/{3}.jsp" />
+	</definition>
+	<definition name="intraPopup/*/*/*/*" extends="intraPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}/{3}/{4}.jsp" />
+	</definition>
+	<definition name="intraPopup/*/*/*/*/*" extends="intraPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}/{3}/{4}/{5}.jsp" />
+	</definition>
+	<!-- intra popup end -->
+	
+
+
+
+
+	<!-- main 예외 -->
+	<definition name="rndp/main/login.tiles" template="/WEB-INF/jsp/egovframework/rndp/main/login.jsp"/>
+	
+	<!-- main start -->
+	<definition name="rndpLayTemplate" template="/WEB-INF/jsp/template/hompage/mainLayout.jsp">
+		<put-attribute name="header" value="/WEB-INF/jsp/template/hompage/header.jsp"/>
+		<put-attribute name="leftMenu" value="/WEB-INF/jsp/template/hompage/leftMenu.jsp"/>
+		<put-attribute name="content" value=""/>
+		<put-attribute name="footer" value="/WEB-INF/jsp/template/hompage/footer.jsp"/>
+	</definition>
+	
+	<definition name="rndp/*.tiles" extends="rndpLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}.jsp" />
+	</definition>
+	
+	<definition name="rndp/*/*.tiles" extends="rndpLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}.jsp" />
+	</definition>
+	
+	<definition name="rndp/*/*/*.tiles" extends="rndpLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}/{3}.jsp" />
+	</definition>
+	
+	<definition name="rndp/*/*/*/*.tiles" extends="rndpLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}/{3}/{4}.jsp" />
+	</definition>
+	<!-- main end -->
+	
+	
+	<!-- main popup start -->
+	<definition name="mainPopupTemplate" template="/WEB-INF/jsp/template/hompage/popup.jsp"> 
+		<put-attribute name="content"    value=""/> 
+	</definition>
+	<definition name="mainPopup/*" extends="adminPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}.jsp" />
+	</definition>
+	<definition name="mainPopup/*/*" extends="adminPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}.jsp" />
+	</definition>
+	<definition name="mainPopup/*/*/*" extends="adminPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}/{3}.jsp" />
+	</definition>
+	<definition name="mainPopup/*/*/*/*" extends="adminPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}/{3}/{4}.jsp" />
+	</definition>
+	<definition name="mainPopup/*/*/*/*/*" extends="adminPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}/{3}/{4}/{5}.jsp" />
+	</definition>
+	<!-- main popup end -->
+	
+	
+	
+	
+	
+	
+	<!-- mes start -->
+	
+	<!-- 로그인 화면 예외 -->  
+	<definition name="mes/login/loginfrm.tiles" template="/WEB-INF/jsp/egovframework/rndp/mes/login/loginfrm.jsp"/>
+	<definition name="mes/main.tiles" template="/WEB-INF/jsp/template/mes/mainLayout.jsp">
+		<put-attribute name="header" value="/WEB-INF/jsp/template/mes/header.jsp"/>
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/mes/main.jsp"/>
+		<put-attribute name="footer" value="/WEB-INF/jsp/template/mes/footer.jsp"/>
+	</definition>  
+	
+	<definition name="mesLayTemplate" template="/WEB-INF/jsp/template/mes/commLayout.jsp">
+		<put-attribute name="header"     value="/WEB-INF/jsp/template/mes/header.jsp"/>
+		<put-attribute name="leftMenu"   value="/WEB-INF/jsp/template/mes/leftMenu.jsp"/>
+		<put-attribute name="menuTitle"  value="/WEB-INF/jsp/template/mes/menuTitle.jsp"/>
+		<put-attribute name="content"    value=""/>
+		<put-attribute name="footer" value="/WEB-INF/jsp/template/mes/footer.jsp"/>
+	</definition> 
+   
+	<definition name="mes/*.tiles" extends="mesLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/mes/{1}.jsp" />
+	</definition>
+	
+	<definition name="mes/*/*.tiles" extends="mesLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/mes/{1}/{2}.jsp" />
+	</definition>
+	
+	<definition name="mes/*/*/*.tiles" extends="mesLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/mes/{1}/{2}/{3}.jsp" />
+	</definition>
+	
+	<definition name="mes/*/*/*/*.tiles" extends="mesLayTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/mes/{1}/{2}/{3}/{4}.jsp" />
+	</definition>
+	<!-- mes end -->
+
+
+
+	<!-- mes popup start -->
+	<definition name="mesPopupTemplate" template="/WEB-INF/jsp/template/mes/popup.jsp"> 
+		<put-attribute name="content"    value=""/> 
+	</definition>
+	<definition name="mesPopup/*" extends="mesPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}.jsp" />
+	</definition>
+	<definition name="mesPopup/*/*" extends="mesPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}.jsp" />
+	</definition>
+	<definition name="mesPopup/*/*/*" extends="mesPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}/{3}.jsp" />
+	</definition>
+	<definition name="mesPopup/*/*/*/*" extends="mesPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}/{3}/{4}.jsp" />
+	</definition>
+	<definition name="mesPopup/*/*/*/*/*" extends="mesPopupTemplate">
+		<put-attribute name="content" value="/WEB-INF/jsp/egovframework/rndp/{1}/{2}/{3}/{4}/{5}.jsp" />
+	</definition>
+	<!-- mes popup end -->
+ 
+	
+	
+	
+</tiles-definitions>

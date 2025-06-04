@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	<typeAlias alias="MesOutputVO" type="egovframework.rndp.mes.output.service.MesOutputVO" />
+	<insert id="mesOutputDAO.insertMesOutput" parameterClass="mesOutputVO">
+		<selectKey type="pre" keyProperty="outputKey">
+			/* MIM pk */
+			SELECT IFNULL(MAX(O_OUTPUT_NUM), 0) + 1 FROM O_OUTPUT
+		</selectKey>
+		/* mesOutputDAO.insertMesOutput */
+		INSERT INTO O_OUTPUT
+		(
+			O_OUTPUT_NUM
+		,	O_COMNAME
+		,	O_STARDATE
+		,	O_ENDDATD
+		,	O_BUSMONEY
+		,	O_INTROCOM
+		,	O_INTROADDRESS
+		,	O_DETAILADDRESS
+		,	O_INTRODEPART
+		,	O_INTROMANAGER
+		,	O_MANAGEROPHONE
+		,	O_MANAGERMAIL
+		,	O_PMNAME
+		,	O_PMPHONE
+		,	O_PMEMAIL
+		,	k_staff_name
+		,	O_SIGN_PASS
+		)
+		VALUES
+		(
+			#outputKey#
+		,	#oComName#
+		,	IF(#oStartDate# = '' , null,#oStartDate#)
+		,	#oEndDate#
+		,	#oBusMoney#
+		,	#oIntoCom#
+		,	#oIntroAdress#
+		,	#oDetailAdress#
+		,	#oIntroDepart#
+		,	#oIntroManager#
+		, 	#oManagerPhone#
+		,	#oManagerEmail#
+		,	#oPmName#
+		, 	#oPmPhone#
+		,	#oPmEmail#
+		,	#kStaffName#
+		,	#oSignPass#
+		)
+	</insert>
+		<insert id="mesOutputDAO.insertMesOutputItem" parameterClass="mesOutputVO">
+		<selectKey type="pre" keyProperty="oOutputIemKey">
+			/* MIM pk */
+			SELECT IFNULL(MAX(O_OUTPUT_ITEM_NUM), 0) + 1 FROM O_OUTPUT_ITEM
+		</selectKey>
+		/* mesOutputDAO.insertMesOutputItem */
+		INSERT INTO O_OUTPUT_ITEM
+		(
+			O_OUTPUT_ITEM_NUM
+		,	O_OUTPUT_NUM
+		,	O_OUTPUT_ITEM_GUBUN
+		,	O_OUTPUT_ITEM_NAME
+		,	O_OUTPUT_ITEM_FILENAME
+		,	O_OUTPUT_ITEM_ETC
+		)
+		VALUES
+		(
+			#oOutputIemKey#
+		,	#outputKey#
+		,	#oOutputItemGubun#
+		,	#oOutputItemName#
+		,	#oOutputItemFileId#
+		,	#oOutputItemEtc#
+		)
+	</insert>
+
+	<select id="mesOutputDAO.selectMesOutputList" parameterClass="mesOutputVO" resultClass="mesOutputVO">
+		/* mesOutputDAO.selectMesOutputList */
+
+	SELECT
+           ou.O_OUTPUT_NUM 																																						AS outputKey
+        ,   ou.O_COMNAME 																																							AS oComName
+        ,   DATE_FORMAT(ou.O_STARDATE, '%Y-%m-%d')  																																AS oStartDate
+        ,   DATE_FORMAT(ou.O_ENDDATD, '%Y-%m-%d') 																																	AS oEndDate
+        ,   ou.O_BUSMONEY																																							AS oBusMoney
+        ,   ou.O_INTROCOM 																																							AS oIntoCom
+        ,   ou.O_INTROADDRESS 																																						AS oIntroAdress
+        ,   ou.O_DETAILADDRESS																																						AS oDetailAddress
+        ,   ou.O_INTRODEPART 																																						AS oIntroDepart
+        ,   ou.O_INTROMANAGER 																																						AS oIntroManager
+        ,   ou.O_MANAGEROPHONE 																																						AS oManagerPhone
+        ,   ou.O_MANAGERMAIL 																																						AS oManagerEmail
+        ,   ou.O_PMNAME 																																							AS oPmName
+        ,   ou.O_PMPHONE																																							AS oPmPhone
+        ,   ou.O_PMEMAIL 																																							AS oPmEmail
+        ,   ou.k_staff_name 																																						AS kStaffName
+		,	ou.SIGN_STATUS																																							AS sSignStatus
+		,	ou.SIGN_NUM																																								AS sSignKey
+		,	(SELECT S.SIGN_STAFF_NUM FROM S_SIGN_ITEM S WHERE 1=1 AND ou.SIGN_NUM = S.SIGN_NUM AND S.SIGN_DECISON = '결재대기' ORDER BY S.SIGN_SEQUENCE ASC LIMIT 1	)				AS sSignStaffKey
+    FROM
+        O_OUTPUT ou
+    WHERE 
+        1=1
+        <isNotEmpty property="topStartDate">
+            <isNotEmpty property="topEndDate">
+                <![CDATA[
+                AND DATE_FORMAT(ou.O_STARDATE, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+                ]]>
+            </isNotEmpty>
+        </isNotEmpty>
+        <isNotEmpty property="searchWord">
+            <isEqual property="searchType" compareValue="1">
+                <![CDATA[
+                AND (
+                    LOWER(ou.O_COMNAME) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+                    OR LOWER(ou.O_INTROCOM) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+                    OR LOWER(ou.O_INTROMANAGER) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+                    OR LOWER(ou.O_PMNAME) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+                )
+                ]]>
+            </isEqual>
+            <isEqual property="searchType" compareValue="2">
+                AND LOWER(ou.O_COMNAME) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+            </isEqual>
+            <isEqual property="searchType" compareValue="3">
+                AND LOWER(ou.O_INTROCOM) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+            </isEqual>
+            <isEqual property="searchType" compareValue="4">
+                AND LOWER(ou.O_INTROMANAGER) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+            </isEqual>
+            <isEqual property="searchType" compareValue="5">
+                AND LOWER(ou.O_PMNAME) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+            </isEqual>
+        </isNotEmpty>
+    ORDER BY 
+        ou.O_OUTPUT_NUM DESC
+    LIMIT 
+        #recordCountPerPage# OFFSET #firstIndex#
+</select>
+
+
+<select id="mesOutputDAO.selectMesOutputListCnt" parameterClass="mesOutputVO" resultClass="int">
+		/* mesOutputDAO.selectMesOutputListCnt */
+		SELECT
+			COUNT(*)
+		FROM   O_OUTPUT ou
+   		WHERE 1=1
+        <isNotEmpty property="topStartDate">
+            <isNotEmpty property="topEndDate">
+                <![CDATA[
+                AND DATE_FORMAT(ou.O_STARDATE, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+                ]]>
+            </isNotEmpty>
+        </isNotEmpty>
+        <isNotEmpty property="searchWord">
+            <isEqual property="searchType" compareValue="1">
+                <![CDATA[
+                AND (
+                    LOWER(ou.O_COMNAME) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+                    OR LOWER(ou.O_INTROCOM) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+                    OR LOWER(ou.O_INTROMANAGER) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+                    OR LOWER(ou.O_PMNAME) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+                )
+                ]]>
+            </isEqual>
+            <isEqual property="searchType" compareValue="2">
+                AND LOWER(ou.O_COMNAME) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+            </isEqual>
+            <isEqual property="searchType" compareValue="3">
+                AND LOWER(ou.O_INTROCOM) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+            </isEqual>
+            <isEqual property="searchType" compareValue="4">
+                AND LOWER(ou.O_INTROMANAGER) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+            </isEqual>
+            <isEqual property="searchType" compareValue="5">
+                AND LOWER(ou.O_PMNAME) LIKE CONCAT('%', LOWER(#searchWord#), '%')
+            </isEqual>
+        </isNotEmpty>
+	</select>
+	
+	<select id="mesOutputDAO.selectOutInfo" parameterClass="mesOutputVO" resultClass="mesOutputVO">
+		/* mesOutputDAO.selectOutInfo */
+
+	SELECT
+           ou.O_OUTPUT_NUM 							AS outputKey
+        ,   ou.O_COMNAME 								AS oComName
+        ,   DATE_FORMAT(ou.O_STARDATE, '%Y-%m-%d')  	AS oStartDate
+        ,   DATE_FORMAT(ou.O_ENDDATD, '%Y-%m-%d') 		AS oEndDate
+        ,   ou.O_BUSMONEY								AS oBusMoney
+        ,   ou.O_INTROCOM 								AS oIntoCom
+        ,   ou.O_INTROADDRESS 							AS oIntroAdress
+        ,   ou.O_DETAILADDRESS							AS oDetailAdress
+        ,   ou.O_INTRODEPART 							AS oIntroDepart
+        ,   ou.O_INTROMANAGER 							AS oIntroManager
+        ,   ou.O_MANAGEROPHONE 							AS oManagerPhone
+        ,   ou.O_MANAGERMAIL 							AS oManagerEmail
+        ,   ou.O_PMNAME 								AS oPmName
+        ,   ou.O_PMPHONE								AS oPmPhone
+        ,   ou.O_PMEMAIL 								AS oPmEmail
+        ,   ou.k_staff_name 							AS kStaffName
+		,	ou.SIGN_STATUS									AS sSignStatus
+		,	ou.SIGN_NUM										AS sSignKey
+		,	ou.O_SIGN_PASS										AS oSignPass
+        ,	S.SIGN_STAFF_NUM								AS sSignStaffKey
+        ,	S.SIGN_STAFF_NAME								AS sSignStaffName
+    FROM
+        O_OUTPUT ou
+     LEFT JOIN S_SIGN_ITEM S ON(ou.SIGN_NUM = S.SIGN_NUM AND S.SIGN_DECISON = '결재대기')
+    WHERE 
+        1=1
+    AND ou.O_OUTPUT_NUM  = #outputKey#
+		LIMIT 1
+   </select>
+   
+   <select id="mesOutputDAO.selectOutInfoItemList" parameterClass="mesOutputVO" resultClass="mesOutputVO">
+		/* mesOutputDAO.selectOutInfoItemList */
+
+	SELECT
+        oui.O_OUTPUT_NUM 						AS outputKey,
+        oui.O_OUTPUT_ITEM_NUM   				AS oOutputIemKey,
+        oui.O_OUTPUT_ITEM_GUBUN   				AS oOutputItemGubun,
+        oui.O_OUTPUT_ITEM_NAME    				AS oOutputItemName,
+        oui.O_OUTPUT_ITEM_ETC        			AS oOutputItemEtc,
+        oui.O_OUTPUT_ITEM_FILENAME        		AS atchFileId,
+        b.orignl_file_nm        				AS eIMGregName,
+        b.file_sn        						AS fileSn
+    FROM
+        O_OUTPUT_ITEM oui
+    left join comtnfiledetail b on (oui.O_OUTPUT_ITEM_FILENAME = b.atch_file_id)
+    WHERE 
+        1=1
+    AND oui.O_OUTPUT_NUM  = #outputKey#
+   </select> 
+   
+    <delete id="mesOutputDAO.deleteMesOutput" parameterClass="mesOutputVO">
+		/* mesOutputDAO.deleteMesOutput */
+		DELETE FROM O_OUTPUT WHERE O_OUTPUT_NUM = #outputKey#
+	</delete>
+	
+	 <delete id="mesOutputDAO.deleteMesOutputItem" parameterClass="mesOutputVO">
+		/* mesOutputDAO.deleteMesOutputItem */
+		DELETE FROM O_OUTPUT_ITEM WHERE O_OUTPUT_NUM = #outputKey#
+	</delete>
+	<update id="mesOutputDAO.updateMesOutput" parameterClass="mesOutputVO">
+		/* mesOutputDAO.updateMesOutput */
+		UPDATE
+			O_OUTPUT
+		SET
+			O_COMNAME  					= #oComName#,
+			O_STARDATE 					= IF(#oStartDate# = '' , null,#oStartDate#),
+			O_ENDDATD 					= #oEndDate#,
+			O_BUSMONEY					= #oBusMoney#,
+			O_INTROCOM 					= #oIntoCom#,
+			O_INTROADDRESS 				= #oIntroAdress#,
+			O_DETAILADDRESS 			= #oDetailAdress#,
+			O_INTRODEPART 				= #oIntroDepart#,
+			O_INTROMANAGER 				= #oIntroManager#,
+			O_MANAGEROPHONE 			= #oManagerPhone#,
+			O_MANAGERMAIL 				= #oManagerEmail#,
+			O_PMNAME 					= #oPmName#,
+			O_PMPHONE 					= #oPmPhone#,
+			O_PMEMAIL 					= #oPmEmail#,
+			O_SIGN_PASS 				= #oSignPass#
+		WHERE 1=1
+		AND O_OUTPUT_NUM = #outputKey#
+	</update>
+
+	<update id="mesOutputDAO.updateMesOutputProcess" parameterClass="mesOutputVO">
+		/* mesOutputDAO.updateMesOutputProcess */
+		UPDATE O_OUTPUT
+		SET
+			SIGN_NUM			= #sSignKey#
+		,	SIGN_STATUS			= '처리등록'
+		WHERE 1=1
+		AND O_OUTPUT_NUM = #outputKey#
+	</update>
+	
+	<update id="mesOutputDAO.requestOutputProcess" parameterClass="mesOutputVO">
+		/* mesOutputDAO.requestOutputProcess */
+		UPDATE O_OUTPUT
+		SET
+			SIGN_STATUS	 = #sSignStatus#
+		WHERE 1=1
+		AND O_OUTPUT_NUM = #outputKey#
+	</update>
+	
+	<update id="mesOutputDAO.updateOutputStatus" parameterClass="mesOutputVO">
+		/* mesOutputDAO.updateOutputStatus */
+		UPDATE O_OUTPUT
+		SET
+			SIGN_STATUS	 = returnSignStatus(SIGN_NUM)
+		WHERE 1=1
+		AND O_OUTPUT_NUM = #outputKey#
+	</update>
+	
+	
+	<select id="mesOutputDAO.mesProjectInfoList" parameterClass="mesOutputVO" resultClass="mesOutputVO">
+		/*mesOutputDAO.mesProjectInfoList*/
+			SELECT 
+			    P_PROJECT_NUM AS eProjectNum, 
+			    eProjectName, 
+			    eStartDate, 
+			    eEndDate, 
+			    eMainContractor, 
+			    eManager, 
+			    eManagerContact, 
+			    eManagerEmail, 
+			    eProjectPM, 
+			    ePMContact, 
+			    ePMEmail, 
+			    eRemarks, 
+			    eProjectStatus, 
+			    DATE_FORMAT(P_PROJECT_WDATE, '%Y-%m-%d') AS pWdate, 
+			    P_PROJECT_WKey AS kStaffKey,
+		 		P_PROJECT_WName AS kStaffName,
+			    CASE 
+				  	WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+				  	ELSE sSignStatus
+				   	END AS sSignStatus,
+		   	 	IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+			FROM P_PROJECT
+			LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = P_PROJECT_NUM  AND s.SIGN_TABLE_NAME = 'P_PROJECT')
+			WHERE 1=1 AND eProjectStatus != '삭제'
+				 <isNotEmpty property="eStartDate">
+			         AND (DATE_FORMAT(eStartDate, '%Y') = #eStartDate# OR DATE_FORMAT(eEndDate, '%Y') = DATE_FORMAT(#eStartDate#, '%Y') )  
+		         </isNotEmpty>
+		            
+		        <isNotEmpty property="eSearchWord1">
+		         AND LOWER(eProjectName) LIKE CONCAT('%',LOWER(#eSearchWord1#),'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="eSearchWord2">
+		         AND LOWER(eManager) LIKE CONCAT('%',LOWER(#eSearchWord2#),'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="eSearchWord3">
+		         AND LOWER(eProjectPM) LIKE CONCAT('%',LOWER(#eSearchWord3#),'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="eSearchWord4">
+		         AND LOWER(eProjectStatus) LIKE CONCAT('%',LOWER(#eSearchWord4#),'%')
+		        </isNotEmpty>
+		      
+			  	 ORDER BY  P_PROJECT_NUM  DESC
+   			LIMIT   #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	<select id="mesOutputDAO.mesProjectInfoListCnt" parameterClass="mesOutputVO" resultClass="int">
+		/*mesOutputDAO.mesProjectInfoListCnt*/
+			SELECT 
+			    COUNT(P_PROJECT_NUM)  
+			FROM P_PROJECT
+			
+			WHERE 1=1 AND eProjectStatus != '삭제'
+				 <isNotEmpty property="eStartDate">
+			         AND (DATE_FORMAT(eStartDate, '%Y') = #eStartDate# OR DATE_FORMAT(eEndDate, '%Y') = DATE_FORMAT(#eStartDate#, '%Y') )  
+		         </isNotEmpty>
+		        <isNotEmpty property="eSearchWord1">
+		         AND LOWER(eProjectName) LIKE CONCAT('%',LOWER(#eSearchWord1#),'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="eSearchWord2">
+		         AND LOWER(eManager) LIKE CONCAT('%',LOWER(#eSearchWord2#),'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="eSearchWord3">
+		         AND LOWER(eProjectPM) LIKE CONCAT('%',LOWER(#eSearchWord3#),'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="eSearchWord4">
+		         AND LOWER(eProjectStatus) LIKE CONCAT('%',LOWER(#eSearchWord4#),'%')
+		        </isNotEmpty>
+	</select>
+	
+	<update id="mesOutputDAO.mesProjectStatusUpdate" parameterClass="mesOutputVO" >
+		/* mesOutputDAO.mesProjectStatusUpdate  */
+		UPDATE P_PROJECT SET eProjectStatus =#eProjectStatus#
+		WHERE P_PROJECT_NUM = #eProjectNum#
+	</update>
+	
+	<insert id="mesOutputDAO.insertDeliverableInfo" parameterClass="mesOutputVO" >
+			/*mesOutputDAO.insertDeliverableInfo*/
+			INSERT INTO P_Deliverable (
+					    eProjectNum,
+					    eItemName,
+					    eItemIndex,
+					    eItemGubun,
+					    eItemDate,
+					    eItemAffiliation,
+					    eItemAuthor,
+					    eItemRemarks
+					) VALUES (
+					    #eProjectNum#,
+					    #eItemName#,
+					    #eItemIndex#,
+					    #eItemGubun#,
+					    #eItemDate#,
+					    #eItemAffiliation#,
+					    #eItemAuthor#,
+					    #eItemRemarks#
+					);	
+	</insert>
+	
+	<insert id="mesOutputDAO.insertDeliverableFileInfo" parameterClass="mesOutputVO" >
+			/*mesOutputDAO.insertDeliverableFileInfo*/
+			INSERT INTO P_Deliverable_file
+					(
+					    eProjectNum,
+					    eFileRowId,
+					    eFileRowName,
+					    eFileRowIndex,
+					    eFileRowGubun
+					)
+					VALUES
+					(
+					    #eProjectNum#,
+					    #eFileRowId#,
+					    #eFileRowName#,
+					    #eFileRowIndex#,
+					    #eFileRowGubun#
+					);
+	</insert>			
+					
+		<select id="mesOutputDAO.insertDeliverableInfoList" parameterClass="mesOutputVO" resultClass="mesOutputVO">
+			/*mesOutputDAO.insertDeliverableInfo*/
+				SELECT  
+				    eProjectNum,
+				    eItemIndex,     
+				    eItemGubun,      
+				    new_special(eItemName)   AS         eItemName,
+				    new_special(eItemDate)   AS         eItemDate,       
+				    new_special(eItemAffiliation)  AS  eItemAffiliation,
+				    new_special(eItemAuthor)  AS       eItemAuthor,     
+				    new_special(eItemRemarks) AS       eItemRemarks     
+				FROM P_Deliverable	
+				WHERE eProjectNum =#eProjectNum# AND eItemGubun= #eItemGubun#
+		</select>
+		<select id="mesOutputDAO.insertDeliverableFileInfoList" parameterClass="mesOutputVO" resultClass="mesOutputVO">
+			/*mesOutputDAO.insertDeliverableFileInfoList*/
+				SELECT  
+				     eProjectNum,
+				    eFileRowId,
+				    eFileRowName,
+				    eFileRowIndex,
+				    eFileRowGubun
+				FROM P_Deliverable_file	
+				WHERE eProjectNum =#eProjectNum#  AND  eFileRowGubun= #eItemGubun#
+		</select>
+		<delete id="mesOutputDAO.deleteDeliverableInfo" parameterClass="mesOutputVO">
+			/*mesOutputDAO.deleteDeliverableInfo*/
+			DELETE FROM P_Deliverable WHERE eProjectNum =#eProjectNum# 
+		</delete>
+		<delete id="mesOutputDAO.deleteDeliverableFileInfo" parameterClass="mesOutputVO">
+			/*mesOutputDAO.deleteDeliverableFileInfo*/
+			DELETE FROM P_Deliverable_file WHERE eProjectNum =#eProjectNum# 
+		</delete>
+		
+			<delete id="mesOutputDAO.deleteReportInfo" parameterClass="mesOutputVO">
+			/*mesOutputDAO.deleteReportInfo*/
+			DELETE FROM P_Report WHERE eProjectNum =#eProjectNum# 
+		</delete>
+		<delete id="mesOutputDAO.deleteReportFileInfo" parameterClass="mesOutputVO">
+			/*mesOutputDAO.deleteReportFileInfo*/
+			DELETE FROM P_Report_file WHERE eProjectNum =#eProjectNum# 
+		</delete>
+		
+	<insert id="mesOutputDAO.insertReportInfo" parameterClass="mesOutputVO" >
+			/*mesOutputDAO.insertReportInfo*/
+			INSERT INTO P_Report (
+					    eProjectNum,
+					    eItemName,
+					    eItemIndex,
+					    eItemGubun,
+					    eItemDate,
+					    eItemAffiliation,
+					    eItemAuthor,
+					    eItemRemarks
+					) VALUES (
+					    #eProjectNum#,
+					    #eItemName#,
+					    #eItemIndex#,
+					    #eItemGubun#,
+					    #eItemDate#,
+					    #eItemAffiliation#,
+					    #eItemAuthor#,
+					    #eItemRemarks#
+					);	
+	</insert>
+	
+	<insert id="mesOutputDAO.insertReportFileInfo" parameterClass="mesOutputVO" >
+			/*mesOutputDAO.insertReportFileInfo*/
+			INSERT INTO P_Report_file
+					(
+					    eProjectNum,
+					    eFileRowId,
+					    eFileRowName,
+					    eFileRowIndex,
+					    eFileRowGubun
+					)
+					VALUES
+					(
+					    #eProjectNum#,
+					    #eFileRowId#,
+					    #eFileRowName#,
+					    #eFileRowIndex#,
+					    #eFileRowGubun#
+					);
+	</insert>			
+				
+		<select id="mesOutputDAO.insertReportInfoList" parameterClass="mesOutputVO" resultClass="mesOutputVO">
+			/*mesOutputDAO.insertReportInfoList*/
+				SELECT  
+				    eProjectNum,
+				    eItemIndex,     
+				    eItemGubun,      
+				    new_special(eItemName)   AS         eItemName,
+				    new_special(eItemDate)   AS         eItemDate,       
+				    new_special(eItemAffiliation)  AS  eItemAffiliation,
+				    new_special(eItemAuthor)  AS       eItemAuthor,     
+				    new_special(eItemRemarks) AS       eItemRemarks     
+				FROM P_Report	
+				WHERE eProjectNum =#eProjectNum# AND eItemGubun= #eItemGubun#
+		</select>
+		<select id="mesOutputDAO.insertReportFileInfoList" parameterClass="mesOutputVO" resultClass="mesOutputVO">
+			/*mesOutputDAO.insertReportFileInfoList*/
+				SELECT  
+				     eProjectNum,
+				    eFileRowId,
+				    eFileRowName,
+				    eFileRowIndex,
+				    eFileRowGubun
+				FROM P_Report_file	
+				WHERE eProjectNum =#eProjectNum#  AND  eFileRowGubun= #eItemGubun#
+		</select>
+</sqlMap>

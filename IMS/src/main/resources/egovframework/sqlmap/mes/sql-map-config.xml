@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN" "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	<sqlMap resource="egovframework/sqlmap/mes/Log_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Asset_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Blueprint_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Common_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Gubun_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_GubunCate_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Login_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Maintance_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_MyPage_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Output_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Position_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Project_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Sign_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Staff_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Statistics_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_User_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Inspection_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Contact_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Issue_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Equipment_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/mes/Mes_Approval_SQL.xml" />
+</sqlMapConfig>

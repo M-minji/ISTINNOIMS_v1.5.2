@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>	
+	<typeAlias alias="aVo" type="egovframework.rndp.mes.approval.service.MesApprovalVO" />
+	
+	 
+	<select id="mesApprovalDAO.mesApprovalList" parameterClass="aVo" resultClass="aVo">
+		 /* mesApprovalDAO.mesApprovalList */
+			SELECT 
+				ssi.SIGN_TABLE_NUM AS eTableKey,
+				ssi.SIGN_STAFF_NUM AS eStaffKey,
+				ssi.SIGN_STAFF_GUBUN AS eGubun,
+				DATE_FORMAT(ss.SIGN_START_DATE,'%Y-%m-%d %H:%i' ) AS eDete,
+				table_name AS eTableName,
+				table_url AS eTableUrl,
+				key_name AS eKeyName,
+				menu_name AS eMenuName,
+				kma.k_menu_auth_flag AS eMenuFlag
+			FROM S_SIGN_ITEM AS ssi 
+			LEFT JOIN S_SIGN AS ss  ON ssi.SIGN_NUM = ss.SIGN_NUM
+			LEFT JOIN approval_url AS au  ON ssi.SIGN_TABLE_NAME = au.table_name
+			LEFT JOIN k_menu_auth kma  ON (kma.k_staff_key =#eStaffKey# AND kma.k_menu_key = au.cockKey)
+			WHERE  ssi.SIGN_DECISON = '결재대기'
+			 	AND ssi.SIGN_TABLE_NAME IS NOT NULL
+			  	AND ssi.SIGN_TABLE_NAME != ''
+		  		AND ssi.SIGN_STAFF_NUM = #eStaffKey#
+		  		AND DATE_FORMAT(ss.SIGN_START_DATE, '%Y-%m-%d') BETWEEN #eTopStartDate# AND #eTopEndDate#
+		  		<isNotEmpty property="eSearchTypeSet1">
+					AND LOWER(table_name) LIKE LOWER(#eSearchTypeSet1#)
+				</isNotEmpty>
+				<isNotEmpty property="eSearchTypeSet2">
+					AND LOWER(ssi.SIGN_STAFF_GUBUN) LIKE LOWER(#eSearchTypeSet2#)
+				</isNotEmpty>
+			ORDER BY ssi.SIGN_ITEM_NUM DESC 
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="mesApprovalDAO.mesApprovalListCnt" parameterClass="aVo" resultClass="int">
+		/* mesApprovalDAO.mesApprovalListCnt */
+			 SELECT 
+				COUNT(ssi.SIGN_TABLE_NUM)  
+			FROM S_SIGN_ITEM AS ssi 
+			LEFT JOIN S_SIGN AS ss  ON ssi.SIGN_NUM = ss.SIGN_NUM
+			LEFT JOIN approval_url AS au  ON ssi.SIGN_TABLE_NAME = au.table_name
+			LEFT JOIN k_menu_auth kma  ON (kma.k_staff_key =#eStaffKey# AND kma.k_menu_key = au.cockKey)
+			WHERE  ssi.SIGN_DECISON = '결재대기'
+			 	AND ssi.SIGN_TABLE_NAME IS NOT NULL
+			  	AND ssi.SIGN_TABLE_NAME != ''
+		  		AND ssi.SIGN_STAFF_NUM = #eStaffKey#
+		  		AND DATE_FORMAT(ss.SIGN_START_DATE, '%Y-%m-%d') BETWEEN #eTopStartDate# AND #eTopEndDate#
+		  		<isNotEmpty property="eSearchTypeSet1">
+					AND LOWER(table_name) LIKE LOWER(#eSearchTypeSet1#)
+				</isNotEmpty>
+				<isNotEmpty property="eSearchTypeSet2">
+					AND LOWER(ssi.SIGN_STAFF_GUBUN) LIKE LOWER(#eSearchTypeSet2#)
+				</isNotEmpty>
+		 
+	</select>
+	<select id="mesApprovalDAO.mesApprovalNameList" parameterClass="aVo" resultClass="aVo">
+		 /* mesApprovalDAO.mesApprovalNameList */
+			SELECT 
+				table_name AS eTableName,
+				table_url AS eTableUrl,
+				key_name AS eKeyName,
+				menu_name AS eMenuName
+			FROM approval_url AS au  
+	</select>
+	 
+</sqlMap>

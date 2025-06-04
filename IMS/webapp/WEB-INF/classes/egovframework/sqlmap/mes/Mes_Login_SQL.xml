@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	<typeAlias alias="mesKStaffVO" type="egovframework.rndp.mes.login.service.MesK_StaffVo" />
+	
+	<!-- 2020 07 27 intra 에서 mes 로 모듈화 위해 이동 -->
+	<typeAlias alias="mesLoginVo" type="egovframework.rndp.mes.login.service.MesLoginVo" />
+	<typeAlias alias="mesStaffVO" type="egovframework.rndp.mes.staff.service.MesStaffVO" /> 
+	
+	<select id="mesLoginDAO.selectMesLoginStaff" parameterClass="mesKStaffVO" resultClass="mesKStaffVO" >
+		/* mesLoginDAO.selectMesLoginStaff */
+		/* 테스트용 마스터 pw (rndp 것으로 혹시나 해서 만들어봄, 언젠가 필요한 날이 있을듯) */
+		SELECT
+			k_staff_key                                            AS kStaffKey   
+		,	k_class_key                                            AS kClassKey   
+		,	(
+			SELECT	k_class_name
+			FROM	k_class
+			WHERE	k_class_key = k_staff.k_class_key
+			)                                                      AS kClassName 
+		,	k_position_key                                         AS kPositionKey    
+		,	(
+			SELECT	POSITION_NAME
+			FROM	K_POSITION
+			WHERE	POSITION_NUM = k_staff.k_position_key
+			)														AS kPositionName			     
+		,	k_staff_id           									AS kStaffId                       
+		,	k_staff_name         									AS kStaffName                     
+		,	k_staff_birthday     									AS kStaffBirthday          
+		,	k_staff_birthday_flag									AS kStaffBirthdayFlag    
+		,	k_staff_email       									AS kStaffEmail                  
+		,	k_staff_messenger   									AS kStaffMessenger          
+		,	k_staff_post1       									AS kStaffPost1                  
+		,	k_staff_post2       									AS kStaffPost2                  
+		,	k_staff_address1    									AS kStaffAddress1            
+		,	k_staff_address2    									AS kStaffAddress2            
+		,	k_staff_telephone1  									AS kStaffTelephone1        
+		,	k_staff_telephone2  									AS kStaffTelephone2        
+		,	k_staff_telephone3  									AS kStaffTelephone3        
+		,	k_staff_mobile1     									AS kStaffMobile1              
+		,	k_staff_mobile2     									AS kStaffMobile2              
+		,	k_staff_mobile3     									AS kStaffMobile3              
+		,	k_staff_homepage    									AS kStaffHomepage            
+		,	k_staff_comment     									AS kStaffComment              
+		,	k_staff_state_flag  									AS kStaffStateFlag         
+		,	k_staff_imagefile   									AS kStaffImagefile          
+		,	k_staff_sign_image  									AS kStaffSignImage         
+		,	k_staff_num         									AS kStaffNum                      
+		,	k_mail_use          									AS kMailUse                        
+		,	k_sector_key        									AS kSectorKey            
+		,	k_staff_auth_c											AS kStaffAuthConfirmFlag 
+		,	k_staff_auth_w											AS kStaffAuthWriteFlag 	
+		,	k_staff_auth_m											AS kStaffAuthModifyFlag 	
+		,	k_staff_auth_d											AS kStaffAuthDelFlag 	
+		,	k_staff_auth_close																	AS kStaffAuthCloseFlag 
+		,	k_staff_auth_m											AS kAdminAuth 	
+		,	(SELECT k_env_value FROM k_env WHERE 1=1 AND k_env_name = 'comLogImgName')				AS comLogImg
+		,	(SELECT k_env_value FROM k_env WHERE 1=1 AND k_env_name = 'mainLogImgName')				AS mainLogImg
+		FROM
+			k_staff                           
+		WHERE 1=1
+		AND k_staff_id = #kStaffId#
+		AND k_staff_state_flag != '2' 		/* 퇴직 */
+		AND k_staff_state_flag != '99999'	/* 삭제시 상태만 처리, mesUserDAO.deleteUser 참고 */
+		AND k_staff_password = AES_ENCRYPT(#kStaffPassword#, get_random_key())
+
+	</select>
+	
+	<insert id="mesLoginDAO.mesLogInsert" parameterClass="mesKStaffVO">
+		/* mesLoginDAO.mesLogInsert */
+		INSERT INTO k_menu_log
+		( 
+		  k_log_key						
+		, k_staff_key
+		, k_menu_key
+		, k_menu_root
+		, k_log_gubun
+		, k_log_ip
+		, k_log_date
+		) 
+		VALUES 
+		(
+		  ( SELECT IFNULL(MAX(a.k_log_key), 0) + 1 FROM	k_menu_log as a  )
+		, #kStaffKey#
+		, #kMenuKey#
+		, #kMenuRoot#
+		, #kLogGubun#
+		, #kLogIp#
+		, NOW()
+		)
+	</insert>
+	
+	<select id="mesLoginDAO.inLogWorkerIdList" parameterClass="mesKStaffVO" resultClass="mesKStaffVO" >
+		/* mesLoginDAO.inLogWorkerIdList */
+			SELECT 
+				kLog.k_staff_key   AS kStaffKey
+				,staff.k_staff_id   AS kStaffId
+				,staff.k_staff_name AS kStaffName
+				,DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d')  AS  eLogData
+				,COUNT(kLog.k_menu_key) AS eLogCnt
+				,totals.eLogSum as eLogSum
+			FROM k_menu_log AS kLog
+			INNER JOIN k_staff as staff
+				ON (kLog.k_staff_key = staff.k_staff_key)
+			LEFT JOIN (
+					  SELECT 
+					    COUNT(kLog.k_menu_key) as eLogSum
+					    ,kLog.k_staff_key as kStaffKey
+					    ,DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') as eLogData
+					  FROM k_menu_log AS kLog
+					  WHERE 1=1 AND kLog.k_log_gubun != 'menu'
+					   <isNotEmpty property="eTopStartDate">	
+							<isNotEmpty property="eTopEndDate">
+								<![CDATA[                  
+								AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') >=  #eTopStartDate#
+								AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') <= #eTopEndDate# 
+								]]>     
+							</isNotEmpty>
+						</isNotEmpty>
+					    GROUP BY  DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d')
+					) as totals
+				ON( totals.eLogData = DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') )
+			WHERE 1=1
+			<isNotEmpty property="eTopStartDate">	
+				<isNotEmpty property="eTopEndDate">
+					<![CDATA[                  
+					AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') >=  #eTopStartDate#
+					AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') <= #eTopEndDate# 
+					]]>     
+				</isNotEmpty>
+			</isNotEmpty>
+			AND  kLog.k_log_gubun != 'menu'
+		GROUP BY kLog.k_staff_key, DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d')
+	</select>
+	<select id="mesLoginDAO.inLogWorkerIdTextList" parameterClass="mesKStaffVO" resultClass="mesKStaffVO" >
+		/* mesLoginDAO.inLogWorkerIdTextList */
+			SELECT 
+				kLog.k_staff_key   AS kStaffKey
+				,staff.k_staff_id   AS kStaffId
+				,staff.k_staff_name AS kStaffName
+				,DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d')  AS  eLogData
+				,COUNT(kLog.k_menu_key) AS eLogCnt
+				,totals.eLogSum as eLogSum
+			FROM k_menu_log AS kLog
+			INNER JOIN k_staff as staff
+				ON (kLog.k_staff_key = staff.k_staff_key)
+			LEFT JOIN (
+					  SELECT 
+					    COUNT(kLog.k_menu_key) as eLogSum
+					    ,kLog.k_staff_key as kStaffKey
+					    ,DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') as eLogData
+					  FROM k_menu_log AS kLog
+					  WHERE 1=1 AND  kLog.k_log_gubun != 'menu'
+					   <isNotEmpty property="eTopStartDate">	
+							<isNotEmpty property="eTopEndDate">
+								<![CDATA[                  
+								AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') >=  #eTopStartDate#
+								AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') <= #eTopEndDate# 
+								]]>     
+							</isNotEmpty>
+						</isNotEmpty>
+					    GROUP BY DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d')
+					) as totals
+				ON( totals.eLogData = DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') )
+			WHERE 1=1
+			<isNotEmpty property="eTopStartDate">	
+				<isNotEmpty property="eTopEndDate">
+					<![CDATA[                  
+					AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') >=  #eTopStartDate#
+					AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') <= #eTopEndDate# 
+					]]>     
+				</isNotEmpty>
+			</isNotEmpty>
+			AND  kLog.k_log_gubun != 'menu'
+		GROUP BY kLog.k_staff_key 
+		ORDER BY kLog.k_staff_key 
+	</select>
+	<select id="mesLoginDAO.inLogWorkerMenuList" parameterClass="mesKStaffVO" resultClass="mesKStaffVO" >
+		/*mesLoginDAO.inLogWorkerMenuList*/
+		SELECT 
+			kLog.k_menu_key   AS kMenuKey
+			,menu.k_menu_name  AS kMenuName
+			,DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d')  AS  eLogData
+			,count(kLog.k_menu_key) AS eLogCnt
+			,totals.eLogSum as eLogSum
+		FROM k_menu_log AS kLog
+		INNER JOIN k_menu as menu
+			ON (kLog.k_menu_key = menu.k_menu_key )
+		 LEFT JOIN (
+				  SELECT 
+				    COUNT(kLog.k_menu_key) as eLogSum
+				    ,DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') as eLogData
+				  FROM k_menu_log AS kLog
+				  WHERE 1=1 AND  kLog.k_log_gubun = 'menu'  
+					<isNotEmpty property="eTopStartDate">	
+						<isNotEmpty property="eTopEndDate">
+							<![CDATA[                  
+							AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') >=  #eTopStartDate#
+							AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') <= #eTopEndDate# 
+							]]>     
+						</isNotEmpty>
+					</isNotEmpty>
+				    GROUP BY  DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d')
+				) as totals
+			ON(totals.eLogData = DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') )	
+		WHERE 1=1 AND kLog.k_log_gubun = 'menu' AND kLog.k_menu_root NOT IN (741,769,740)
+		  AND k_menu_visible_flag = 'T'
+		<isNotEmpty property="eTopStartDate">	
+			<isNotEmpty property="eTopEndDate">
+				<![CDATA[                  
+				AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') >=  #eTopStartDate#
+				AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') <= #eTopEndDate# 
+				]]>     
+			</isNotEmpty>
+		</isNotEmpty>
+		GROUP BY kLog.k_menu_key 
+     	ORDER BY kLog.k_menu_key ASC
+	</select>
+	
+	<!-- 2020 07 27 intra 에서 mes 로 모듈화 위해 이동 --> 
+	<resultMap id="selectKClassNameList" class="mesLoginVo">
+		<result property="kClassKey" column="k_class_key" />
+		<result property="kClassRank" column="k_class_rank" />
+		<result property="kClassName" column="k_class_name" />
+	</resultMap>
+	<!-- 직원 등록 신청 팝업에 사용 : 직급 선택 -->
+	<select id="mesLoginDAO.selectKClassNameList" parameterClass="mesLoginVo" resultMap="selectKClassNameList">
+	<![CDATA[ 
+		/* mesLoginDAO.selectKClassNameList */
+		SELECT
+			k_class_key,
+			k_class_rank,
+			k_class_name	
+		FROM
+			k_class
+			ORDER BY k_class_rank DESC
+	]]>
+	</select>
+	
+	<resultMap id="selectKSectorList" class="mesLoginVo">
+		<result property="kSectorKey" column="k_sector_key" />
+		<result property="kSectorRank" column="k_sector_rank" />
+		<result property="kSectorName" column="k_sector_name" />
+	</resultMap>
+<!-- 직원 등록 신청 팝업에 사용 : 사업 선택 -->
+	<select id="mesLoginDAO.selectKSectorList" parameterClass="mesLoginVo" resultMap="selectKSectorList">
+	<![CDATA[ 
+		/* mesLoginDAO.selectKSectorList */
+		SELECT
+			k_sector_key,
+			k_sector_rank,
+			k_sector_name
+		FROM
+			k_sector
+	]]>
+	</select>
+	
+	<resultMap id="selectKPositionList" class="mesLoginVo">
+		<result property="kPositionKey" column="POSITION_NUM" />
+		<result property="kPositionRank" column="POSITION_rank" />
+		<result property="kPositionName" column="POSITION_NAME" />
+	</resultMap>
+	
+	<!-- 직원 등록 신청 팝업에 사용 : 부서 선택 -->
+	<select id="mesLoginDAO.selectKPositionList" parameterClass="mesLoginVo" resultMap="selectKPositionList">
+	<![CDATA[ 
+		/* mesLoginDAO.selectKPositionList */
+		SELECT
+			POSITION_NUM,
+			POSITION_rank,
+			POSITION_NAME
+		FROM
+			K_POSITION
+	]]>
+	</select>
+	
+	<select id="mesLoginDAO.selectCheckId" parameterClass="String" resultClass="int">
+	<![CDATA[ 
+		/* mesLoginDAO.selectCheckId */
+		SELECT	SUM(cnt)
+		FROM	(
+				SELECT	COUNT (k_staff_id) AS cnt
+				FROM	k_staff_request k
+				WHERE	k.k_staff_id = #id#
+				UNION ALL
+				SELECT	count(k_staff_id) AS cnt
+				FROM	k_staff a
+				WHERE	a.k_staff_id = #id#
+				) AS a
+	]]>
+	</select>
+	
+	<update id="mesLoginDAO.updateMesLoginStaff" parameterClass="mesKStaffVO">
+		/* mesLoginDAO.updateMesLoginStaff */
+		UPDATE
+			k_staff
+		SET
+				k_staff_count = IFNULL(k_staff_count , 0) + 1
+		WHERE 
+			k_staff_id = #kStaffId#
+	</update>
+	
+	<update id="mesLoginDAO.updateMesLoginStaff2" parameterClass="mesKStaffVO">
+		/* mesLoginDAO.updateMesLoginStaff2 */
+		UPDATE
+			k_staff
+		SET
+				k_staff_count = 0
+		WHERE 
+			k_staff_id = #kStaffId#
+	</update>
+	
+	<select id="mesLoginDAO.selectMesLoginCount" parameterClass="mesKStaffVO" resultClass="int">
+		/* mesLoginDAO.selectMesLoginCount */
+		SELECT 
+				IF(COUNT(*) != 0 , IFNULL(k_staff_count , 0) , 99)
+		FROM 
+			k_staff
+		WHERE k_staff_id = #kStaffId#  
+		AND   k_staff_state_flag != '99999'
+	</select>
+	
+	
+	
+	
+	<select id="mesStaffDAO.selectMesMenuAuth" parameterClass="menuBeanVO" resultClass="menuBeanVO" >
+		/* mesStaffDAO.selectMesMenuAuth */
+		SELECT 
+			k_menu_key					AS kMenuKey
+        ,	k_menu_auth_flag			AS kMenuAuthFlag
+        ,	k_menu_auth_c				AS kMenuAuthC
+        ,	k_menu_auth_m				AS kMenuAuthM
+        ,	k_menu_auth_d				AS kMenuAuthD
+        ,	k_menu_auth_w				AS kMenuAuthW
+        FROM k_menu_auth 
+        WHERE 1=1 
+        AND k_staff_key = #kStaffKey#
+        AND k_menu_key = #key#
+	</select>
+	
+	<select id="mesLoginDAO.eALLofMenuList"  resultClass="mesKStaffVO" >
+        /*mesLoginDAO.eALLofMenuList*/
+            SELECT 
+                k_menu_key AS kMenuKey,
+                k_menu_name  AS kMenuName
+            FROM 
+                k_menu km 
+            where k_menu_group_key = 1 and  k_menu_visible_flag = 'T' and k_menu_ref = 0 
+    </select>
+    
+    <select id="mesLoginDAO.eMenuLogDataList" parameterClass="mesKStaffVO"  resultClass="mesKStaffVO" >
+        /*mesLoginDAO.eMenuLogDataList*/
+         SELECT 
+                kLog.k_menu_key   AS kMenuKey
+            ,   DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d')  AS  eLogData
+            ,   count(kLog.k_menu_key) AS eLogCnt
+            ,   totals.eLogSum as eLogSum
+         FROM k_menu_log AS kLog
+         INNER JOIN k_menu as menu ON (kLog.k_menu_key = menu.k_menu_key )
+            LEFT JOIN (
+                    SELECT 
+                        COUNT(kLog.k_menu_key) as eLogSum
+                    ,   DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') as eLogData
+                    FROM k_menu_log AS kLog
+                     INNER JOIN k_staff as staff ON (kLog.k_staff_key = staff.k_staff_key and staff.k_staff_id  != 'rndp')
+                    INNER JOIN k_menu as menu ON (kLog.k_menu_key = menu.k_menu_key )
+                    WHERE 1=1 
+                    AND kLog.k_log_gubun = 'menu' 
+                    AND menu.k_menu_group_key = 1  
+                    AND menu.k_menu_visible_flag = 'T'
+                    AND  staff.k_staff_id  != 'rndp'
+                    AND menu.k_menu_ref = 0                
+                        <isNotEmpty property="eTopStartDate">   
+                            <isNotEmpty property="eTopEndDate">
+                                <![CDATA[                  
+                                AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') >=  #eTopStartDate#
+                                AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') <= #eTopEndDate# 
+                                ]]>     
+                            </isNotEmpty>
+                        </isNotEmpty>
+                    GROUP BY  DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d')
+                ) AS totals     ON(totals.eLogData = DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') ) 
+        WHERE 1=1 
+        AND kLog.k_log_gubun = 'menu' 
+        AND menu.k_menu_group_key = 1  
+        AND menu.k_menu_visible_flag = 'T'
+        AND menu.k_menu_ref = 0 
+         <isNotEmpty property="eTopStartDate">   
+                            <isNotEmpty property="eTopEndDate">
+                                <![CDATA[                  
+                                AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') >=  #eTopStartDate#
+                                AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') <= #eTopEndDate# 
+                                ]]>     
+                            </isNotEmpty>
+                        </isNotEmpty>
+        GROUP BY kLog.k_menu_key
+            , DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d')
+        ORDER BY kLog.k_log_date ASC,kLog.k_menu_key
+        
+    </select>
+    
+    <select id="mesLoginDAO.eMenuLogStaffSum" parameterClass="mesKStaffVO"  resultClass="mesKStaffVO" >
+        /*mesLoginDAO.eMenuLogStaffSum*/
+                     SELECT 
+                        COUNT(kLog.k_menu_key) as eLogSum
+                        ,   staff.k_staff_id AS kStaffId 
+                        ,   staff.k_staff_name AS kStaffName 
+                        ,   staff.k_staff_key  AS kStaffKey
+                    FROM k_menu_log AS kLog
+                    INNER JOIN k_staff as staff ON (kLog.k_staff_key = staff.k_staff_key and staff.k_staff_id  != 'rndp')
+                    INNER JOIN k_menu as menu ON (kLog.k_menu_key = menu.k_menu_key )
+                    WHERE 1=1 
+                    AND kLog.k_log_gubun = 'menu' 
+                    AND menu.k_menu_group_key = 1  
+                    AND menu.k_menu_visible_flag = 'T'
+                    AND  staff.k_staff_id  != 'rndp'
+<!--                     AND menu.k_menu_ref = 0                 -->
+                        <isNotEmpty property="eTopStartDate">   
+                           <isNotEmpty property="eTopEndDate">
+                                <![CDATA[                  
+                                AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') >=  #eTopStartDate#
+                                AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') <= #eTopEndDate# 
+                                ]]>     
+                            </isNotEmpty>
+                        </isNotEmpty> 
+                    GROUP BY  staff.k_staff_key  
+    </select>
+    <select id="mesLoginDAO.eALLofMenuAndSumList"  parameterClass="mesKStaffVO" resultClass="mesKStaffVO" >
+        /* mesLoginDAO.eALLofMenuAndSumList */
+                SELECT 
+                        COUNT(ifnull(kLog.k_menu_key,0)) as eLogSum
+                        ,menu.k_menu_name  AS kMenuName
+                 FROM k_menu as menu 
+                     INNER JOIN k_menu_log AS kLog ON (kLog.k_menu_key = menu.k_menu_key )
+                     INNER JOIN k_staff as staff ON (kLog.k_staff_key = staff.k_staff_key and staff.k_staff_id  != 'rndp')
+                    WHERE 1=1  AND menu.k_menu_root NOT IN (741,769,740)
+                    AND kLog.k_log_gubun = 'menu'  
+                    AND menu.k_menu_group_key = 1  
+                    AND menu.k_menu_visible_flag = 'T'
+                    AND  staff.k_staff_id  != 'rndp'
+<!--                     AND menu.k_menu_ref = 0                 -->
+                        <isNotEmpty property="eTopStartDate">   
+                            <isNotEmpty property="eTopEndDate">
+                                <![CDATA[                  
+                                AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') >=  #eTopStartDate#
+                                AND DATE_FORMAT(kLog.k_log_date, '%Y-%m-%d') <= #eTopEndDate# 
+                                ]]>     
+                            </isNotEmpty>
+                        </isNotEmpty> 
+                   GROUP BY  kLog.k_menu_key
+                   ORDER BY	kLog.k_menu_key ASC
+    </select>
+</sqlMap>

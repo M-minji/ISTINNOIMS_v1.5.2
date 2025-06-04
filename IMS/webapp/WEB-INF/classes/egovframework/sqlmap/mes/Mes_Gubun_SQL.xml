@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	<typeAlias alias="mesGubunVO" type="egovframework.rndp.mes.gubun.service.MesGubunVO" />
+
+	<!-- 안상현 -->
+	<select id="mesGubunDAO.selectMesGubunCateList" resultClass="mesGubunVO">
+		/* mesGubunDAO.selectMesGubunCateList */
+		SELECT
+			gc.GU_NUM 	AS sGubunCateKey
+		,	gc.GU_NAME 	AS sGubunCateName
+		FROM
+			GU gc
+		ORDER BY GU_NUM DESC
+	</select>
+	
+	<insert id="mesGubunDAO.insertMesGubun" parameterClass="mesGubunVO">
+		<selectKey keyProperty="sGubunKey">
+			/* s_gubun pk */
+			SELECT IFNULL(MAX(GC_NUM), 0) + 1 FROM GC
+		</selectKey>
+		/* mesGubunDAO.insertMesGubun */
+		INSERT INTO GC 
+		(
+			GC_NUM
+		,	GU_NUM
+		,	GU_NAME
+		,	GC_NAME
+		,	GC_ETC
+		,	GC_WDATE
+		,	k_staff_key
+		)
+		VALUES
+		(
+			#sGubunKey#
+		,	#sGubunCateKey#
+		,	(SELECT GU_NAME FROM GU ALIAS_FOR_SUBQUERY WHERE GU_NUM = #sGubunCateKey#)
+		,	#sGubunName#
+		,	#sGubunEtc#
+		,	NOW()
+		,	#kStaffKey#
+		)
+	</insert>
+	
+	<select id="mesGubunDAO.selectMesGubunList" parameterClass="mesGubunVO" resultClass="mesGubunVO">
+		/* mesGubunDAO.selectMesGubunList */
+		SELECT
+			g.GC_NUM 				AS sGubunKey
+		,	g.GU_NUM 				AS sGubunCateKey
+		,	g.GU_NAME 				AS sGubunCateName
+		,	g.GC_NAME 				AS sGubunName
+		,	g.GC_ETC 				AS sGubunEtc
+		FROM
+			GC g
+		WHERE 1=1
+		<isNotEmpty property="searchGubun">
+			AND g.GU_NUM = #searchGubun#
+		</isNotEmpty>
+		<isNotEmpty property="searchWord">
+			AND LOWER(g.GC_NAME) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+		</isNotEmpty>
+		ORDER BY g.GU_NUM, g.GC_NAME
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="mesGubunDAO.selectMesGubunListCnt" parameterClass="mesGubunVO" resultClass="int">
+		/* mesGubunDAO.selectMesGubunListCnt */
+		SELECT
+			COUNT(*)
+		FROM
+			GC g
+		WHERE 1=1
+		<isNotEmpty property="searchGubun">
+			AND g.GU_NUM = #searchGubun#
+		</isNotEmpty>
+		<isNotEmpty property="searchWord">
+			AND LOWER(g.GC_NAME) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+		</isNotEmpty>
+	</select>
+	
+	<select id="mesGubunDAO.selectMesGubunInfo" parameterClass="mesGubunVO" resultClass="mesGubunVO">
+		/* mesGubunDAO.selectMesGubunInfo */
+		SELECT
+			g.GC_NUM 				AS sGubunKey
+		,	g.GU_NUM				AS sGubunCateKey	
+		,	g.GU_NAME		 		AS sGubunCateName
+		,	g.GC_NAME 				AS sGubunName
+		,	g.GC_ETC 				AS sGubunEtc
+		FROM
+			GC g
+		WHERE 1=1
+		AND g.GC_NUM = #sGubunKey#
+	</select>
+	
+	<delete id="mesGubunDAO.deleteMesGubun" parameterClass="mesGubunVO">
+		/* mesGubunDAO.deleteMesGubun */
+		DELETE FROM	GC WHERE 1=1 AND GC_NUM = #sGubunKey#
+	</delete>
+	
+	<update id="mesGubunDAO.updateMesSGubun" parameterClass="mesGubunVO">
+		/* mesGubunDAO.updateMesSGubun */
+		UPDATE
+			GC
+		SET
+			GU_NUM 			= #sGubunCateKey#
+		,	GU_NAME 		= (SELECT GU_NAME FROM GU ALIAS_FOR_SUBQUERY WHERE GU_NUM = #sGubunCateKey#)
+		,	GC_NAME 		= #sGubunName#
+		,	GC_ETC	 		= #sGubunEtc#
+		,	k_staff_key 	= #kStaffKey#
+		WHERE 1=1
+		AND GC_NUM = #sGubunKey#
+	</update>
+	
+	<select id="mesGubunDAO.selectMesGubunCodeList" parameterClass="mesGubunVO" resultClass="mesGubunVO">
+		/* mesGubunDAO.selectMesGubunCodeList */
+		SELECT 	  
+			GC_NUM			AS sGubunKey
+		,	GC_NAME 		AS sGubunName
+		,	GC_ETC 		AS sGubunEtc
+	  	FROM 
+	  		GC
+	  	WHERE 1=1
+	  	<isNotEmpty property="sGubunCateKey">
+     		AND GU_NUM = #sGubunCateKey#
+	  	</isNotEmpty>                   
+	</select>
+
+</sqlMap>
+

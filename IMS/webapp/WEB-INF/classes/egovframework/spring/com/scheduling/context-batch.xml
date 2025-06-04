@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	<!--  메모리 상으로만 job meta 정보를 관리하는 repository db에 정보를 저장하지 않고 간단하게 돌려보는 용도 -->
+	<!-- 실제 트랜잭션은 발생하지 않지만 스프링 프레임워크 구성을 맞추기 위한 가짜 트랜잭션 매니저 -->
+	<bean id="transactionManager" class="org.springframework.batch.support.transaction.ResourcelessTransactionManager"></bean>
+
+</beans>

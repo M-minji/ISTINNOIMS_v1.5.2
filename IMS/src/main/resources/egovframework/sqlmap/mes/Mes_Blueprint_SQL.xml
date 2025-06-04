@@ -1,0 +1,1688 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	<typeAlias alias="mesBlueprintVO" type="egovframework.rndp.mes.bluprint.service.MesBlueprintVO" />
+	
+	<insert id="mesBlueprintDAO.insertUpdateMesBlueprint" parameterClass="mesBlueprintVO">
+		<selectKey type="pre" keyProperty="pkey" resultClass="String">
+			SELECT IFNULL(MAX(BLP_NUM), 0) + 1 FROM BLP
+		</selectKey>
+		/*	mesBlueprintDAO.insertUpdateMesBlueprint	*/
+		INSERT INTO BLP
+		(
+			BLP_NUM,
+			BLP_NUMBER,
+			BLP_WDATE,
+			BLP_UDATE,
+			PI_NAME,
+			PI_PATH,
+			BLP_ETC,
+			k_staff_key,
+			k_staff_name
+		)
+		VALUES
+		(
+			IF(#blueprintKey# = '', #pkey# , #blueprintKey#),
+			( 	SELECT
+				CONCAT(#blueprintNumber#,'-',LPAD(IFNULL(MAX(CAST(RIGHT(BLP_NUMBER,3) AS UNSIGNED)), 0) + 1, 3, 0))
+				FROM
+				BLP ALIAS_FOR_SUBQUERY
+				WHERE 1=1
+				AND BLP_NUMBER LIKE CONCAT('%',#blueprintNumber#,'%')	),
+			#blueprintWdate#,
+			NOW(),
+			#eItemName#,
+			#eItemCatePath#,
+			#blueprintEtc#,
+			#kStaffKey#,
+			#kStaffName#
+		) ON DUPLICATE KEY UPDATE
+			BLP_WDATE 		= #blueprintWdate#,
+			BLP_UDATE 		= NOW(),
+			PI_PATH 		= #eItemCatePath#,
+			BLP_ETC 		= #blueprintEtc#,
+			k_staff_key 	= #kStaffKey#,
+			k_staff_name 	= #kStaffName#
+	</insert>
+	
+
+	<insert id="mesBlueprintDAO.insertMesBlueprintItem" parameterClass="mesBlueprintVO">
+		/*	BLPI pk	*/
+		<selectKey type="pre" keyProperty="blueprintItemKey">
+			SELECT IFNULL(MAX(BLPI_NUM), 0) + 1 FROM BLPI
+		</selectKey>
+		INSERT INTO BLPI
+		(
+			BLPI_NUM,
+			BLP_NUM,
+			BLP_NUMBER,
+			BLPI_FILEID,
+			BLPI_FILEID_sn,
+			BLP_VERSION,
+			BLPI_ETC,
+			k_staff_key,
+			k_staff_name,
+			O_SIGN_PASS
+		)
+		VALUES
+		(
+			#blueprintItemKey#,
+			#blueprintKey#,
+			(SELECT BLP_NUMBER FROM BLP WHERE BLP_NUM = #blueprintKey#),
+			IF(#blueprintItemFileId# = '', NULL, #blueprintItemFileId#),
+			IF(#blueprintItemFileIdsn# = '', NULL, #blueprintItemFileIdsn#),
+			#eBlueprintVersion#,
+			#blueprintEtc#,
+			#kStaffKey#,
+			#kStaffName#,
+			#oSignPass#
+		)
+
+		
+	</insert>
+	
+	<select id="mesBlueprintDAO.selectMesBlueprintList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/*	mesBlueprintDAO.selectMesBlueprintList */
+		SELECT
+			BLP_NUM         AS blueprintKey,
+			BLP_NUMBER      AS blueprintNumber,
+			DATE_FORMAT(BLP_WDATE,'%Y-%m-%d')       AS blueprintWdate,
+			DATE_FORMAT(BLP_UDATE,'%Y-%m-%d')       AS blueprintUdate,
+			GC_NUM          AS eItemCateKey,
+			PI_NUM          AS eItemKey,
+			PI_NAME         AS eItemName,
+			PI_UNIT         AS eItemUnit,
+			PI_UNIT_TXT     AS eItemUnitTxt,
+			PI_STANDARD     AS eItemStandard,
+			PI_PATH         AS eItemCatePath,
+			PI_CODE         AS eItemCode,
+			BLP_ETC         AS blueprintEtc,
+			k_staff_key     AS kStaffKey,
+			k_staff_name    AS kStaffName
+		FROM BLP
+		WHERE 1=1
+		<isNotEmpty property="topStartDate">
+            <isNotEmpty property="topEndDate">
+                <![CDATA[
+                AND DATE_FORMAT(BLP_UDATE, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+                ]]>
+            </isNotEmpty>
+        </isNotEmpty>
+		<isNotEmpty property="searchWord">
+			<isEqual property="searchcount" compareValue="2">
+				<isEqual property="searchType" compareValue="1">
+					AND
+					(
+					LOWER(PI_CODE) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+					OR LOWER(PI_NAME) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+					OR LOWER(BLP_NUMBER) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+					)
+					AND RIGHT(LOWER(PI_STANDARD),#wordlength#)= LOWER(#searchWordback#)
+				</isEqual>
+				<isEqual property="searchType" compareValue="2">
+					AND LOWER(PI_CODE) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="3">
+					AND LOWER(PI_NAME) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="4">
+					AND LOWER(BLP_NUMBER) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+			</isEqual>
+			<isEqual property="searchcount" compareValue="1">
+				<isEqual property="searchType" compareValue="1">
+					AND
+					(
+					LOWER(PI_CODE) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+					OR LOWER(PI_NAME) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+					OR LOWER(BLP_NUMBER) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+					OR LOWER(PI_STANDARD) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+					)
+				</isEqual>
+				<isEqual property="searchType" compareValue="2">
+					AND LOWER(PI_CODE) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="3">
+					AND LOWER(PI_NAME) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="4">
+					AND LOWER(BLP_NUMBER) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+			</isEqual>
+		</isNotEmpty>
+		ORDER BY BLP_NUM DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="mesBlueprintDAO.selectMesBlueprintListCnt" parameterClass="mesBlueprintVO" resultClass="int">
+		/*	mesBlueprintDAO.selectMesBlueprintListCnt */
+		SELECT 
+			COUNT(*)
+		FROM	BLP
+		WHERE 1=1
+		<isNotEmpty property="topStartDate">
+            <isNotEmpty property="topEndDate">
+                <![CDATA[
+                AND DATE_FORMAT(BLP_UDATE, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+                ]]>
+            </isNotEmpty>
+        </isNotEmpty>
+		<isNotEmpty property="searchWord">	
+			<isEqual property="searchType" compareValue="1">
+				AND 
+				(
+					LOWER(PI_CODE) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+					OR LOWER(PI_NAME) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+					OR LOWER(BLP_NUMBER) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				)
+			</isEqual>
+			<isEqual property="searchType" compareValue="2">
+				AND LOWER(PI_CODE) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+			</isEqual>
+			<isEqual property="searchType" compareValue="3">
+				AND LOWER(PI_NAME) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+			</isEqual>
+			<isEqual property="searchType" compareValue="4">
+				AND LOWER(BLP_NUMBER) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+			</isEqual>
+		</isNotEmpty>
+	</select>
+	
+	<select id="mesBlueprintDAO.selectBlueprintInfo" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectBlueprintInfo	*/
+		SELECT
+			blp.BLP_NUM         AS blueprintKey,
+			blp.BLP_NUMBER      AS blueprintNumber,
+			blp.PI_NAME      	AS eItemName,
+			DATE_FORMAT(blp.BLP_WDATE,'%Y-%m-%d')       AS blueprintWdate,
+			blp.GC_NUM          AS eItemCateKey,
+			blp.PI_PATH         AS eItemCatePath,
+			blpi.BLPI_ETC         AS blueprintEtc,
+			blpi.SIGN_NUM         AS sSignKey,
+			blpi.BLPI_NUM         AS blueprintItemKey,
+			blp.k_staff_key     AS kStaffKey,
+			blp.k_staff_name    AS kStaffName,
+			blpi.O_SIGN_PASS    AS oSignPass,
+			count(blpico.SIGN_STATUS)    AS sSignStatusCount
+		FROM BLP blp
+		LEFT JOIN BLPI blpi ON (blp.BLP_NUM = blpi.BLP_NUM AND blpi.BLP_VERSION = #version#)
+		LEFT JOIN BLPI blpico ON (blp.BLP_NUM = blpico.BLP_NUM AND blpico.SIGN_STATUS != '승인' AND blpico.SIGN_STATUS != '결제제외')
+		WHERE 1=1
+		AND blp.BLP_NUM = #blueprintKey#
+	</select>
+
+	<select id="mesBlueprintDAO.selectBlueprintItemInfo" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectBlueprintItemInfo	*/
+
+		SELECT
+			BLPI_NUM        	AS blueprintItemKey
+		,	BLP_NUM         	AS blueprintKey
+		,	BLP_NUMBER      	AS blueprintNumber
+		,	BLPI_FILEID         AS blueprintItemFileId
+		,	BLPI_ETC        	AS blueprintItemEtc
+		,	cd.orignl_file_nm   AS blueprintItemOriginFileName
+		,	cd.stre_file_nm     AS blueprintItemFileNameSn
+		,	cd.file_extsn 		AS newPrint
+		,	blpi.SIGN_STATUS						AS sSignStatus
+		,	blpi.SIGN_NUM							AS sSignKey
+		,	(SELECT S.SIGN_STAFF_NUM FROM S_SIGN_ITEM S WHERE 1=1 AND blpi.SIGN_NUM = S.SIGN_NUM AND S.SIGN_DECISON = '결재대기' ORDER BY S.SIGN_SEQUENCE ASC LIMIT 1	)				AS sSignStaffKey
+		FROM BLPI blpi
+		LEFT JOIN comtnfiledetail cd ON(blpi.BLPI_FILEID=cd.atch_file_id)
+		WHERE 1=1
+		AND BLPI_NUM = #blueprintItemKey#
+	</select>
+
+	<delete id="mesBlueprintDAO.deleteMesBlueprintItem" parameterClass="mesBlueprintVO">
+		/*	mesBlueprintDAO.deleteMesBlueprintItem	*/
+		UPDATE PI pi, (SELECT PI_NAME AS pname, PI_UNIT AS punit, PI_CODE AS pcode, PI_STANDARD AS pstd, PI_NUM AS pnum FROM BLP WHERE  BLP_NUM = #blueprintKey#)a
+		SET
+		pi.BLPI_FILEID=null,
+		pi.BLPI_FILEID_sn =null
+		WHERE 1=1
+		AND pi.PI_NUM =pnum
+		AND pi.PI_UNIT =punit
+		AND pi.PI_NAME =pname
+		AND pi.PI_CODE =pcode
+		AND pi.PI_STANDARD =pstd
+		
+
+	</delete>
+	
+	<delete id="mesBlueprintDAO.deleteMesBlueprintItemBLPI" parameterClass="mesBlueprintVO">
+		/*	mesBlueprintDAO.deleteMesBlueprintItemBLPI	*/
+		DELETE FROM BLPI WHERE BLP_NUM = #blueprintKey#
+	</delete>
+
+	<delete id="mesBlueprintDAO.deleteMesBlueprintItemBLPIOne" parameterClass="mesBlueprintVO">
+		/*	mesBlueprintDAO.deleteMesBlueprintItemBLPIOne	*/
+		DELETE FROM BLPI WHERE BLP_NUM = #blueprintKey# AND BLP_VERSION = #version#
+	</delete>
+		
+	<delete id="mesBlueprintDAO.deleteMesBlueprint" parameterClass="mesBlueprintVO">
+		/*	mesBlueprintDAO.deleteMesBlueprint	*/
+		DELETE FROM BLP WHERE BLP_NUM = #blueprintKey#
+	</delete>
+
+	<!-- <update id="mesBlueprintDAO.updateOrderItemBlueprint"  parameterClass="mesBlueprintVO">
+		/*	mesBlueprintDAO.updateOrderItemBlueprint	*/
+		UPDATE ORDPI
+		SET
+			BLPI_FILEID =   #blueprintItemFileId#,
+			BLPI_FILEID_sn = 0
+		WHERE 1=1
+		AND PI_NUM = #eItemKey#
+		AND PI_NAME = #eItemName#
+		AND PI_CODE = #eItemCode#
+		AND PI_UNIT = #eItemUnit#
+		AND PI_STANDARD = #eItemStandard#
+		AND (WL_CONFIRM = '자재재고 선택' OR WL_CONFIRM ='작업시작')
+	</update> -->
+	
+	
+	<update id="mesBlueprintDAO.updatedMesBlueprintItem" parameterClass="mesBlueprintVO">
+		/*	mesBlueprintDAO.updatedMesBlueprintItem	*/
+		UPDATE BLPI
+		SET BLPI_ETC = #blueprintItemEtc_past#
+	</update>
+	
+	<select id="mesBlueprintDAO.mesBlueprintVersion"  parameterClass="mesBlueprintVO" resultClass="String">
+		/* mesBlueprintDAO.mesBlueprintVersion */
+		SELECT 
+			IFNULL(MAX(BLP_VERSION), 0) + 1	
+		FROM
+			BLPI
+		WHERE 1=1
+		AND BLP_NUM = #blueprintKey#
+	</select>
+
+	<select id="mesBlueprintDAO.mesBlueprintVersionItem"  parameterClass="mesBlueprintVO" resultClass="String">
+		/* mesBlueprintDAO.mesBlueprintVersionItem */
+		SELECT 
+			BLP_VERSION
+		FROM
+			BLPI
+		WHERE 1=1
+		AND BLP_NUM = #blueprintKey#
+		AND BLP_VERSION = #version#
+	</select>
+	
+	<insert id="mesBlueprintDAO.mesBlueprintFile" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.mesBlueprintFile */
+		<selectKey type="pre" keyProperty="eBlueprintFileKey" resultClass="String">
+			/* BLP_FILE pk */
+			SELECT IFNULL(MAX(BLP_FILE_NUM), 0) + 1 FROM BLP_FILE
+		</selectKey>
+		INSERT INTO BLP_FILE 
+		(
+			BLP_FILE_NUM
+		,	BLP_FILE_ID
+		,	BLP_FILE_NAME
+		,	BLP_FILE_GUBUN
+		,	BLP_NUM
+		,	BLP_VERSION	
+		,	BLP_FILE_ETC					
+		,	BLP_ETC					
+		)
+		VALUES
+		(
+			#eBlueprintFileKey#
+		,	#eAddFileId#
+		,	#atchFileName#
+		,	#eBlueprintFileGubun#
+		,	#blueprintKey#
+		,	#eBlueprintVersion#
+		,	#eBlueprintItemEtc#
+		,	#blueprintEtc#
+		)
+	</insert> 
+	
+	<insert id="mesBlueprintDAO.mesBlueprintFile1" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.mesBlueprintFile1 */
+		<selectKey type="pre" keyProperty="eBlueprintFileKey" resultClass="String">
+			/* BLP_FILE pk */
+			SELECT IFNULL(MAX(BLP_FILE_NUM), 0) + 1 FROM BLP_FILE
+		</selectKey>
+		INSERT INTO BLP_FILE (
+			BLP_FILE_NUM
+		,	BLP_FILE_ID
+		,	BLP_FILE_NAME
+		,	BLP_FILE_GUBUN
+		,	BLP_NUM
+		,	BLP_VERSION		
+		,	BLP_FILE_ETC						
+		,	BLP_ETC						
+		)
+		VALUES(
+			#eBlueprintFileKey#
+		,	#eAddFileId#
+		,	#atchFileName#
+		,	#eBlueprintFileGubun#
+		,	#blueprintKey#
+		,	#eBlueprintVersion#
+		,	#eBlueprintItemEtc#
+		,	#blueprintEtc#
+		)
+	</insert> 
+	
+	<select id="mesBlueprintDAO.selectMesBlueprintFile" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectMesBlueprintFile */
+		SELECT
+			FORMAT(a.BLP_VERSION, 1)			AS eBlueprintVersion
+		FROM
+			BLP_FILE a
+		WHERE 1=1
+		AND a.BLP_NUM = #blueprintKey#
+		GROUP BY a.BLP_VERSION
+		ORDER BY a.BLP_VERSION DESC
+	</select>
+	
+	<select id="mesBlueprintDAO.selectMesBlueprintFileListU" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectMesBlueprintFileListU */
+		SELECT
+			a.BLP_FILE_NUM						AS eBlueprintFileKey
+		,	a.BLP_FILE_ID						AS eAddFileId7
+		,	a.BLP_FILE_NAME						AS atchFileName
+		,	a.BLP_FILE_GUBUN					AS eBlueprintFileGubun
+		,	a.BLP_NUM							AS blueprintKey
+		,	FORMAT(a.BLP_VERSION, 1)			AS eBlueprintVersion
+		,	BLP_FILE_ETC						AS eBlueprintItemEtc
+		FROM
+			BLP_FILE a
+		WHERE 1=1
+		AND a.BLP_NUM = #blueprintKey#
+		AND a.BLP_VERSION = #version#
+	</select>
+	
+	<select id="mesBlueprintDAO.selectMesBlueprintFileList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectMesBlueprintFileList */
+		SELECT
+			a.BLP_FILE_NUM						AS eBlueprintFileKey
+		,	a.BLP_FILE_ID						AS eAddFileId7
+		,	a.BLP_FILE_NAME						AS atchFileName
+		,	a.BLP_FILE_GUBUN					AS eBlueprintFileGubun
+		,	a.BLP_NUM							AS blueprintKey
+		,	FORMAT(a.BLP_VERSION, 1)			AS eBlueprintVersion
+		,	BLP_FILE_ETC						AS eBlueprintItemEtc
+		FROM
+			BLP_FILE a
+		WHERE 1=1
+		AND a.BLP_NUM = #blueprintKey#
+		ORDER BY a.BLP_VERSION DESC
+	</select>
+	
+	<select id="mesBlueprintDAO.selectMesBlueprintFileEtc" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectMesBlueprintFileEtc */
+		SELECT
+			FORMAT(a.BLP_VERSION, 1)			AS eBlueprintVersion
+		,	BLP_ETC								AS blueprintEtc
+		FROM
+			BLP_FILE a
+		WHERE 1=1
+		AND a.BLP_NUM = #blueprintKey#
+		GROUP BY a.BLP_VERSION
+		ORDER BY a.BLP_VERSION
+	</select>
+	
+	<select id="mesBlueprintDAO.selectBlueprintItemList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectBlueprintItemList	*/
+
+		SELECT
+			blpi.BLPI_NUM        			   	AS blueprintItemKey
+		,	blpi.BLP_NUM         			   	AS blueprintKey
+		,	blpi.BLP_NUMBER      			   	AS blueprintNumber
+		,	blpi.BLPI_FILEID         		   	AS blueprintItemFileId
+		,	FORMAT(blpi.BLP_VERSION, 1)         AS eBlueprintVersion
+		,	blpi.BLP_VERSION					AS eBlueprintItemVersion
+		,	COUNT(blpf.BLP_FILE_NUM)         	AS eBlueprintVersionCount
+		,	blpi.BLPI_ETC        			    AS blueprintItemEtc
+		,	blpi.k_staff_key        			    AS kStaffKey
+		,	blpi.k_staff_name        			    AS kStaffName
+		,	blpi.SIGN_STATUS						AS sSignStatus
+		,	blpi.SIGN_NUM							AS sSignKey
+		,	(SELECT count(SI.SIGN_STAFF_NUM) FROM S_SIGN_ITEM SI WHERE 1=1 AND blpi.SIGN_NUM = SI.SIGN_NUM AND SI.SIGN_DECISON = '결재대기')							AS sSignCount
+		,	(SELECT count(S.SIGN_STAFF_NUM) FROM S_SIGN_ITEM S WHERE 1=1 AND blpi.SIGN_NUM = S.SIGN_NUM)					AS sSignCountTot
+		,	(SELECT S.SIGN_STAFF_NUM FROM S_SIGN_ITEM S WHERE 1=1 AND blpi.SIGN_NUM = S.SIGN_NUM AND S.SIGN_DECISON = '결재대기' ORDER BY S.SIGN_SEQUENCE ASC LIMIT 1	)				AS sSignStaffKey
+		FROM BLPI blpi
+		LEFT JOIN BLP_FILE blpf ON (blpi.BLP_NUM = blpf.BLP_NUM AND blpi.BLP_VERSION = blpf.BLP_VERSION)
+		WHERE 1=1
+		AND blpi.BLP_NUM = #blueprintKey#
+		GROUP BY blpi.BLP_VERSION
+	</select>
+	
+	<select id="mesBlueprintDAO.selectSignList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectSignList */
+		SELECT
+			blpi.BLPI_NUM					AS blueprintItemKey
+		,	sign.SIGN_ITEM_NUM				AS sSignItemKey
+		,	sign.SIGN_NUM					AS sSignKey
+		,	sign.SIGN_SEQUENCE				AS sSignSequence
+		,	sign.SIGN_TABLE_NUM				AS sSignTableKey
+		,	sign.SIGN_TABLE_NAME			AS sSignTableName
+		,	sign.SIGN_STAFF_NUM				AS sSignStaffKey
+		,	sign.SIGN_STAFF_NAME			AS sSignStaffName
+		,	sign.SIGN_DECISON				AS sSignDecison
+		,	sign.SIGN_CONTENT				AS sSignContent
+		FROM BLPI blpi
+		LEFT JOIN S_SIGN_ITEM sign ON (blpi.SIGN_NUM = sign.SIGN_NUM)
+		WHERE 1=1
+		AND BLP_NUM = #blueprintKey#
+		AND sign.SIGN_NUM is not null
+		ORDER BY SIGN_SEQUENCE ASC
+	</select>
+	
+	<update id="mesBlueprintDAO.updateMesBlueprintItemBLPI" parameterClass="mesBlueprintVO">
+		/*	mesBlueprintDAO.updateMesBlueprintItemBLPI	*/
+		UPDATE BLPI
+		SET BLPI_ETC = #blueprintEtc#
+		,	O_SIGN_PASS = #oSignPass#
+		WHERE 1=1
+		AND BLP_NUM = #blueprintKey#
+		AND BLP_VERSION = #version#
+	</update>
+	
+	<delete id="mesBlueprintDAO.deleteMesBlueprintBLPFILE" parameterClass="mesBlueprintVO">
+		/*	mesBlueprintDAO.deleteMesBlueprintBLPFILE	*/
+		DELETE FROM BLP_FILE WHERE BLP_NUM = #blueprintKey#
+	</delete>
+
+	<delete id="mesBlueprintDAO.deleteMesBlueprintBLPFILEOne" parameterClass="mesBlueprintVO">
+		/*	mesBlueprintDAO.deleteMesBlueprintBLPFILE	*/
+		DELETE FROM BLP_FILE WHERE BLP_NUM = #blueprintKey# AND BLP_VERSION = #version#
+	</delete>
+	
+	<update id="mesBlueprintDAO.updateMesBlueprintProcess" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.updateMesBlueprintProcess */
+		UPDATE BLPI
+		SET
+			SIGN_NUM			= IF(#sSignKey# = "" , 0 , #sSignKey#)
+		,	SIGN_STATUS			= #sSignStatus#
+		WHERE 1=1
+		AND BLPI_NUM = #blueprintItemKey#
+	</update>
+	
+	<update id="mesBlueprintDAO.requesteBlueprintProcess" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.requesteBlueprintProcess */
+		UPDATE BLPI
+		SET
+			SIGN_STATUS	 = #sSignStatus#
+		WHERE 1=1
+		AND BLPI_NUM = #blueprintItemKey#
+	</update>
+	
+	<update id="mesBlueprintDAO.updateBlueprintStatus" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.updateBlueprintStatus */
+		UPDATE BLPI
+		SET
+			SIGN_STATUS	 = returnSignStatus(SIGN_NUM)
+		WHERE 1=1
+		AND BLPI_NUM = #blueprintItemKey#
+	</update>
+	
+	
+	
+	<insert id="mesBlueprintDAO.eChangeManagementInfoInssert" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eChangeManagementInfoInssert */
+		 <selectKey type="post" keyProperty="eChangeKey" >
+	        SELECT LAST_INSERT_ID() AS eChangeKey
+	     </selectKey>
+		INSERT INTO I_CHANGE  (
+		     eReqOrg,
+			  eReqDept,
+			  eRequester,
+			  eRequesterOrg,
+			  eReqDate,
+			  eReqContent,
+			  eWorkStart,
+			  eWorkEnd,
+			  eAffiliation,
+			  eWorkerName,
+			  eWorkDate,
+			  eIsInterrupted,
+			  eIsInterruptedName,
+			  eWorkDetails,
+			  w_staff_key,
+			  w_staff_name,
+			  eStatus,
+			  sSignStatus
+		) VALUES (
+		      #eReqOrg#,
+			  #eReqDept#,
+			  #eRequester#,
+			  #eRequesterOrg#,
+			  #eReqDate#,
+			  #eReqContent#,
+			  #eWorkStart#,
+			  #eWorkEnd#,
+			  #eAffiliation#,
+			  #eWorkerName#,
+			  #blueprintWdate#,
+			  #eIsInterrupted#,
+			  #eIsInterruptedName#,
+			  #eWorkDetails#,
+			  #kStaffKey#,
+			  #kStaffName#,
+			  #eStatus#,
+			  #sSignStatus#
+		);
+
+	</insert>
+	
+	<insert id="mesBlueprintDAO.eAssetInfoInsert" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eAssetInfoInsert */
+		INSERT INTO I_CHANGE_ASSET (
+		    eChangeKey,
+		    eAssetKey 
+		) VALUES (
+		    #eChangeKey#,
+		    #eAssetKey#
+		);
+	</insert>
+	
+	
+	
+	<select id="mesBlueprintDAO.selectChangeList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectChangeList */
+		SELECT 
+		  eChangeKey ,
+		  eReqOrg,
+		  eReqDept,
+		  eRequester,
+		  eRequesterOrg,
+		  eReqDate,
+		  (eReqContent) AS eReqContent,
+		  eWorkStart,
+		  eWorkEnd,
+		  eAffiliation,
+		  eWorkerName,
+		  eWorkDate,
+		  eIsInterrupted,
+		  eIsInterruptedName,
+		  (eWorkDetails) AS eWorkDetails,
+		  eStatus,
+		  CASE 
+		  	WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		  	ELSE sSignStatus
+		   	END AS sSignStatus,
+		   	IF(
+					(SELECT COUNT(*) 
+					FROM S_SIGN_ITEM AS ssi 
+					WHERE ssi.SIGN_TABLE_NUM = eChangeKey and ssi.SIGN_TABLE_NAME = 'I_CHANGE'
+					AND ssi.SIGN_DECISON = '결재대기'
+					AND ssi.SIGN_STAFF_NUM = #kStaffKey#
+				) > 0, 'Y', 'N') AS eViewGubun,
+   		  w_staff_key AS kStaffKey,
+		  w_staff_name AS kStaffName,
+	  	  IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		FROM I_CHANGE
+		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = eChangeKey  AND s.SIGN_TABLE_NAME = 'I_CHANGE')
+		WHERE 1=1  AND eStatus !='삭제'
+		<isNotEmpty property="searchWord">
+				<isEqual property="searchType" compareValue="1">
+					AND
+					(
+						LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+					)
+				</isEqual>
+				<isEqual property="searchType" compareValue="2">
+					AND LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="3">
+					AND LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="4">
+					AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord1">
+			AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#eTextSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord2">
+			AND LOWER(eReqContent) LIKE CONCAT('%',LOWER(#eTextSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord3">
+			AND LOWER(eWorkDetails) LIKE CONCAT('%',LOWER(#eTextSearchWord3#),'%')
+		</isNotEmpty>
+		 
+		AND DATE_FORMAT(eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		
+		ORDER BY eChangeKey DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="mesBlueprintDAO.selectChangeExcelList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectChangeExcelList */
+		SELECT 
+		  eChangeKey ,
+		  eReqOrg,
+		  eReqDept,
+		  eRequester,
+		  eRequesterOrg,
+		  eReqDate,
+		  getContentLf(eReqContent) AS eReqContent,
+		  eWorkStart,
+		  eWorkEnd,
+		  eAffiliation,
+		  eWorkerName,
+		  eWorkDate,
+		  eIsInterrupted,
+		  eIsInterruptedName,
+		  getContentLf(eWorkDetails) AS eWorkDetails,
+		  eStatus,
+		  CASE 
+		  	WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		  	ELSE sSignStatus
+		   	END AS sSignStatus,
+   		  w_staff_key AS kStaffKey,
+		  w_staff_name AS kStaffName,
+	  	  IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		FROM I_CHANGE
+		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = eChangeKey  AND s.SIGN_TABLE_NAME = 'I_CHANGE')
+		WHERE 1=1  AND eStatus !='삭제'
+		<isNotEmpty property="searchWord">
+				<isEqual property="searchType" compareValue="1">
+					AND
+					(
+						LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+					)
+				</isEqual>
+				<isEqual property="searchType" compareValue="2">
+					AND LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="3">
+					AND LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="4">
+					AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord1">
+			AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#eTextSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord2">
+			AND LOWER(eReqContent) LIKE CONCAT('%',LOWER(#eTextSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord3">
+			AND LOWER(eWorkDetails) LIKE CONCAT('%',LOWER(#eTextSearchWord3#),'%')
+		</isNotEmpty>
+		AND DATE_FORMAT(eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		
+		ORDER BY wdate DESC
+		LIMIT 730
+	</select>
+	<select id="mesBlueprintDAO.selectChangeListCnt" parameterClass="mesBlueprintVO" resultClass="int">
+		/* mesBlueprintDAO.selectChangeListCnt */
+		SELECT 
+		  COUNT(eChangeKey) 
+		FROM I_CHANGE
+		WHERE 1=1 AND eStatus !='삭제'
+		AND DATE_FORMAT(eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		<isNotEmpty property="searchWord">
+				<isEqual property="searchType" compareValue="1">
+					AND
+					(
+						LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+					)
+				</isEqual>
+				<isEqual property="searchType" compareValue="2">
+					AND LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="3">
+					AND LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="4">
+					AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord1">
+			AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#eTextSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord2">
+			AND LOWER(eReqContent) LIKE CONCAT('%',LOWER(#eTextSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord3">
+			AND LOWER(eWorkDetails) LIKE CONCAT('%',LOWER(#eTextSearchWord3#),'%')
+		</isNotEmpty>
+	</select>
+	
+	
+	<select id="mesBlueprintDAO.selectChangeInfo" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectChangeInfo */
+		SELECT 
+		  eChangeKey ,
+		  eReqOrg,
+		  eReqDept,
+		  eRequester,
+		  eRequesterOrg,
+		  eReqDate,
+		  eReqContent,
+		  eWorkStart,
+		  eWorkEnd,
+		  eAffiliation,
+		  eWorkerName,
+		  eWorkDate AS blueprintWdate,
+		  eIsInterrupted,
+		  eIsInterruptedName,
+		  eWorkDetails,
+		  eStatus,
+		    CASE 
+		  	WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		  	ELSE sSignStatus
+		   	END AS sSignStatus,
+   		  w_staff_key AS kStaffKey,
+		  w_staff_name AS kStaffName,
+	  	  IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress	
+		FROM I_CHANGE
+		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = eChangeKey  AND s.SIGN_TABLE_NAME = 'I_CHANGE')
+		WHERE 1=1 
+	 	AND eChangeKey = #eChangeKey#
+	</select>
+	
+	<select id="mesBlueprintDAO.eSelectAssetInfoList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eSelectAssetInfoList */
+			SELECT 
+				ica.eChangeKey AS eChangeKey
+			,	ica.eAssetKey AS eAssetKey					
+	        ,	aa.ASSET_NUMBER				AS aAssetNumber
+	        ,	getContentLf(aa.ASSET_STATUS)				AS aAssetStatus
+	        ,	getContentLf(aa.ASSET_TYPE_NAME)			AS aAssetType
+	        ,	getContentLf(aa.ASSET_NAME)				    AS aAssetName
+	        ,	getContentLf(aa.ASSET_MAKER)				AS aAssetMaker
+	        ,	getContentLf(aa.ASSET_MODEL)				AS aAssetModel
+	        ,	aa.ASSET_MANUFACTURE_NUMBER	AS aAssetManufactureNumber
+	        ,	getContentLf(aa.ASSET_FORM)					AS aAssetForm
+	        ,	getContentLf(aa.ASSET_INTRODUCER)			AS aAssetIntroducer
+	        ,	aa.ASSET_DATE								AS aAssetDate
+	        ,	FORMAT(aa.ASSET_COST, 0)					AS aAssetCost
+	        ,	aa.ASSET_IMAGE_ID							AS aAssetImage
+	        ,	aa.ASSET_ETC								AS aAssetEtc
+	        ,	getNameTxt(aa.ASSET_NUM) 					AS ePositionName1
+	        ,	aa.ASSET_DEVICE_TYPE 						AS eDeviceType
+			,	aa.ASSET_PURPOSE 							AS eAssetPurpose
+			,	aa.ASSET_NETWORK_TYPE 						AS eNetworkType
+			,	aa.ASSET_HOST 								AS eHostName
+			,	aa.ASSET_IP 								AS eIp
+			,	aa.ASSET_OS 								AS eOs                         
+		FROM I_CHANGE_ASSET AS ica
+		LEFT JOIN A_ASSET AS aa ON (ica.eAssetKey = aa.ASSET_NUM)
+	 	WHERE  eChangeKey = #eChangeKey#
+	</select>
+	
+	
+	<insert id="mesBlueprintDAO.eIssueInfoInssert" parameterClass="mesBlueprintVO">
+	 <selectKey type="post" keyProperty="eIssueKey" >
+        SELECT LAST_INSERT_ID() AS eIssueKey
+	  </selectKey>
+		/* mesBlueprintDAO.eIssueInfoInssert */
+		INSERT INTO I_BLUE_ISSUE  (
+		     eReqOrg,
+			  eReqDept,
+			  eRequester,
+			  eRequesterOrg,
+			  eReqDate,
+			  blueprintWdate,
+			  eReqContent,
+			  eWorkStart,
+			  eWorkEnd,
+			  eIssueCause,
+			  eSolutionMethod,
+			  w_staff_key,
+			  w_staff_name,
+			  eStatus,
+			  sSignStatus
+		) VALUES (
+		      #eReqOrg#,
+			  #eReqDept#,
+			  #eRequester#,
+			  #eRequesterOrg#,
+			  #eReqDate#,
+			  #blueprintWdate#,
+			  #eReqContent#,
+			  #eWorkStart#,
+			  #eWorkEnd#,
+			  #eIssueCause#,
+			  #eSolutionMethod#,
+			  #kStaffKey#,
+			  #kStaffName#,
+			  #eStatus#,
+			  #sSignStatus#
+		);
+	</insert>
+	
+	<insert id="mesBlueprintDAO.eIssueAssetInfoInsert" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eIssueAssetInfoInsert */
+		INSERT INTO I_BLUE_ISSUE_ASSET (
+		    eIssueKey,
+		    eAssetKey 
+		) VALUES (
+		    #eIssueKey#,
+		    #eAssetKey#
+		);
+	</insert>
+	
+	<select id="mesBlueprintDAO.selectIssueList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectIssueList */
+		SELECT 
+		  eIssueKey ,
+		  eReqOrg,
+		  eReqDept,
+		  getContentLfNew(eRequester,8) AS eRequester,
+		  getContentLfNew(eRequesterOrg,8) AS eRequesterOrg,
+		  eReqDate,
+		  blueprintWdate,
+		  eReqContent AS eReqContent,
+		  eWorkStart,
+		  eWorkEnd,
+		  eIssueCause AS eIssueCause,
+		  eSolutionMethod AS eSolutionMethod,
+		  eStatus,
+		    CASE 
+		  	WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		  	ELSE sSignStatus
+		   	END AS sSignStatus,
+		   	IF(
+					(SELECT COUNT(*) 
+					FROM S_SIGN_ITEM AS ssi 
+					WHERE ssi.SIGN_TABLE_NUM = eIssueKey and ssi.SIGN_TABLE_NAME = 'I_BLUE_ISSUE'
+					AND ssi.SIGN_DECISON = '결재대기'
+					AND ssi.SIGN_STAFF_NUM = #kStaffKey#
+				) > 0, 'Y', 'N') AS eViewGubun,
+   		  w_staff_key AS kStaffKey,
+		  w_staff_name AS kStaffName,
+	  	  IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		FROM I_BLUE_ISSUE
+		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = eIssueKey  AND s.SIGN_TABLE_NAME = 'I_BLUE_ISSUE')
+		WHERE 1=1  AND eStatus != '삭제'
+		<isNotEmpty property="searchWord">
+				<isEqual property="searchType" compareValue="1">
+					AND
+					(
+						LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+					)
+				</isEqual>
+				<isEqual property="searchType" compareValue="2">
+					AND LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="3">
+					AND LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="4">
+					AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord1">
+			AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#eTextSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord2">
+			AND LOWER(eReqContent) LIKE CONCAT('%',LOWER(#eTextSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord3">
+			AND LOWER(eIssueCause) LIKE CONCAT('%',LOWER(#eTextSearchWord3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord4">
+			AND LOWER(eSolutionMethod) LIKE CONCAT('%',LOWER(#eTextSearchWord4#),'%')
+		</isNotEmpty>
+		AND DATE_FORMAT(eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		ORDER BY eIssueKey DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="mesBlueprintDAO.selectIssueListCnt" parameterClass="mesBlueprintVO" resultClass="int">
+		/* mesBlueprintDAO.selectIssueListCnt */
+		SELECT 
+		  COUNT(eIssueKey) 
+		FROM I_BLUE_ISSUE
+		WHERE 1=1  AND eStatus != '삭제'
+		AND DATE_FORMAT(eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		<isNotEmpty property="searchWord">
+				<isEqual property="searchType" compareValue="1">
+					AND
+					(
+						LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+					)
+				</isEqual>
+				<isEqual property="searchType" compareValue="2">
+					AND LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="3">
+					AND LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="4">
+					AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord1">
+			AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#eTextSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord2">
+			AND LOWER(eReqContent) LIKE CONCAT('%',LOWER(#eTextSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord3">
+			AND LOWER(eIssueCause) LIKE CONCAT('%',LOWER(#eTextSearchWord3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord4">
+			AND LOWER(eSolutionMethod) LIKE CONCAT('%',LOWER(#eTextSearchWord4#),'%')
+		</isNotEmpty>
+	</select>
+	
+	
+	<select id="mesBlueprintDAO.selectIssueExcelList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectIssueExcelList */
+		SELECT 
+		  eIssueKey ,
+		  eReqOrg,
+		  eReqDept,
+		  eRequester,
+		  eRequesterOrg,
+		  eReqDate,
+		  blueprintWdate,
+		  getContentLf(eReqContent) AS eReqContent,
+		  eWorkStart,
+		  eWorkEnd,
+		  eIssueCause,
+		  eSolutionMethod,
+		  eStatus,
+		    CASE 
+		  	WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		  	ELSE sSignStatus
+		   	END AS sSignStatus,
+   		  w_staff_key AS kStaffKey,
+		  w_staff_name AS kStaffName,
+	  	  IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		FROM I_BLUE_ISSUE
+		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = eIssueKey  AND s.SIGN_TABLE_NAME = 'I_BLUE_ISSUE')
+		WHERE 1=1  AND eStatus != '삭제'
+		<isNotEmpty property="searchWord">
+				<isEqual property="searchType" compareValue="1">
+					AND
+					(
+						LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+					)
+				</isEqual>
+				<isEqual property="searchType" compareValue="2">
+					AND LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="3">
+					AND LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="4">
+					AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord1">
+			AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#eTextSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord2">
+			AND LOWER(eReqContent) LIKE CONCAT('%',LOWER(#eTextSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord3">
+			AND LOWER(eIssueCause) LIKE CONCAT('%',LOWER(#eTextSearchWord3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord4">
+			AND LOWER(eSolutionMethod) LIKE CONCAT('%',LOWER(#eTextSearchWord4#),'%')
+		</isNotEmpty>
+		AND DATE_FORMAT(eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		ORDER BY wdate DESC
+		 LIMIT 730
+	</select>
+	
+	<select id="mesBlueprintDAO.selectIssueInfo" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectIssueInfo */
+		SELECT 
+		  eIssueKey ,
+		  eReqOrg,
+		  eReqDept,
+		  eRequester,
+		  eRequesterOrg,
+		  eReqDate,
+		  blueprintWdate,
+		  eReqContent,
+		  eWorkStart,
+		  eWorkEnd,
+		  eIssueCause,
+		  eSolutionMethod,
+		   eStatus,
+		  CASE 
+		  	WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		  	ELSE sSignStatus
+		   	END AS sSignStatus,
+   		  w_staff_key AS kStaffKey,
+		  w_staff_name AS kStaffName,
+	  	  IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		FROM I_BLUE_ISSUE
+		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = eIssueKey  AND s.SIGN_TABLE_NAME = 'I_BLUE_ISSUE')
+		WHERE 1=1  AND eIssueKey = #eIssueKey#
+	</select>
+		
+	<select id="mesBlueprintDAO.eSelectIssueAssetInfoList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eSelectIssueAssetInfoList */
+			SELECT 
+				ica.eIssueKey AS eIssueKey
+			,	ica.eAssetKey AS eAssetKey					
+	        ,	aa.ASSET_NUMBER			AS aAssetNumber
+	        ,	getContentLf(aa.ASSET_STATUS)				AS aAssetStatus
+	        ,	getContentLf(aa.ASSET_TYPE_NAME)			AS aAssetType
+	        ,	getContentLf(aa.ASSET_NAME)				    AS aAssetName
+	        ,	getContentLf(aa.ASSET_MAKER)				AS aAssetMaker
+	        ,	getContentLf(aa.ASSET_MODEL)				AS aAssetModel
+	        ,	aa.ASSET_MANUFACTURE_NUMBER	AS aAssetManufactureNumber
+	        ,	getContentLf(aa.ASSET_FORM)					AS aAssetForm
+	        ,	getContentLf(aa.ASSET_INTRODUCER)			AS aAssetIntroducer
+	        ,	aa.ASSET_DATE								AS aAssetDate
+	        ,	FORMAT(aa.ASSET_COST, 0)					AS aAssetCost
+	        ,	aa.ASSET_IMAGE_ID							AS aAssetImage
+	        ,	aa.ASSET_ETC								AS aAssetEtc
+	        ,	getNameTxt(aa.ASSET_NUM) 					AS ePositionName1
+	        ,	aa.ASSET_DEVICE_TYPE 						AS eDeviceType
+			,	aa.ASSET_PURPOSE 							AS eAssetPurpose
+			,	aa.ASSET_NETWORK_TYPE 						AS eNetworkType
+			,	aa.ASSET_HOST 								AS eHostName
+			,	aa.ASSET_IP 								AS eIp
+			,	aa.ASSET_OS 								AS eOs                         
+		FROM I_BLUE_ISSUE_ASSET AS ica
+		LEFT JOIN A_ASSET AS aa ON (ica.eAssetKey = aa.ASSET_NUM)
+	 	WHERE 1=1 AND eIssueKey = #eIssueKey#
+	</select>
+	
+	<update id="mesBlueprintDAO.deleteBlueprint" parameterClass="mesBlueprintVO">
+	/*mesBlueprintDAO.deleteBlueprint*/
+	UPDATE I_CHANGE SET eStatus = '삭제' WHERE eChangeKey = #eChangeKey#
+	</update>
+	
+	<update id="mesBlueprintDAO.eChangeManagementInfoUpdate" parameterClass="mesBlueprintVO">
+	/*mesBlueprintDAO.eChangeManagementInfoUpdate*/
+	UPDATE I_CHANGE
+	SET
+	    eReqOrg = #eReqOrg#,
+	    eReqDept = #eReqDept#,
+	    eRequester = #eRequester#,
+	    eRequesterOrg = #eRequesterOrg#,
+	    eReqDate = #eReqDate#,
+	    eReqContent = #eReqContent#,
+	    eWorkStart = #eWorkStart#,
+	    eWorkEnd = #eWorkEnd#,
+	    eAffiliation = #eAffiliation#,
+	    eWorkerName = #eWorkerName#,
+	    eWorkDate = #blueprintWdate#,
+	    eIsInterrupted = #eIsInterrupted#,
+	    eIsInterruptedName = #eIsInterruptedName#,
+	    eWorkDetails = #eWorkDetails#,
+	    eStatus = #eStatus#,
+	    sSignStatus = #sSignStatus#
+	WHERE eChangeKey = #eChangeKey#
+	</update>
+	
+	<delete id="mesBlueprintDAO.eChangeAssetInfoDelete" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eChangeAssetInfoDelete */
+		DELETE FROM I_CHANGE_ASSET WHERE eChangeKey = #eChangeKey#
+	</delete>
+	<delete id="mesBlueprintDAO.eIssueAssetInfoDelete" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eIssueAssetInfoDelete */
+		DELETE FROM I_BLUE_ISSUE_ASSET WHERE eIssueKey = #eIssueKey#
+	</delete>
+	<update id="mesBlueprintDAO.selectIssueDelete" parameterClass="mesBlueprintVO">
+	/*mesBlueprintDAO.selectIssueDelete*/
+	UPDATE I_BLUE_ISSUE SET eStatus = '삭제' WHERE eIssueKey = #eIssueKey#
+	</update>
+	<update id="mesBlueprintDAO.updateIssueInfo" parameterClass="mesBlueprintVO">
+	/*mesBlueprintDAO.updateIssueInfo*/
+		UPDATE I_BLUE_ISSUE
+		SET
+		    eReqOrg = #eReqOrg#,
+		    eReqDept = #eReqDept#,
+		    eRequester = #eRequester#,
+		    eRequesterOrg = #eRequesterOrg#,
+		    eReqDate = #eReqDate#,
+		    blueprintWdate = #blueprintWdate#,
+		    eReqContent = #eReqContent#,
+		    eWorkStart = #eWorkStart#,
+		    eWorkEnd = #eWorkEnd#,
+		    eIssueCause = #eIssueCause#,
+		    eSolutionMethod = #eSolutionMethod#,
+		    w_staff_key = #kStaffKey#,
+		    w_staff_name = #kStaffName#,
+		    eStatus = #eStatus#,
+		    sSignStatus = #sSignStatus#
+		WHERE eIssueKey = #eIssueKey#
+	</update>
+	
+	
+	<select id="mesBlueprintDAO.selectSRList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectSRList */
+		SELECT 
+		  eIssueKey ,
+		  eReqOrg,
+		  eReqDept,
+		  eRequester,
+		  eReqDate,
+		  (eReqContent) AS eReqContent,
+		  eWorkStart,
+		  eWorkEnd,
+		  eIssueCause,
+		  eSolutionMethod,
+		  blueprintWdate,
+		  eStatus,
+		  CASE 
+		  	WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		  	ELSE sSignStatus
+		   	END AS sSignStatus,
+		   	IF(
+					(SELECT COUNT(*) 
+					FROM S_SIGN_ITEM AS ssi 
+					WHERE ssi.SIGN_TABLE_NUM = eIssueKey and ssi.SIGN_TABLE_NAME = 'I_BLUE_SR'
+					AND ssi.SIGN_DECISON = '결재대기'
+					AND ssi.SIGN_STAFF_NUM = #kStaffKey#
+				) > 0, 'Y', 'N') AS eViewGubun,
+   		  w_staff_key AS kStaffKey,
+		  w_staff_name AS kStaffName,
+	  	  IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		FROM I_BLUE_SR
+		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = eIssueKey  AND s.SIGN_TABLE_NAME = 'I_BLUE_SR')
+		WHERE 1=1  AND eStatus != '삭제'
+		AND DATE_FORMAT(eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		<isNotEmpty property="searchWord">
+				<isEqual property="searchType" compareValue="1">
+					AND
+					(
+						LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+					)
+				</isEqual>
+				<isEqual property="searchType" compareValue="2">
+					AND LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="3">
+					AND LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="4">
+					AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord1">
+			AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#eTextSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord2">
+			AND LOWER(eReqContent) LIKE CONCAT('%',LOWER(#eTextSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord3">
+			AND LOWER(eIssueCause) LIKE CONCAT('%',LOWER(#eTextSearchWord3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord4">
+			AND LOWER(eSolutionMethod) LIKE CONCAT('%',LOWER(#eTextSearchWord4#),'%')
+		</isNotEmpty>
+		ORDER BY eIssueKey DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	
+	<select id="mesBlueprintDAO.selectSRExcelList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectSRExcelList */
+		SELECT 
+		  eIssueKey ,
+		  eRequesterOrg,
+		  eReqDept,
+		  eRequester,
+		  eReqDate,
+		  getContentLf(eReqContent) AS eReqContent,
+		  eWorkStart,
+		  eWorkEnd,
+		  eIssueCause,
+		  eSolutionMethod,
+		  blueprintWdate,
+		  eStatus,
+		  CASE 
+		  	WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		  	ELSE sSignStatus
+		   	END AS sSignStatus,
+   		  w_staff_key AS kStaffKey,
+		  w_staff_name AS kStaffName,
+	  	  IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		FROM I_BLUE_SR
+		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = eIssueKey  AND s.SIGN_TABLE_NAME = 'I_BLUE_SR')
+		WHERE 1=1  AND eStatus != '삭제'
+		AND DATE_FORMAT(eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		<isNotEmpty property="searchWord">
+				<isEqual property="searchType" compareValue="1">
+					AND
+					(
+						LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+					)
+				</isEqual>
+				<isEqual property="searchType" compareValue="2">
+					AND LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="3">
+					AND LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="4">
+					AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord1">
+			AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#eTextSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord2">
+			AND LOWER(eReqContent) LIKE CONCAT('%',LOWER(#eTextSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord3">
+			AND LOWER(eIssueCause) LIKE CONCAT('%',LOWER(#eTextSearchWord3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord4">
+			AND LOWER(eSolutionMethod) LIKE CONCAT('%',LOWER(#eTextSearchWord4#),'%')
+		</isNotEmpty>
+		ORDER BY wdate DESC
+		 LIMIT 730
+	</select>
+	
+	
+	<select id="mesBlueprintDAO.selectSRListCnt" parameterClass="mesBlueprintVO" resultClass="int">
+		/* mesBlueprintDAO.selectSRListCnt */
+		SELECT 
+		  COUNT(eIssueKey) 
+		FROM I_BLUE_SR
+		WHERE 1=1  AND eStatus != '삭제'
+		AND DATE_FORMAT(eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		<isNotEmpty property="searchWord">
+				<isEqual property="searchType" compareValue="1">
+					AND
+					(
+						LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+						OR LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWordfront#),'%')
+					)
+				</isEqual>
+				<isEqual property="searchType" compareValue="2">
+					AND LOWER(eReqOrg) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="3">
+					AND LOWER(eReqDept) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+				<isEqual property="searchType" compareValue="4">
+					AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+				</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord1">
+			AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#eTextSearchWord1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord2">
+			AND LOWER(eReqContent) LIKE CONCAT('%',LOWER(#eTextSearchWord2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord3">
+			AND LOWER(eIssueCause) LIKE CONCAT('%',LOWER(#eTextSearchWord3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eTextSearchWord4">
+			AND LOWER(eSolutionMethod) LIKE CONCAT('%',LOWER(#eTextSearchWord4#),'%')
+		</isNotEmpty>
+	</select>
+	
+	<insert id="mesBlueprintDAO.eSRInfoInssert" parameterClass="mesBlueprintVO">
+	 <selectKey type="post" keyProperty="eIssueKey" >
+        SELECT LAST_INSERT_ID() AS eIssueKey
+	  </selectKey>
+		/* mesBlueprintDAO.eSRInfoInssert */
+		INSERT INTO I_BLUE_SR  (
+		     eReqOrg,
+			  eReqDept,
+			  eRequester,
+			  eRequesterOrg,
+			  eReqDate,
+			  blueprintWdate,
+			  eReqContent,
+			  eWorkStart,
+			  eWorkEnd,
+			  eIssueCause,
+			  eSolutionMethod,
+			  w_staff_key,
+			  w_staff_name,
+			  eStatus,
+			  sSignStatus
+		) VALUES (
+		      #eReqOrg#,
+			  #eReqDept#,
+			  #eRequester#,
+			  #eRequesterOrg#,
+			  #eReqDate#,
+			  #blueprintWdate#,
+			  #eReqContent#,
+			  #eWorkStart#,
+			  #eWorkEnd#,
+			  #eIssueCause#,
+			  #eSolutionMethod#,
+			  #kStaffKey#,
+			  #kStaffName#,
+			  #eStatus#,
+			  #sSignStatus#
+		);
+	</insert>
+	
+	<insert id="mesBlueprintDAO.eSRAssetInfoInsert" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eSRAssetInfoInsert */
+		INSERT INTO I_BLUE_SR_ASSET (
+		    eIssueKey,
+		    eAssetKey 
+		) VALUES (
+		    #eIssueKey#,
+		    #eAssetKey#
+		);
+	</insert>
+	
+	
+	<select id="mesBlueprintDAO.selectSRInfo" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.selectSRInfo */
+		SELECT 
+		  eIssueKey ,
+		  eReqOrg,
+		  eReqDept,
+		  eRequester,
+		  eRequesterOrg,
+		  eReqDate,
+		  blueprintWdate,
+		  eReqContent,
+		  eWorkStart,
+		  eWorkEnd,
+		  eIssueCause,
+		  eSolutionMethod,
+		  eStatus,
+		  CASE 
+		  	WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		  	ELSE sSignStatus
+		   	END AS sSignStatus,
+   		  w_staff_key AS kStaffKey,
+		  w_staff_name AS kStaffName,
+	  	  IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		FROM I_BLUE_SR
+		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = eIssueKey  AND s.SIGN_TABLE_NAME = 'I_BLUE_SR')
+		WHERE 1=1  AND eIssueKey = #eIssueKey#
+	</select>
+		
+	<select id="mesBlueprintDAO.eSelectSRAssetInfoList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eSelectIssueAssetInfoList */
+			SELECT 
+				ica.eIssueKey AS eIssueKey
+			,	ica.eAssetKey AS eAssetKey					
+	        ,	aa.ASSET_NUMBER				AS aAssetNumber
+	        ,	getContentLf(aa.ASSET_STATUS)				AS aAssetStatus
+	        ,	getContentLf(aa.ASSET_TYPE_NAME)			AS aAssetType
+	        ,	getContentLf(aa.ASSET_NAME)				    AS aAssetName
+	        ,	getContentLf(aa.ASSET_MAKER)				AS aAssetMaker
+	        ,	getContentLf(aa.ASSET_MODEL)				AS aAssetModel
+	        ,	aa.ASSET_MANUFACTURE_NUMBER	AS aAssetManufactureNumber
+	        ,	getContentLf(aa.ASSET_FORM)					AS aAssetForm
+	        ,	getContentLf(aa.ASSET_INTRODUCER)			AS aAssetIntroducer
+	        ,	aa.ASSET_DATE								AS aAssetDate
+	        ,	FORMAT(aa.ASSET_COST, 0)					AS aAssetCost
+	        ,	aa.ASSET_IMAGE_ID							AS aAssetImage
+	        ,	aa.ASSET_ETC								AS aAssetEtc
+	        ,	getNameTxt(aa.ASSET_NUM) 					AS ePositionName1
+	        ,	aa.ASSET_DEVICE_TYPE 						AS eDeviceType
+			,	aa.ASSET_PURPOSE 							AS eAssetPurpose
+			,	aa.ASSET_NETWORK_TYPE 						AS eNetworkType
+			,	aa.ASSET_HOST 								AS eHostName
+			,	aa.ASSET_IP 								AS eIp
+			,	aa.ASSET_OS 								AS eOs                         
+		FROM I_BLUE_SR_ASSET AS ica
+		LEFT JOIN A_ASSET AS aa ON (ica.eAssetKey = aa.ASSET_NUM)
+	   WHERE 1=1 AND eIssueKey = #eIssueKey#
+	</select>
+	<delete id="mesBlueprintDAO.eSRAssetInfoDelete" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eSRAssetInfoDelete */
+		DELETE FROM I_BLUE_SR_ASSET WHERE eIssueKey = #eIssueKey#
+	</delete>
+	<update id="mesBlueprintDAO.selectSRDelete" parameterClass="mesBlueprintVO">
+	/*mesBlueprintDAO.selectSRDelete*/
+	UPDATE I_BLUE_SR SET eStatus = '삭제' WHERE eIssueKey = #eIssueKey#
+	</update>
+	<update id="mesBlueprintDAO.eSRInfoUpdate" parameterClass="mesBlueprintVO">
+	/*mesBlueprintDAO.eSRInfoUpdate*/
+		UPDATE I_BLUE_SR
+		SET
+		    eReqOrg = #eReqOrg#,
+		    eReqDept = #eReqDept#,
+		    eRequester = #eRequester#,
+		    eRequesterOrg = #eRequesterOrg#,
+		    eReqDate = #eReqDate#,
+		    blueprintWdate = #blueprintWdate#,
+		    eReqContent = #eReqContent#,
+		    eWorkStart = #eWorkStart#,
+		    eWorkEnd = #eWorkEnd#,
+		    eIssueCause = #eIssueCause#,
+		    eSolutionMethod = #eSolutionMethod#,
+		    eStatus = #eStatus#,
+		    sSignStatus = #sSignStatus#
+		WHERE eIssueKey = #eIssueKey#
+	</update>
+	<insert id="mesBlueprintDAO.eInsertFileInfo" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eInsertFileInfo */
+		INSERT INTO I_CHANGE_FILE (
+		  eChangeKey, 
+		  eFileRowId, 
+		  eFileRowName, 
+		  eFileRowIndex
+		)
+		VALUES (
+		  #eChangeKey#, 
+		  #eFileRowId#, 
+		  #eFileRowName#, 
+		  #eFileRowIndex#
+		);
+	</insert>
+	<insert id="mesBlueprintDAO.eInsertDetailInfo" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eInsertDetailInfo */
+		INSERT INTO I_CHANGE_DETALI (
+			  eChangeKey, 
+			  eRowIndex, 
+			  eDepartment, 
+			  eWorker, 
+			  eWorkDate, 
+			  eDescription
+			)
+			VALUES (
+			  #eChangeKey#, 
+			  #eRowIndex#, 
+			  #eDepartment#, 
+			  #eWorker#, 
+			  #eWorkDate#, 
+			  #eDescription#
+			);
+	</insert>
+	<select id="mesBlueprintDAO.eSelectFileInfoList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eSelectFileInfoList */
+	 	SELECT 
+		  eChangeKey, 
+		  eFileRowId, 
+		  eFileRowName, 
+		  eFileRowIndex
+		FROM I_CHANGE_FILE
+		WHERE eChangeKey = #eChangeKey#
+	</select>
+	
+	<select id="mesBlueprintDAO.eSelectDeteliInfoList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eSelectDeteliInfoList */
+		 SELECT 
+		  eChangeKey, 
+		  eRowIndex, 
+		  eDepartment, 
+		  eWorker, 
+		  eWorkDate, 
+		  eDescription
+		FROM I_CHANGE_DETALI
+		WHERE eChangeKey = #eChangeKey#
+	</select>
+	
+	<delete id="mesBlueprintDAO.eDetailInfoInfoDelete" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eDetailInfoInfoDelete */
+		DELETE FROM I_CHANGE_DETALI WHERE eChangeKey = #eChangeKey#
+	</delete>
+	<delete id="mesBlueprintDAO.eFileInfoDelete" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eFileInfoDelete */
+		DELETE FROM I_CHANGE_FILE WHERE eChangeKey = #eChangeKey#
+	</delete>
+	
+	
+	<insert id="mesBlueprintDAO.insertIssueFileListInfo" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.insertIssueFileListInfo */
+		INSERT INTO I_ISSUE_FILE (
+		  eIssueKey, 
+		  eFileRowId, 
+		  eFileRowName, 
+		  eFileRowIndex
+		) VALUES (
+		  #eIssueKey#, 
+		  #eFileRowId#, 
+		  #eFileRowName#, 
+		  #eFileRowIndex#
+		);
+	</insert>
+	
+	<insert id="mesBlueprintDAO.insertIssueDetailListInfo" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.insertIssueDetailListInfo */
+		INSERT INTO I_ISSUE_DETALI (
+			  eIssueKey, 
+			  eRowIndex, 
+			  eDepartment, 
+			  eWorker, 
+			  eWorkDate, 
+			  eDescription
+			) VALUES (
+			  #eIssueKey#, 
+			  #eRowIndex#, 
+			  #eDepartment#, 
+			  #eWorker#, 
+			  #eWorkDate#, 
+			  #eDescription#
+			);
+	</insert>
+	
+	<insert id="mesBlueprintDAO.insertIssueNotesListInfo" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.insertIssueNotesListInfo */
+		INSERT INTO I_ISSUE_NOTES (
+			  eIssueKey, 
+			  eRowWorker, 
+			  eRowDepartment, 
+			  eRowPosition, 
+			  eRowContact, 
+			  eRowNotes
+			) VALUES (
+			  #eIssueKey#, 
+			  #eRowWorker#, 
+			  #eRowDepartment#, 
+			  #eRowPosition#, 
+			  #eRowContact#, 
+			  #eRowNotes#
+			);
+	</insert>
+	<select id="mesBlueprintDAO.eSelectIssueFileInfoList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eSelectIssueFileInfoList */
+	 	SELECT 
+		  eIssueKey, 
+		  eFileRowId, 
+		  eFileRowName, 
+		  eFileRowIndex
+		FROM I_ISSUE_FILE
+		WHERE eIssueKey = #eIssueKey#
+	</select>
+	<select id="mesBlueprintDAO.eSelectIssueDeteliInfoList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eSelectIssueDeteliInfoList */
+	 	SELECT 
+   			eRowIndex, 
+			eDepartment, 
+		 	eWorker, 
+		 	eWorkDate, 
+		 	eDescription
+		FROM I_ISSUE_DETALI
+		WHERE eIssueKey = #eIssueKey#
+	</select>
+	<select id="mesBlueprintDAO.eSelectIssueNotesInfoList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eSelectIssueNotesInfoList */
+	 	SELECT 
+   			 eIssueKey, 
+			  eRowWorker, 
+			  eRowDepartment, 
+			  eRowPosition, 
+			  eRowContact, 
+			  eRowNotes
+		FROM I_ISSUE_NOTES
+		WHERE eIssueKey = #eIssueKey#
+	</select>
+	
+	<delete id="mesBlueprintDAO.eIssueFileInfoDelete" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eIssueFileInfoDelete */
+		DELETE FROM I_ISSUE_FILE WHERE eIssueKey = #eIssueKey#
+	</delete>
+	
+	<delete id="mesBlueprintDAO.eIssueDetailInfoDelete" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eIssueDetailInfoDelete*/
+		DELETE FROM I_ISSUE_DETALI WHERE eIssueKey = #eIssueKey#
+	</delete>
+	
+	<delete id="mesBlueprintDAO.eIssueNotesInfoDelete" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eIssueNotesInfoDelete*/
+		DELETE FROM I_ISSUE_NOTES WHERE eIssueKey = #eIssueKey#
+	</delete>
+	<update id="mesInspectionDAO.mesSignBlueprint" parameterClass="mesBlueprintVO" >
+		/*mesInspectionDAO.mesSignBlueprint*/
+		UPDATE I_CHANGE
+		SET 
+			 sSignStatus = #sSignStatus#
+		WHERE eChangeKey = #eChangeKey#
+	</update>
+	<update id="mesInspectionDAO.mesSignBlueIssue" parameterClass="mesBlueprintVO" >
+		/*mesInspectionDAO.mesSignBlueIssue*/
+		UPDATE I_BLUE_ISSUE
+		SET 
+			 sSignStatus = #sSignStatus#
+		WHERE eIssueKey = #eIssueKey#
+	</update>
+	<update id="mesInspectionDAO.mesSignBlueSr" parameterClass="mesBlueprintVO" >
+		/*mesInspectionDAO.mesSignBlueSr*/
+		UPDATE I_BLUE_SR
+		SET 
+			 sSignStatus = #sSignStatus#
+		WHERE eIssueKey = #eIssueKey#
+	</update>
+	
+	
+	<insert id="mesBlueprintDAO.srFileInsert" parameterClass="mesBlueprintVO">
+		/* mesBlueprintDAO.srFileInsert */
+		INSERT INTO I_BLUE_SR_FILE
+			(
+				 SR_FILE_ID
+				 , SR_FILE_NAME
+				 , SR_FILE_EXT
+				 , SR_NUM
+		)
+		VALUES( #eFileID#, #eFileName#, #eFileExt#, #eIssueKey#);
+	</insert>
+	<select id="mesBlueprintDAO.eFileInfoList" parameterClass="mesBlueprintVO" resultClass="mesBlueprintVO">
+		/* mesBlueprintDAO.eFileInfoList */
+		SELECT 
+			 SR_FILE_ID AS eFileID
+			, SR_FILE_NAME AS eFileName
+			, SR_FILE_EXT AS eFileExt
+			, SR_NUM AS eIssueKey
+			FROM I_BLUE_SR_FILE
+		WHERE 1=1 AND SR_NUM = #eIssueKey#
+	</select>
+	<delete id="mesBlueprintDAO.srFileDelete" parameterClass="mesBlueprintVO" >
+		/* mesBlueprintDAO.srFileDelete */
+		DELETE FROM I_BLUE_SR_FILE WHERE SR_NUM = #eIssueKey#
+	</delete>
+	
+	
+	
+</sqlMap>

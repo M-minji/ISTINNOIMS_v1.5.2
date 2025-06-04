@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap>
+	<typeAlias alias="mesMaintanceVO" type="egovframework.rndp.mes.maintance.service.MesMaintanceVO" />
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="mesMaintanceDAO.selectMesMaintanceList" parameterClass="mesMaintanceVO" resultClass="mesMaintanceVO">
+		/* mesMaintanceDAO.selectMesMaintanceList */
+		SELECT
+	    	MAINTANCE_NUM									AS mMaintanceKey
+		,	MAINTANCE_STAFF_NUM								AS mMaintanceStaffKey
+		,	MAINTANCE_STAFF_NAME							AS mMaintanceStaffName
+		,	MAINTANCE_TYPE									AS mMaintanceType
+		,	MAINTANCE_DATE									AS mMaintanceDate
+		,	MAINTANCE_MODEL									AS mMaintanceModel
+		,	MAINTANCE_SERIAL								AS mMaintanceSerial
+		,	getContentLf(MAINTANCE_CONTENT)					AS mMaintanceContent
+		,	MAINTANCE_FILE									AS mMaintanceFile
+		,	PROCESS_TYPE									AS mProcessType
+		,	PROCESS_STAFF_NUM								AS mProcessStaffKey
+		,	PROCESS_STAFF_NAME								AS mProcessStaffName
+		,	PROCESS_RESULT									AS mProcessResult
+		,	PROCESS_DATE									AS mProcessDate
+		,	getContentLf(PROCESS_CONTENT)					AS mProcessContent
+		,	PROCESS_FILE									AS mProcessFile
+		,	SIGN_STATUS										AS sSignStatus
+		,	SIGN_NUM										AS sSignKey
+		,	MAINTANCE_Number AS  mMaintanceNumber
+		,   MAINTANCE_IssueType AS  mIssueTypeName
+		,	mAuthor 
+		,   getNameTTxt(MAINTANCE_NUM) AS mMaintanceCateName
+		,	eMaintanceSelect1
+		,	eMaintanceSelect2
+		,	eMaintanceSelect3
+		,	eMaintanceSelect4
+		,	mHandler
+		,	mRequestDate
+		,	mProcessingDate
+		,	mIssueTypeName
+		,	eAssetTypeName
+		,	eAssetType
+		,	mMaintanceTypeName
+		FROM M_MAINTANCE M
+		WHERE 1=1 
+		<isNotEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+				AND DATE_FORMAT(mRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			</isNotEmpty>
+		</isNotEmpty>
+		
+		<isNotEmpty property="eSearchWordA">
+			AND LOWER(mMaintanceNumber) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordB">
+			AND LOWER(eAssetTypeName) LIKE CONCAT('%',LOWER(#eSearchWordB#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordC">
+			AND LOWER(mMaintanceTypeName) LIKE CONCAT('%',LOWER(#eSearchWordC#),'%')
+		</isNotEmpty>
+		
+		<isNotEmpty property="eSearchWordD">
+			AND LOWER(mIssueTypeName) LIKE CONCAT('%',LOWER(#eSearchWordD#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordE">
+			AND LOWER(MAINTANCE_CONTENT) LIKE CONCAT('%',LOWER(#eSearchWordE#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordF">
+			AND LOWER(mHandler) LIKE CONCAT('%',LOWER(#eSearchWordF#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordG">
+			AND DATE_FORMAT(mProcessingDate, '%Y-%m-%d') =DATE_FORMAT(eSearchWordG, '%Y-%m-%d')
+		</isNotEmpty>
+		 
+		ORDER BY MAINTANCE_DATE DESC, MAINTANCE_NUM DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="mesMaintanceDAO.selectMesMaintanceListCnt" parameterClass="mesMaintanceVO" resultClass="int">
+		/* mesMaintanceDAO.selectMesMaintanceListCnt */
+		SELECT
+	    	COUNT(*)
+		FROM M_MAINTANCE
+		WHERE 1=1
+		<isNotEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+				AND DATE_FORMAT(mRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			</isNotEmpty>
+		</isNotEmpty>
+		
+		<isNotEmpty property="eSearchWordA">
+			AND LOWER(mMaintanceNumber) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordB">
+			AND LOWER(eAssetTypeName) LIKE CONCAT('%',LOWER(#eSearchWordB#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordC">
+			AND LOWER(mMaintanceTypeName) LIKE CONCAT('%',LOWER(#eSearchWordC#),'%')
+		</isNotEmpty>
+		
+		<isNotEmpty property="eSearchWordD">
+			AND LOWER(mIssueTypeName) LIKE CONCAT('%',LOWER(#eSearchWordD#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordE">
+			AND LOWER(MAINTANCE_CONTENT) LIKE CONCAT('%',LOWER(#eSearchWordE#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordF">
+			AND LOWER(mHandler) LIKE CONCAT('%',LOWER(#eSearchWordF#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordG">
+			AND DATE_FORMAT(mProcessingDate, '%Y-%m-%d') =DATE_FORMAT(eSearchWordG, '%Y-%m-%d')
+		</isNotEmpty>
+	</select>
+	
+	<insert id="mesMaintanceDAO.insertMesMaintance" parameterClass="mesMaintanceVO">
+		<selectKey type="pre" keyProperty="mMaintanceKey" resultClass="String">
+			SELECT IFNULL(MAX(MAINTANCE_NUM), 0) + 1 FROM M_MAINTANCE
+		</selectKey>
+		/* mesMaintanceDAO.insertMesMaintance */
+		INSERT INTO M_MAINTANCE(
+			MAINTANCE_NUM
+		,	MAINTANCE_STAFF_NUM
+		,	MAINTANCE_STAFF_NAME
+		,	MAINTANCE_TYPE
+		,	MAINTANCE_DATE
+		,	MAINTANCE_MODEL
+		,	MAINTANCE_SERIAL
+		,	MAINTANCE_CONTENT
+		,	MAINTANCE_FILE
+		,	MAINTANCE_Requester
+		,	MAINTANCE_Number
+		,   MAINTANCE_IssueType
+		,	mAuthor
+		,	eMaintanceSelect1
+		,	eMaintanceSelect2
+		,	eMaintanceSelect3
+		,	eMaintanceSelect4
+		,	MAINTANCE_index
+		,	mHandler
+		,	mRequestDate
+		,	mProcessingDate
+		,	mIssueTypeName
+		,	eAssetTypeName
+		,	eAssetType
+		,	mMaintanceTypeName
+		) VALUES(
+			#mMaintanceKey#
+		,	#mMaintanceStaffKey#
+		,	#mRequester#
+		,	#mMaintanceType#
+		,	#mMaintanceDate#
+		,	#mMaintanceModel#
+		,	#mMaintanceSerial#
+		,	#mMaintanceContent#
+		,	#mMaintanceFile#
+		,	#mMaintanceRequester#
+		,	 CONCAT(DATE_FORMAT(#mMaintanceDate#, '%Y%m%d'),'-', 
+       			LPAD((SELECT IFNULL(MAX(sub.MAINTANCE_index),0) + 1 FROM M_MAINTANCE AS sub WHERE DATE_FORMAT(sub.w_date, '%Y-%m-%d') = DATE_FORMAT(#mMaintanceDate#, '%Y-%m-%d') ), 4, 0) )	
+		,	#mMaintanceIssueType#
+		,	#mAuthor#
+		,	#eMaintanceSelect1#
+		,	#eMaintanceSelect2#
+		,	#eMaintanceSelect3#
+		,	#eMaintanceSelect4#
+		,	 (SELECT IFNULL(MAX(sub.MAINTANCE_index),0) + 1 FROM M_MAINTANCE AS sub WHERE DATE_FORMAT(sub.w_date, '%Y-%m-%d') = DATE_FORMAT(#mMaintanceDate#, '%Y-%m-%d'))
+		,	#mHandler#
+		,	#mRequestDate#
+		,	#mProcessingDate#
+		,	#mIssueTypeName#
+		,	#eAssetTypeName#
+		,	#eAssetType#
+		,	#mMaintanceTypeName#
+		)
+	</insert>
+	
+	
+	<select id="mesMaintanceDAO.selectMaintanceInfo" parameterClass="mesMaintanceVO" resultClass="mesMaintanceVO">
+		/* mesMaintanceDAO.selectMaintanceInfo */
+		SELECT
+	    	M.MAINTANCE_NUM									AS mMaintanceKey
+		,	M.MAINTANCE_CATE_NUM							AS mMaintanceCateKey
+		,	M.MAINTANCE_CATE_NAME							AS mMaintanceCateName
+		,	M.MAINTANCE_STAFF_NUM							AS mMaintanceStaffKey
+		,	M.MAINTANCE_STAFF_NAME							AS mRequester
+		,	M.MAINTANCE_TYPE								AS mMaintanceType
+		,	M.MAINTANCE_DATE								AS mMaintanceDate
+		,	M.MAINTANCE_MODEL								AS mMaintanceModel
+		,	M.MAINTANCE_SERIAL								AS mMaintanceSerial
+		,	M.MAINTANCE_CONTENT								AS mMaintanceContent
+		,	M.MAINTANCE_FILE								AS mMaintanceFile
+		,	M.PROCESS_TYPE									AS mProcessType
+		,	M.PROCESS_STAFF_NUM								AS mProcessStaffKey
+		,	M.PROCESS_STAFF_NAME							AS mProcessStaffName
+		,	M.PROCESS_RESULT								AS mProcessResult
+		,	M.PROCESS_DATE									AS mProcessDate
+		,	M.PROCESS_CONTENT								AS mProcessContent
+		,	M.PROCESS_FILE									AS mProcessFile
+		,	M.SIGN_STATUS									AS sSignStatus
+		,	M.SIGN_NUM										AS sSignKey
+        ,	S.SIGN_STAFF_NUM								AS sSignStaffKey
+        ,	S.SIGN_STAFF_NAME								AS sSignStaffName
+        ,	M.O_SIGN_PASS									AS oSignPass
+       	,	M.MAINTANCE_Requester							AS mMaintanceRequester
+		,	M.MAINTANCE_Number								AS mMaintanceNumber
+		,	M.MAINTANCE_IssueType								AS mMaintanceIssueType
+		,	mAuthor
+		,	getNameTTxt(M.MAINTANCE_NUM)    AS mMaintanceCatePath
+		,	eMaintanceSelect1
+		,	eMaintanceSelect2
+		,	eMaintanceSelect3
+		,	eMaintanceSelect4
+		,	MAINTANCE_index
+		,	mHandler
+		,	mRequestDate
+		,	mProcessingDate
+		,	mIssueTypeName
+		,	eAssetTypeName
+		,	eAssetType
+		,	mMaintanceTypeName
+		FROM M_MAINTANCE M
+        LEFT JOIN S_SIGN_ITEM S ON(M.SIGN_NUM = S.SIGN_NUM AND S.SIGN_DECISON = '결재대기')
+		WHERE 1=1
+		AND MAINTANCE_NUM = #mMaintanceKey#
+		LIMIT 1
+	</select>
+	
+	
+	<update id="mesMaintanceDAO.updateMesMaintance" parameterClass="mesMaintanceVO">
+		/* mesMaintanceDAO.updateMesMaintance */
+		UPDATE M_MAINTANCE
+		SET
+			MAINTANCE_CATE_NUM		= #mMaintanceCateKey#
+		,	MAINTANCE_CATE_NAME		= #mMaintanceCateName#
+		,	MAINTANCE_STAFF_NUM		= #mMaintanceStaffKey#
+		,	MAINTANCE_STAFF_NAME	= #mMaintanceStaffName#
+		,	MAINTANCE_TYPE			= #mMaintanceType#
+		,	MAINTANCE_DATE			= #mMaintanceDate#
+		,	MAINTANCE_MODEL			= #mMaintanceModel#
+		,	MAINTANCE_SERIAL		= #mMaintanceSerial#
+		,	MAINTANCE_CONTENT		= #mMaintanceContent#
+		,	MAINTANCE_FILE			= #mMaintanceFile#
+		WHERE 1=1
+		AND MAINTANCE_NUM = #mMaintanceKey#
+	</update>
+	
+	
+	<update id="mesMaintanceDAO.updateMesProcess" parameterClass="mesMaintanceVO">
+		/* mesMaintanceDAO.updateMesProcess */
+		UPDATE M_MAINTANCE
+		SET
+			PROCESS_TYPE		= #mProcessType#
+		,	PROCESS_STAFF_NUM	= #mProcessStaffKey#
+		,	PROCESS_STAFF_NAME	= #mProcessStaffName#
+		,	PROCESS_RESULT		= #mProcessResult#
+		,	PROCESS_DATE		= #mProcessDate#
+		,	PROCESS_CONTENT		= #mProcessContent#
+		,	PROCESS_FILE		= #mProcessFile#
+		,	SIGN_NUM			= IF(#sSignKey# = "", 0 , #sSignKey#)
+		,	SIGN_STATUS			= #sSignStatus#
+		WHERE 1=1
+		AND MAINTANCE_NUM = #mMaintanceKey#
+	</update>
+	
+	
+	<update id="mesMaintanceDAO.updateMesProcessNull" parameterClass="mesMaintanceVO">
+		/* mesMaintanceDAO.updateMesProcessNull */
+		UPDATE M_MAINTANCE
+		SET
+			PROCESS_TYPE		 = NULL
+		,	PROCESS_STAFF_NUM	 = NULL
+		,	PROCESS_STAFF_NAME	 = NULL
+		,	PROCESS_RESULT		 = NULL
+		,	PROCESS_DATE		 = NULL
+		,	PROCESS_CONTENT		 = NULL
+		,	PROCESS_FILE		 = NULL
+		,	SIGN_STATUS		 	 = "요청등록"
+		WHERE 1=1
+		AND MAINTANCE_NUM = #mMaintanceKey#
+	</update>
+	
+	
+	<update id="mesMaintanceDAO.updateMesSign" parameterClass="mesMaintanceVO">
+		/* mesMaintanceDAO.updateMesSign */
+		UPDATE M_MAINTANCE
+		SET
+			SIGN_STATUS				= #sSignStatus#
+		,	SIGN_DECISON			= #sSignDecison#
+		,	SIGN_CONTENT			= #sSignContent#
+		,	SIGN_STAFF_NUM			= #sSignStaffKey#
+		,	SIGN_STAFF_NAME			= #sSignStaffName#
+		WHERE 1=1
+		AND MAINTANCE_NUM = #mMaintanceKey#
+	</update>
+	
+	
+	<update id="mesMaintanceDAO.updateMesSignNull" parameterClass="mesMaintanceVO">
+		/* mesMaintanceDAO.updateMesSignNull */
+		UPDATE M_MAINTANCE
+		SET
+			SIGN_STATUS				= NULL
+		,	SIGN_DECISON			= NULL
+		,	SIGN_CONTENT			= NULL
+		,	SIGN_STAFF_NUM			= NULL
+		,	SIGN_STAFF_NAME			= NULL
+		WHERE 1=1
+		AND MAINTANCE_NUM = #mMaintanceKey#
+	</update>
+	
+	
+	<update id="mesMaintanceDAO.updateMesSignDecison" parameterClass="mesMaintanceVO">
+		/* mesMaintanceDAO.updateMesSignDecison */
+		UPDATE M_MAINTANCE
+		SET
+			SIGN_STATUS	 = #sSignStatus#
+		WHERE 1=1
+		AND MAINTANCE_NUM = #mMaintanceKey#
+	</update>
+	
+	
+	<update id="mesMaintanceDAO.updateMaintanceStatus" parameterClass="mesMaintanceVO">
+		/* mesMaintanceDAO.updateMaintanceStatus */
+		UPDATE M_MAINTANCE
+		SET
+			SIGN_STATUS	 = returnSignStatus(SIGN_NUM)
+		WHERE 1=1
+		AND MAINTANCE_NUM = #mMaintanceKey#
+	</update>
+	
+	
+	<delete id="mesMaintanceDAO.deleteMesMaintance" parameterClass="mesMaintanceVO">
+		/* mesMaintanceDAO.deleteMesMaintance */
+		DELETE FROM M_MAINTANCE
+		WHERE 1=1
+		AND MAINTANCE_NUM = #mMaintanceKey#
+	</delete>
+	
+	
+	<select id="mesMaintanceDAO.getMaintanceMaxKey" parameterClass="mesMaintanceVO" resultClass="String">
+		/* mesMaintanceDAO.getMaintanceMaxKey */
+		SELECT
+	    	IFNULL(MAX(MAINTANCE_NUM), 0) + 1
+		FROM M_MAINTANCE
+		WHERE 1=1
+	</select>
+	
+	
+	<select id="mesMaintanceDAO.getMaintanceFile" parameterClass="mesMaintanceVO" resultClass="mesMaintanceVO">
+		/* mesMaintanceDAO.getMaintanceFile */
+		SELECT
+			 FILE_ID 		AS eAddFileId
+			 ,	FILE_NAME	AS atchFileName
+		FROM
+			M_MAINTANCE_ITEM
+		WHERE
+			1=1  AND FILE_ID != '' AND  FILE_ID IS NOT NULL
+		<isNotEmpty property="eFileNum">
+			AND no = #eFileNum#
+		</isNotEmpty>
+		<isNotEmpty property="mMaintanceKey">
+			AND MAINTANCE_NUM = #mMaintanceKey#
+		</isNotEmpty>
+	</select>
+
+	<select id="mesMaintanceDAO.getProcessFile" parameterClass="mesMaintanceVO" resultClass="mesMaintanceVO">
+		/* mesMaintanceDAO.getProcessFile */
+		SELECT
+			 FILE_ID 		AS eAddFileId
+			 ,	FILE_NAME	AS atchFileName
+		FROM
+			M_MAINTANCE_PROCESS
+		WHERE
+			1=1  AND FILE_ID != '' AND  FILE_ID IS NOT NULL
+		<isNotEmpty property="eFileNum">
+			AND no = #eFileNum#
+		</isNotEmpty>
+		<isNotEmpty property="mMaintanceKey">
+			AND MAINTANCE_NUM = #mMaintanceKey#
+		</isNotEmpty>
+	</select>
+	
+	<insert id="mesMaintanceDAO.insertMaintanceFile" parameterClass="mesMaintanceVO">
+		/* mesMaintanceDAO.insertMaintanceFile */
+		INSERT INTO M_MAINTANCE_ITEM
+		(
+			MAINTANCE_NUM
+			,	FILE_ID
+			,	FILE_NAME
+		) VALUES (
+			#mMaintanceKey#
+			,	#eAddFileId#
+			,	#atchFileName#
+		)
+	</insert>
+
+	<insert id="mesMaintanceDAO.insertProcessFile" parameterClass="mesMaintanceVO">
+		/* mesMaintanceDAO.insertProcessFile */
+		INSERT INTO M_MAINTANCE_PROCESS
+		(
+			MAINTANCE_NUM
+			,	FILE_ID
+			,	FILE_NAME
+		) VALUES (
+			#mMaintanceKey#
+			,	#eAddFileId#
+			,	#atchFileName#
+		)
+	</insert>
+	
+	<delete id="mesMaintanceDAO.deleteMaintanceFile" parameterClass="mesMaintanceVO">
+		/* mesMaintanceDAO.deleteMaintanceFile */
+		DELETE FROM
+			M_MAINTANCE_ITEM
+		WHERE
+			1=1
+		<isNotEmpty property="eFileNum">
+			AND no = #eFileNum#
+		</isNotEmpty>
+		<isNotEmpty property="mMaintanceKey">
+			AND MAINTANCE_NUM = #mMaintanceKey#
+		</isNotEmpty>
+	</delete>
+
+	<delete id="mesMaintanceDAO.deleteProcessFile" parameterClass="mesMaintanceVO">
+		/* mesMaintanceDAO.deleteProcessFile */
+		DELETE FROM
+			M_MAINTANCE_PROCESS
+		WHERE
+			1=1
+		<isNotEmpty property="eFileNum">
+			AND no = #eFileNum#
+		</isNotEmpty>
+		<isNotEmpty property="mMaintanceKey">
+			AND MAINTANCE_NUM = #mMaintanceKey#
+		</isNotEmpty>
+	</delete>
+	
+	
+	<select id="mesMaintanceDAO.selectMaintanceInfoList" parameterClass="java.util.Map" resultClass="mesMaintanceVO">
+		/* mesMaintanceDAO.selectMaintanceInfoList */
+		SELECT
+	    	MAINTANCE_NUM									AS mMaintanceKey
+		,	MAINTANCE_STAFF_NUM								AS mMaintanceStaffKey
+		,	MAINTANCE_STAFF_NAME							AS mMaintanceStaffName
+		,	MAINTANCE_TYPE									AS mMaintanceType
+		,	MAINTANCE_DATE									AS mMaintanceDate
+		,	MAINTANCE_MODEL									AS mMaintanceModel
+		,	MAINTANCE_SERIAL								AS mMaintanceSerial
+		,	getContentLf(MAINTANCE_CONTENT)					AS mMaintanceContent
+		,	MAINTANCE_FILE									AS mMaintanceFile
+		,	PROCESS_TYPE									AS mProcessType
+		,	PROCESS_STAFF_NUM								AS mProcessStaffKey
+		,	PROCESS_STAFF_NAME								AS mProcessStaffName
+		,	PROCESS_RESULT									AS mProcessResult
+		,	PROCESS_DATE									AS mProcessDate
+		,	getContentLf(PROCESS_CONTENT)					AS mProcessContent
+		,	PROCESS_FILE									AS mProcessFile
+		,	SIGN_STATUS										AS sSignStatus
+		,	SIGN_NUM										AS sSignKey
+		,	MAINTANCE_Number AS  mMaintanceNumber
+		,   MAINTANCE_IssueType AS  mIssueTypeName
+		,	mAuthor 
+		,   getNameTTxt(MAINTANCE_NUM) AS mMaintanceCateName
+		,	eMaintanceSelect1
+		,	eMaintanceSelect2
+		,	eMaintanceSelect3
+		,	eMaintanceSelect4
+		,	mHandler
+		,	mRequestDate
+		,	mProcessingDate
+		,	mIssueTypeName
+		,	eAssetTypeName
+		,	eAssetType
+		,	mMaintanceTypeName
+		FROM M_MAINTANCE M
+		WHERE 1=1 AND MAINTANCE_NUM 
+		  <iterate prepend="IN" property="keyList" open="(" close=")" conjunction=","> 
+		 	#keyList[]# 
+		 </iterate>
+	</select>
+	
+	
+	<select id="mesMaintanceDAO.selectMesMaintancePopList" parameterClass="mesMaintanceVO" resultClass="mesMaintanceVO">
+		/* mesMaintanceDAO.selectMesMaintancePopList */
+		SELECT
+	    	MAINTANCE_NUM									AS mMaintanceKey
+		,	MAINTANCE_STAFF_NUM								AS mMaintanceStaffKey
+		,	MAINTANCE_STAFF_NAME							AS mMaintanceStaffName
+		,	MAINTANCE_TYPE									AS mMaintanceType
+		,	MAINTANCE_DATE									AS mMaintanceDate
+		,	MAINTANCE_MODEL									AS mMaintanceModel
+		,	MAINTANCE_SERIAL								AS mMaintanceSerial
+		,	getContentLf(MAINTANCE_CONTENT)					AS mMaintanceContent
+		,	MAINTANCE_FILE									AS mMaintanceFile
+		,	PROCESS_TYPE									AS mProcessType
+		,	PROCESS_STAFF_NUM								AS mProcessStaffKey
+		,	PROCESS_STAFF_NAME								AS mProcessStaffName
+		,	PROCESS_RESULT									AS mProcessResult
+		,	PROCESS_DATE									AS mProcessDate
+		,	getContentLf(PROCESS_CONTENT)					AS mProcessContent
+		,	PROCESS_FILE									AS mProcessFile
+		,	SIGN_STATUS										AS sSignStatus
+		,	SIGN_NUM										AS sSignKey
+		,	MAINTANCE_Number AS  mMaintanceNumber
+		,   MAINTANCE_IssueType AS  mIssueTypeName
+		,	mAuthor 
+		,   getNameTTxt(MAINTANCE_NUM) AS mMaintanceCateName
+		,	eMaintanceSelect1
+		,	eMaintanceSelect2
+		,	eMaintanceSelect3
+		,	eMaintanceSelect4
+		,	mHandler
+		,	mRequestDate
+		,	mProcessingDate
+		,	mIssueTypeName
+		,	eAssetTypeName
+		,	eAssetType
+		,	mMaintanceTypeName
+		FROM M_MAINTANCE M
+		WHERE 1=1 AND MAINTANCE_NUM != #mMaintanceKey# AND SIGN_STATUS = '요청등록'
+		<isNotEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+				AND DATE_FORMAT(mRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			</isNotEmpty>
+		</isNotEmpty>
+		
+		<isNotEmpty property="eSearchWordA">
+			AND LOWER(mMaintanceNumber) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordB">
+			AND LOWER(eAssetTypeName) LIKE CONCAT('%',LOWER(#eSearchWordB#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordC">
+			AND LOWER(mMaintanceTypeName) LIKE CONCAT('%',LOWER(#eSearchWordC#),'%')
+		</isNotEmpty>
+		
+		<isNotEmpty property="eSearchWordD">
+			AND LOWER(mIssueTypeName) LIKE CONCAT('%',LOWER(#eSearchWordD#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordE">
+			AND LOWER(MAINTANCE_CONTENT) LIKE CONCAT('%',LOWER(#eSearchWordE#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordF">
+			AND LOWER(mHandler) LIKE CONCAT('%',LOWER(#eSearchWordF#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordG">
+			AND DATE_FORMAT(mProcessingDate, '%Y-%m-%d') =DATE_FORMAT(eSearchWordG, '%Y-%m-%d')
+		</isNotEmpty>
+		ORDER BY MAINTANCE_DATE DESC, MAINTANCE_NUM DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="mesMaintanceDAO.selectMesMaintancePopListCnt" parameterClass="mesMaintanceVO" resultClass="int">
+		/* mesMaintanceDAO.selectMesMaintancePopListCnt */
+		SELECT
+	    	COUNT(*)
+		FROM M_MAINTANCE
+		WHERE 1=1 AND MAINTANCE_NUM != #mMaintanceKey#  AND SIGN_STATUS = '요청등록'
+		<isNotEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+				AND DATE_FORMAT(mRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			</isNotEmpty>
+		</isNotEmpty>
+		
+		<isNotEmpty property="eSearchWordA">
+			AND LOWER(mMaintanceNumber) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordB">
+			AND LOWER(eAssetTypeName) LIKE CONCAT('%',LOWER(#eSearchWordB#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordC">
+			AND LOWER(mMaintanceTypeName) LIKE CONCAT('%',LOWER(#eSearchWordC#),'%')
+		</isNotEmpty>
+		
+		<isNotEmpty property="eSearchWordD">
+			AND LOWER(mIssueTypeName) LIKE CONCAT('%',LOWER(#eSearchWordD#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordE">
+			AND LOWER(MAINTANCE_CONTENT) LIKE CONCAT('%',LOWER(#eSearchWordE#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordF">
+			AND LOWER(mHandler) LIKE CONCAT('%',LOWER(#eSearchWordF#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordG">
+			AND DATE_FORMAT(mProcessingDate, '%Y-%m-%d') =DATE_FORMAT(eSearchWordG, '%Y-%m-%d')
+		</isNotEmpty>
+	</select>
+	
+	 <insert id = "mesMaintanceDAO.insertAssetInfoItem" parameterClass="mesMaintanceVO">
+	 /* mesMaintanceDAO.insertAssetInfoItem */
+			INSERT INTO M_MAINTANCE_ASSET
+	 			(  
+					MAINTANCE_NUM
+					,ASSET_NUM
+	 			)
+			VALUES(
+			   #mMaintanceKey#
+			  ,#eAssetKey#
+			 )
+	</insert>
+	 <insert id = "mesMaintanceDAO.insertMaintanceInfoItem" parameterClass="mesMaintanceVO">
+	 /* mesMaintanceDAO.insertMaintanceInfoItem */
+			INSERT INTO M_MAINTANCE_TANCE
+	 			(  
+					MAINTANCE_NUM
+					,TANCE_NUM
+	 			)
+			VALUES(
+			   #mMaintanceKey#
+			  ,#eRowMaintanceKey#
+			 )
+	</insert>
+	
+</sqlMap>

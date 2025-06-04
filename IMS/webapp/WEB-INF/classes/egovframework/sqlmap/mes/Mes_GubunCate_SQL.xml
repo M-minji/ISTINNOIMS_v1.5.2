@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	
+	<typeAlias alias="mesGubunCateVO" type="egovframework.rndp.mes.gubun.gubunCate.service.MesGubunCateVO" />
+	
+	<!-- 안상현 -->
+	<select id="mesGubunCateDAO.selectGubunCheck" parameterClass="mesGubunCateVO" resultClass="int">
+		/* mesGubunCateDAO.selectGubunCheck */
+		SELECT
+			COUNT(*)
+		FROM
+			GU
+		WHERE 1=1
+		AND GU_NAME = TRIM(#sGubunCateName#)
+	</select>
+	
+	<insert id="mesgubunCateDAO.insertMesGubunCate" parameterClass="mesGubunCateVO">
+		<selectKey keyProperty="sGubunCateKey">
+			/* s_gubun_cate pk */
+			SELECT IFNULL(MAX(GU_NUM), 0) + 1 FROM GU
+		</selectKey>
+		/* mesgubunCateDAO.insertMesGubunCate */
+		INSERT INTO GU 
+		(
+			GU_NUM
+		,	GU_NAME
+		,	GU_ETC
+		,	GU_WDATE
+		,	k_staff_key
+		)
+		VALUES
+		(
+			#sGubunCateKey#
+		,	#sGubunCateName#
+		,	#sGubunCateEtc#
+		, 	NOW()
+		,	#kStaffKey#
+		)
+	</insert>
+	
+	<select id="mesGubunCateDAO.selectMesGubunCateList" parameterClass="mesGubunCateVO" resultClass="mesGubunCateVO">
+		/* mesGubunCateDAO.selectMesGubunCateList */
+     	SELECT
+			gc.GU_NUM 	AS sGubunCateKey
+		,	gc.GU_NAME 	AS sGubunCateName
+		,	gc.GU_ETC 	AS sGubunCateEtc
+		FROM
+			GU gc
+		WHERE 1=1
+		<isNotEmpty property="searchWord">
+			AND	LOWER(gc.GU_NAME) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+		</isNotEmpty>
+		ORDER BY GU_NUM DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="mesGubunCateDAO.selectMesGubunCateListCnt" parameterClass="mesGubunCateVO" resultClass="int">
+		/* mesGubunCateDAO.selectMesGubunCateListCnt */
+		SELECT
+			COUNT(*)
+		FROM
+			GU gc
+		WHERE 1=1
+		<isNotEmpty property="searchWord">
+			AND	LOWER(gc.GU_NAME) LIKE CONCAT('%',LOWER(#searchWord#),'%')
+		</isNotEmpty>
+	</select>
+	
+	<select id="mesGubunCateDAO.selectMesGubunCateInfo" parameterClass="mesGubunCateVO" resultClass="mesGubunCateVO">
+		/* mesGubunCateDAO.selectMesGubunCateInfo */
+		SELECT
+			gc.GU_NUM 																AS sGubunCateKey
+		,	gc.GU_NAME 																AS sGubunCateName
+		,	gc.GU_ETC 																AS sGubunCateEtc
+		,	(SELECT COUNT(*) FROM GC g WHERE g.GU_NUM = gc.GU_NUM) 					AS gbnCnt
+		FROM
+			GU gc
+		WHERE 1=1
+		AND gc.GU_NUM = #sGubunCateKey#
+	</select>
+	
+	<delete id="mesGubunCateDAO.deleteMesGubunCate" parameterClass="mesGubunCateVO">
+		/* mesGubunCateDAO.deleteMesGubunCate */
+		DELETE FROM	GU WHERE 1=1 AND GU_NUM = #sGubunCateKey# 
+	</delete>
+	
+	<update id="mesGubunCateDAO.updateMesGubunCate" parameterClass="mesGubunCateVO">
+		/* mesGubunCateDAO.updateMesGubunCate */
+		UPDATE	
+			GU			                
+   		SET  	
+   			GU_NAME 			= #sGubunCateName#
+   		,	GU_ETC			 	= #sGubunCateEtc#
+   		,	k_staff_key 		= #kStaffKey#	
+		WHERE 1=1	
+		AND GU_NUM = #sGubunCateKey#            		
+	</update>
+	
+</sqlMap>
+

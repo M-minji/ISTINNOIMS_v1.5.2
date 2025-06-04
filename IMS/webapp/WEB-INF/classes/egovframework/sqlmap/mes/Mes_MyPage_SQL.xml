@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap>
+	
+	<typeAlias 	alias="mesMyPageVO" type="egovframework.rndp.mes.myPage.service.MesMyPageVO" />
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="mesMyPageDAO.selectMyPageInfo" parameterClass="mesMyPageVO" resultClass="mesMyPageVO" >
+		/* mesMyPageDAO.selectMyPageInfo */
+		
+		SELECT
+			s.k_staff_key							AS kStaffKey,
+			s.k_class_key							AS kClassKey,
+			s.k_position_key						AS kPositionKey,
+			k_staff_num								AS kStaffNum,	
+			k_staff_id								AS kStaffId,
+			k_staff_name							AS kStaffName,
+			AES_DECRYPT(k_staff_password,get_daily_key())	AS kStaffPw,
+			k_staff_birthday						AS kStaffBirthday,
+			k_staff_birthday_flag					AS kStaffBirthdayFlag,
+			k_staff_email							AS kStaffEmail,
+			k_staff_messenger						AS kStaffMessenger,
+			k_staff_post1							AS kStaffPost1,
+			k_staff_post2							AS kStaffPost2,
+			k_staff_address1						AS kStaffAddress1,
+			k_staff_address2						AS kStaffAddress2,
+			k_staff_telephone1						AS kStaffPhone1,
+			k_staff_telephone2						AS kStaffPhone2,
+			k_staff_telephone3						AS kStaffPhone3,
+			k_staff_mobile1							AS kStaffMobile1,
+			k_staff_mobile2							AS kStaffMobile2,
+			k_staff_mobile3							AS kStaffMobile3,
+			k_staff_homepage						AS kStaffHomePage,
+			k_staff_comment							AS kStaffComment,
+			k_staff_state_flag						AS kStaffStateFlag,
+			k_staff_imagefile						AS kStaffImageFile,
+			s.k_sector_key							AS kStaffSectorKey,
+			k_class_name							AS kClassName,
+			POSITION_NAME							AS kPositionName,
+			t.k_sector_name							AS kSectorName
+		FROM
+			k_staff s
+			LEFT JOIN k_class c ON s.k_class_key = c.k_class_key
+			LEFT JOIN K_POSITION p ON s.k_position_key = p.POSITION_NUM
+			LEFT JOIN k_sector t ON t.k_sector_key = s.k_sector_key
+		WHERE
+			k_staff_id = #shMemberId#
+			
+	</select>
+	
+	<update id="mesMyPageDAO.updateMyPageInfo" parameterClass="mesMyPageVO">
+		/* mesMyPageDAO.updateMyPageInfo */
+		
+		UPDATE
+			k_staff
+		SET
+			k_class_key = #kClassKey#,
+			k_position_key = #kPositionKey#,
+			k_staff_num = #kStaffNum#,
+			k_staff_id = #kStaffId#,
+			k_staff_name = #kStaffName#,
+			k_staff_birthday = #kStaffBirthday#,
+			k_staff_birthday_flag = #kStaffBirthdayFlag#,
+			k_staff_email = #kStaffEmail#,
+			k_staff_messenger = #kStaffMessenger#,
+			k_staff_post1 = #kStaffPost1#,
+			k_staff_post2 = #kStaffPost2#,
+			k_staff_address1 = #kStaffAddress1#,	
+			k_staff_address2 = #kStaffAddress2#,
+			k_staff_telephone1 = #kStaffPhone1#,
+			k_staff_telephone2 = #kStaffPhone2#,
+			k_staff_telephone3 = #kStaffPhone3#,
+			k_staff_mobile1 = #kStaffMobile1#,
+			k_staff_mobile2 = #kStaffMobile2#,
+			k_staff_mobile3 = #kStaffMobile3#,
+			k_staff_state_flag = #kStaffStateFlag#,
+			k_sector_key = #kStaffSectorKey#
+		WHERE
+			k_staff_key = #kStaffKey#
+	
+	</update>
+	
+</sqlMap>

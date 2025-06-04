@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+	<typeAlias  alias="positionVO" type="egovframework.rndp.admin.position.service.PositionVO"/>
+	<typeAlias  alias="staffVO" type="egovframework.rndp.admin.position.service.StaffVO"/>
+	
+	<resultMap id="position" class="positionVO">
+		<result property="key" column="POSITION_NUM"/>
+		<result property="rank" column="POSITION_rank"/>
+		<result property="name" column="POSITION_NAME"/>
+	</resultMap>
+	<select id="positionDAO.positionList" resultMap="position">
+		/* positionDAO.positionList */
+		select 
+			POSITION_NUM
+			, POSITION_rank
+			, POSITION_NAME 
+		from K_POSITION 
+		order by POSITION_rank
+	</select>
+	
+	<resultMap id="positionInfo" class="positionVO">
+		<result property="key" column="POSITION_NUM"/>
+		<result property="name" column="POSITION_NAME"/>
+	</resultMap>
+	<select id="positionDAO.positionInfoByRank" parameterClass="int" resultMap="positionInfo">
+		/* positionDAO.positionInfoByRank */
+		select 
+			POSITION_NUM
+			, POSITION_NAME 
+		from K_POSITION 
+		where POSITION_rank = #rank#
+	</select>
+	
+	
+	
+	
+	<resultMap id="staff" class="staffVO">
+		<result property="staffKey" column="k_staff_key"/>
+		<result property="iclass" column="k_class_name"/>
+		<result property="position" column="POSITION_NAME"/>
+		<result property="num" column="k_staff_num"/>
+		<result property="id" column="k_staff_id"/>
+		<result property="name" column="k_staff_name"/>
+		<result property="email" column="k_staff_email"/>
+		<result property="mobile1" column="k_staff_mobile1"/>
+		<result property="mobile1" column="k_staff_mobile2"/>
+		<result property="mobile1" column="k_staff_mobile3"/>
+		<result property="comment" column="k_staff_comment"/>
+		<result property="imagefile" column="k_staff_imagefile"/>
+	</resultMap>
+	<select id="staffDAO.staffListByPos"  resultMap="staff">
+		/* staffDAO.staffListByPos */
+		select 
+			k_staff_key
+			, k_class_name
+			, POSITION_NAME
+			, k_staff_num
+			, k_staff_id
+			, k_staff_name
+			, k_staff_email
+			, k_staff_mobile1
+			, k_staff_mobile2
+			, k_staff_mobile3
+			, k_staff_comment
+			, k_staff_imagefile 
+		from 
+			k_staff s, k_class c, K_POSITION p 
+		where k_staff_state_flag = '1'
+		and s.k_class_key = c.k_class_key 
+		and s.k_position_key = p.POSITION_NUM 
+		order by k_staff_state_flag, k_class_rank, POSITION_rank, k_staff_id
+	</select>
+	
+	<select id="staffDAO.staffListByPos1" parameterClass="int" resultMap="staff">
+		/* staffDAO.staffListByPos1 */
+		select 
+			k_staff_key
+			, k_class_name
+			, POSITION_NAME
+			, k_staff_num
+			, k_staff_id
+			, k_staff_name
+			, k_staff_email
+			, k_staff_mobile1
+			, k_staff_mobile2
+			, k_staff_mobile3
+			, k_staff_comment
+			, k_staff_imagefile 
+		from 
+			k_staff s, k_class c, K_POSITION p 
+		where s.k_position_key = #positionKey#
+		and k_staff_state_flag = '1'
+		and s.k_class_key = c.k_class_key 
+		and s.k_position_key = p.POSITION_NUM 
+		order by k_staff_state_flag, k_class_rank, POSITION_rank, k_staff_id
+	</select>
+	
+	
+	<resultMap id="staff1" class="staffVO">
+		<result property="iclass" column="k_class_name"/>
+		<result property="position" column="POSITION_NAME"/>
+		<result property="num" column="k_staff_num"/>
+		<result property="id" column="k_staff_id"/>
+		<result property="name" column="k_staff_name"/>
+		<result property="password" column="k_staff_password"/>
+		<result property="birth" column="k_staff_birthday"/>
+		<result property="birthFlag" column="k_staff_birthday_flag"/>
+		<result property="email" column="k_staff_email"/>
+		<result property="messenger" column="k_staff_messenger"/>
+		<result property="post1" column="k_staff_post1"/>
+		<result property="post2" column="k_staff_post2"/>
+		<result property="address1" column="k_staff_address1"/>
+		<result property="address2" column="k_staff_address2"/>
+		<result property="telephone1" column="k_staff_telephone1"/>
+		<result property="telephone2" column="k_staff_telephone2"/>
+		<result property="telephone3" column="k_staff_telephone3"/>
+		<result property="mobile1" column="k_staff_mobile1"/>
+		<result property="mobile2" column="k_staff_mobile2"/>
+		<result property="mobile3" column="k_staff_mobile3"/>
+		<result property="homepage" column="k_staff_homepage"/>
+		<result property="comment" column="k_staff_comment"/>
+		<result property="stateFlag" column="k_staff_state_flag"/>
+		<result property="imagefile" column="k_staff_imagefile"/>
+		<result property="sector" column="k_sector_name"/>
+		<result property="signImage" column="k_staff_sign_image"/>
+	</resultMap>
+	<select id="staffDAO.staffInfoForView" parameterClass="int" resultMap="staff1">
+		/* staffDAO.staffInfoForView */
+		select 
+			k_class_name
+			, POSITION_NAME
+			, k_staff_num
+			, k_staff_id
+			, k_staff_name
+			, k_staff_password
+			, k_staff_birthday
+			, k_staff_birthday_flag
+			, k_staff_email
+			, k_staff_messenger
+			, k_staff_post1
+			, k_staff_post2
+			, k_staff_address1
+			, k_staff_address2
+			, k_staff_telephone1
+			, k_staff_telephone2
+			, k_staff_telephone3
+			, k_staff_mobile1
+			, k_staff_mobile2
+			, k_staff_mobile3
+			, k_staff_homepage
+			, k_staff_comment
+			, k_staff_state_flag
+			, k_staff_imagefile
+			, t.k_sector_name
+			, k_staff_sign_image
+		from k_staff s, k_class c, K_POSITION p, k_sector t 
+		where s.k_staff_key = #staffKey#
+		and s.k_class_key = c.k_class_key
+		and s.k_position_key = p.POSITION_NUM
+		AND s.k_sector_key = t.k_sector_key
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+</sqlMap>

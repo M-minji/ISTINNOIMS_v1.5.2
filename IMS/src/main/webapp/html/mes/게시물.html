@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>게시물</title>
+	</head>
+	
+	<body>
+		<header>
+			<div class="header">
+				<div class="header_title"><h2>원사입고 현황</h2></div>
+				<ul class="paths">
+					<li>home</li>&#62;
+					<li>원사관리</li>&#62;
+					<li>원사입고</li>
+				</ul>
+			</div>
+		</header>
+
+		<!-- mes 게시물부분 -->
+		<section>
+			<div class="tbl_top">
+				<div class="tbl_top_post">
+					<ul class="tbl_top_left">
+						<li>
+							<select name="recordCountPerPage" class="select_recordCountPerPage" id="recordCountPerPage" style="width:80px;" onchange="fn_guestList(1)">
+              					<option value="20" selected="selected">Page/20</option>
+              					<option value="50" >Page/50</option>
+              					<option value="100" >Page/100</option>
+       						</select> 
+						</li>
+						<li>
+							<select name="searchType" class="select_search" id="searchType" style="width: 100px;">
+								<option value="1">전체</option>
+								<option value="2">입고번호</option>
+								<option value="3">거래처</option>
+								<option value="4">생산국가</option>
+								<option value="5">브랜드</option>
+							</select> 
+						</li>
+						<li>
+							<input name="searchWord" type="text" class="searchWord"	id="searchWord" style="width: 10%;"	value="" />
+						</li>
+						<li>
+							<a>입고일 &#58;</a>
+						</li>
+						<li>
+							&#126;<input type="text" class='inp_color_bg_bg' name="topStartDate" id="topStartDate" value="" style="width: 70px;" readonly/>
+						</li>
+						<li>
+							<input type="text" class='inp_color_bg_bg' name="topEndDate" id="topEndDate" value="" style="width: 70px;" readonly /> 
+						</li>
+						<li>
+							<a onclick="fn_guestList(1)" class="mes_btn">검색</a>
+			  			</li>
+					</ul>
+					<ul class="tbl_top_right">
+						<li><a onclick="go_insert()" class="mes_btn">등록</a></li>
+					</ul>
+				</div>
+				<div class="tbl_list">
+					<table>
+						<thead>
+							<tr>
+								<th>순번</th>
+								<th>자재입고번호</th>
+								<th>거래처</th>
+								<th>생산국가</th>
+								<th>브랜드</th>
+								<th>con/box/kg</th>
+								<th>입고일</th>
+								<th>확정여부</th>
+								<th>바코드</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>1</td>
+								<td>TIN-180530-001</td>
+								<td>TEST</td>
+								<td>베트남</td>
+								<td>니하르</td>
+								<td>100.0/100.0/100.0</td>
+								<td>2018-05-30</td>
+								<td>
+									<a class="mes_btn" href="#" onclick="confirmCheck(5,'N')">
+										확정취소
+									</a>
+								</td>
+								<td>
+									<a class="mes_btn"  href="#" onclick="confirmCheck(5,'N')">
+										출력
+									</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>			
+		</section>
+		<footer>
+			<div class="tbl_paging">
+				<span><ui:pagination paginationInfo="${paginationInfo}" type="text" jsFunction="fn_guestList" /></span>
+			</div>
+		</footer>
+	</body>
+</html>

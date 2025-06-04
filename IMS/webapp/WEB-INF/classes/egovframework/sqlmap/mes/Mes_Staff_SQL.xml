@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap> 
+	<typeAlias alias="mesStaffVO" 	type="egovframework.rndp.mes.staff.service.MesStaffVO" /> 
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap" /> 
+	<typeAlias alias="staffVO" type="egovframework.rndp.admin.position.service.StaffVO"/>
+	
+	
+	 
+	<select id="mesStaffDAO.selectKStaff_S" parameterClass="mesStaffVO" resultClass="mesStaffVO" >
+		/* mesStaffDAO.selectKStaff_S */
+		<![CDATA[
+			SELECT
+				k_staff_key                                            AS kStaffKey,   
+				k_class_key                                            AS kClassKey,   
+				(
+					SELECT
+						k_class_name
+					FROM
+						k_class
+					WHERE
+						k_class_key = k_staff.k_class_key
+				)                                                      AS kClassName, 
+				k_position_key                                         AS kPositionKey,    
+				(
+					SELECT
+						POSITION_NAME
+					FROM
+						K_POSITION
+					WHERE
+						POSITION_NUM = k_staff.k_position_key
+				)                                                      AS kPositionName,     
+				k_staff_id                                             AS kStaffId              ,         
+				k_staff_name                                           AS kStaffName            ,         
+				k_staff_birthday                                       AS kStaffBirthday        ,  
+				k_staff_birthday_flag                                  AS kStaffBirthdayFlag    ,
+				k_staff_email                                          AS kStaffEmail           ,       
+				k_staff_messenger                                      AS kStaffMessenger       ,   
+				k_staff_post1                                          AS kStaffPost1           ,       
+				k_staff_post2                                          AS kStaffPost2           ,       
+				k_staff_address1                                       AS kStaffAddress1        ,    
+				k_staff_address2                                       AS kStaffAddress2        ,    
+				k_staff_telephone1                                     AS kStaffTelephone1      ,  
+				k_staff_telephone2                                     AS kStaffTelephone2      ,  
+				k_staff_telephone3                                     AS kStaffTelephone3      ,  
+				k_staff_mobile1                                        AS kStaffMobile1         ,     
+				k_staff_mobile2                                        AS kStaffMobile2         ,     
+				k_staff_mobile3                                        AS kStaffMobile3         ,     
+				k_staff_homepage                                       AS kStaffHomepage        ,    
+				k_staff_comment                                        AS kStaffComment         ,     
+				k_staff_state_flag                                     AS kStaffStateFlag       ,  
+				k_staff_imagefile                                      AS kStaffImagefile       ,   
+				k_staff_sign_image                                     AS kStaffSignImage       ,  
+				k_staff_num                                            AS kStaffNum             ,         
+				k_mail_use                                             AS kMailUse              ,          
+				k_sector_key                                           AS kSectorKey             
+			FROM                                                       
+				k_staff                                                
+			WHERE                                                      
+				1 = 1                                                  
+				AND k_staff_id = #kStaffId#
+				AND k_staff_password = #kStaffPassword#
+				AND k_staff_state_flag = '1'
+			ORDER BY
+				k_staff_name ASC
+			LIMIT
+				1
+		]]>
+	</select>
+	
+	
+	<resultMap id="staffAdd" class="staffVO">
+		<result property="staffKey" column="k_staff_key"/>
+		<result property="iclass" column="k_class_name"/>
+		<result property="positionKey" column="POSITION_NUM"/>
+		<result property="position" column="POSITION_NAME"/>
+		<result property="sector" column="k_sector_name"/>
+		<result property="num" column="k_staff_num"/>
+		<result property="id" column="k_staff_id"/>
+		<result property="name" column="k_staff_name"/>
+		<result property="email" column="k_staff_email"/>
+		<result property="comment" column="k_staff_comment"/>
+		<result property="stateFlag" column="k_staff_state_flag"/>
+		<result property="imagefile" column="k_staff_imagefile"/>
+	</resultMap>
+	<select id="staffDAO.staffAddList" parameterClass="staffVO" resultMap="staffAdd">
+		/* staffDAO.staffAddList */
+		SELECT 
+			k_staff_key
+			, k_class_name
+			, s.k_position_key as POSITION_NUM
+			, POSITION_NAME
+			, k_sector_name 
+			, k_staff_num 
+			, k_staff_id
+			, k_staff_name
+			, k_staff_email
+			, k_staff_comment
+			, k_staff_state_flag                                                                                      
+			, k_staff_imagefile
+		FROM k_staff s, k_class c, K_POSITION p, k_sector t
+		WHERE s.k_class_key = c.k_class_key
+		<isNotEmpty property="staffKeyDupList">
+			AND	k_staff_key not in
+			<iterate property="staffKeyDupList" open="(" close=")" conjunction=",">
+			  #staffKeyDupList[]#
+			</iterate>
+		</isNotEmpty>
+		AND s.k_position_key = p.POSITION_NUM  
+		AND s.k_sector_key = t.k_sector_key		
+		<isNotEmpty property="positionKey">
+			<isNotEqual property="positionKey" compareValue="0">
+				AND s.k_position_key = #positionKey#
+			</isNotEqual>
+		</isNotEmpty>
+		ORDER BY t.k_sector_rank, c.k_class_rank, p.POSITION_rank,k_staff_name
+	</select>
+	
+	
+	
+	<insert id="mesStaffDAO.checkStaffInsert" parameterClass="mesStaffVO">
+	/* mesStaffDAO.checkStaffInsert */		
+		INSERT INTO
+			k_staff_request (
+				k_staff_request_key,
+				k_class_key,
+				k_position_key,
+				k_staff_id,
+				k_staff_name,
+				k_staff_password,
+				k_staff_birthday,
+				k_staff_birthday_flag,
+				k_staff_email,
+				k_staff_messenger,
+				k_staff_post1,
+				k_staff_post2,
+				k_staff_address1,
+				k_staff_address2,
+				k_staff_telephone1,
+				k_staff_telephone2,
+				k_staff_telephone3,
+				k_staff_mobile1,
+				k_staff_mobile2,
+				k_staff_mobile3,
+				k_staff_homepage,
+				k_staff_comment,
+				k_staff_state_flag,
+				k_staff_imagefile,
+				k_staff_sign_image,
+				k_staff_num,
+				k_mail_use,
+				k_sector_key
+			)
+		VALUES
+			(
+				(SELECT 
+					ifnull(MAX(k_staff_request_key ),0)+1
+				FROM 
+					k_staff_request as a),	
+				#kClassKey#,
+				#kPositionKey#,
+				#kStaffId#,
+				#kStaffName#,
+				#kStaffPassword#,
+				#kStaffBirthday#,
+				#kStaffBirthdayFlag#,
+				#kStaffEmail#,
+				#kStaffMessenger#,
+				#kStaffPost1#,
+				#kStaffPost2#,
+				#kStaffAddress1#,
+				#kStaffAddress2#,
+				#kStaffTelephone1#,
+				#kStaffTelephone2#,
+				#kStaffTelephone3#,
+				#kStaffMobile1#,
+				#kStaffMobile2#,
+				#kStaffMobile3#,
+				#kStaffHomepage#,
+				#kStaffComment#,
+				#kStaffStateFlag#,
+				#kStaffImagefile#,
+				#kStaffSignImage#,
+				#kStaffNum#,
+				#kMailUse#,
+				#kSectorKey#
+			)
+	</insert>
+	
+	<select id="mesStaffDAO.selectStaffInfo" parameterClass="int" resultClass="mesStaffVO">
+		/* mesStaffDAO.selectStaffInfo */
+		select	  k_class_name				as kClassName
+				, k_staff_key				as kStaffKey
+				, POSITION_NAME			as kPositionName
+				, k_staff_num				as kStaffNum
+				, k_staff_id				as kStaffId
+				, k_staff_name				as kStaffName
+				, k_staff_password			as kStaffPassword
+				, trim(k_staff_birthday)	as kStaffBirthday
+				, k_staff_birthday_flag		as kStaffBirthdayFlag
+				, k_staff_email				as kStaffEmail
+				, k_staff_messenger			as kStaffMessenger
+				, trim(k_staff_post1)		as kStaffPost1
+				, trim(k_staff_post2)		as kStaffPost2
+				, k_staff_address1			as kStaffAddress1
+				, k_staff_address2			as kStaffAddress2
+				, trim(k_staff_telephone1)	as kStaffTelephone1
+				, trim(k_staff_telephone2)	as kStaffTelephone2
+				, trim(k_staff_telephone3)	as kStaffTelephone3
+				, trim(k_staff_mobile1)		as kStaffMobile1
+				, trim(k_staff_mobile2)		as kStaffMobile2
+				, trim(k_staff_mobile3)		as kStaffMobile3
+				, k_staff_homepage			as kStaffHomepage
+				, k_staff_comment			as kStaffComment
+				, k_staff_state_flag		as kStaffStateFlag
+				, k_staff_imagefile			as kStaffImagefile
+				, t.k_sector_name			as kSectorName
+				, k_staff_sign_image		as kStaffSignImage
+		from 	k_staff s
+				inner join k_class c
+					on (s.k_class_key = c.k_class_key)
+				inner join K_POSITION p
+					on (s.k_position_key = p.POSITION_NUM)
+				inner join k_sector t
+					on (s.k_sector_key = t.k_sector_key)
+		where s.k_staff_key = #kStaffKey#
+	</select>
+	
+	<update id="mesStaffDAO.updateStaff" parameterClass="mesStaffVO">
+		/* mesStaffDAO.updateStaff */
+		update	k_staff
+		set		  k_staff_birthday			= #kStaffBirthday#
+				, k_staff_birthday_flag		= #kStaffBirthdayFlag#
+				, k_staff_telephone1		= #kStaffTelephone1#
+				, k_staff_telephone2		= #kStaffTelephone2#
+				, k_staff_telephone3		= #kStaffTelephone3#
+				, k_staff_mobile1			= #kStaffMobile1#
+				, k_staff_mobile2			= #kStaffMobile2#
+				, k_staff_mobile3			= #kStaffMobile3#
+				, k_staff_post1				= #kStaffPost1#
+				, k_staff_post2				= #kStaffPost2#
+				, k_staff_address1			= #kStaffAddress1#
+				, k_staff_address2			= #kStaffAddress2#
+		where	k_staff_key = #kStaffKey#
+	</update>
+	
+	<update id="mesStaffDAO.updateStaffPassword" parameterClass="mesStaffVO">
+		/* mesStaffDAO.updateStaffPassword */
+		update	k_staff
+		set		k_staff_password	= #newpassword#
+		where	k_staff_key 		= #kStaffKey#
+		and		k_staff_password	= #kStaffPassword#
+	</update>
+	
+	<update id="mesStaffDAO.updateStaffImageFile" parameterClass="mesStaffVO">
+		/* mesStaffDAO.updateStaffImageFile */
+		update	k_staff
+		set		
+		<isEqual property="kParamImage" compareValue="1">
+				k_staff_imagefile	= #kStaffImagefile#
+		</isEqual>
+		<isEqual property="kParamImage" compareValue="2">
+				k_staff_sign_image	= #kStaffSignImage#
+		</isEqual>
+		where	k_staff_key 		= #kStaffKey#
+	</update>
+
+	
+	<resultMap id="positionList" class="mesStaffVO">
+		<result property="kPositionKey"					column="POSITION_NUM"/>   
+		<result property="kPositionName"           		column="POSITION_NAME"/> 
+	</resultMap>
+	
+	<select id="mesStaffDAO.selectPositionList" resultMap="positionList">
+		/* mesStaffDAO.selectPositionList */
+		SELECT	POSITION_NUM,
+				POSITION_NAME
+		FROM	K_POSITION
+	</select>
+	
+	<resultMap id="staffListByPos" class="mesStaffVO">
+		<result property="kStaffKey"					column="k_staff_key"/>   
+		<result property="kClassName"           		column="k_class_name"/> 
+		<result property="kPositionName"           		column="POSITION_NAME"/> 
+		<result property="kStaffNum"           			column="k_staff_num"/> 
+		<result property="kStaffId"           			column="k_staff_id"/> 
+		<result property="kStaffName"           		column="k_staff_name"/> 
+	</resultMap>
+	
+	<select id="mesStaffDAO.selectStaffListByPos" parameterClass="mesStaffVO" resultMap="staffListByPos">
+		/* mesStaffDAO.selectStaffListByPos */
+		select	s.k_staff_key, 
+				k_class_name, 
+				POSITION_NAME, 
+				k_staff_num,
+				k_staff_id, 
+				k_staff_name, 
+				k_staff_email, 
+				k_staff_mobile1, 
+				k_staff_mobile2, 
+				k_staff_mobile3,
+				k_staff_comment 
+		from 	k_staff s, k_class c, K_POSITION p 
+		where	s.k_class_key = c.k_class_key 
+		and		s.k_position_key = p.POSITION_NUM
+		<isNotEqual property="kPositionKey" compareValue="0">
+			and		s.k_position_key = #kPositionKey#
+		</isNotEqual>
+		and		k_staff_state_flag = #kStaffStateFlag# 
+		order by k_staff_state_flag, k_class_rank, POSITION_rank, k_staff_id
+	</select>	
+	
+	
+	<update id="mesStaffDAO.updateUserInfoPwd" parameterClass="mesStaffVO">
+		/* mesStaffDAO.updateUserInfoPwd */
+		UPDATE
+			k_staff
+		SET
+			k_staff_password = #chPassword2#
+		WHERE 
+			k_staff_id = #shMemberId#
+	</update>
+	<select id="mesStaffDAO.selectShopMyPageInfo" parameterClass="mesStaffVO" resultClass="mesStaffVO">
+		/* mesStaffDAO.selectShopMyPageInfo */
+		SELECT 
+			k_staff_password AS shMemberPassword
+		FROM 
+			k_staff
+		WHERE k_staff_id = #shMemberId#
+	</select>
+
+	<select id="mesLoginDAO.selectMainCountInfo" parameterClass="mesStaffVO" resultClass="mesStaffVO">
+		/* mesLoginDAO.selectMainCountInfo */
+		SELECT * FROM (
+		(
+		SELECT COUNT(ORDPI_NUM) AS sendEndCount
+		FROM ORDPI
+		WHERE 1 = 1
+		AND ORDPI.ORDPI_CONFIRM = '생산완료'
+		<![CDATA[
+			 AND DATE_FORMAT(WL_START_DATE,'%Y-%m-%d') >= #topStartDate#
+			 AND DATE_FORMAT(WL_START_DATE,'%Y-%m-%d') <= #topEndDate#
+			 ]]>
+		) AS a,
+		(
+		SELECT COUNT(ORDPI_NUM) AS orderProcessCount
+		FROM ORDPI
+		WHERE 1 = 1
+		AND (ORDPI.ORDPI_CONFIRM != '생산완료' OR ORDPI.PRI_NAME IS NULL )
+		<![CDATA[
+			 AND DATE_FORMAT(WL_START_DATE,'%Y-%m-%d') >= #topStartDate#
+			 AND DATE_FORMAT(WL_START_DATE,'%Y-%m-%d') <= #topEndDate#
+			 ]]>
+		) AS b,
+		(
+		SELECT COUNT(PCHUH_NUM)  AS sujuNotCompleteCount
+		FROM PCHUH
+		WHERE 1 = 1
+		AND PCHUH_CONFIRM = '출고확정'
+		<![CDATA[
+			 AND DATE_FORMAT(SU_CHU_DATE,'%Y-%m-%d') >= #topStartDate#
+			 AND DATE_FORMAT(SU_CHU_DATE,'%Y-%m-%d') <= #topEndDate#
+			 ]]>
+		) AS c,
+		(
+		SELECT COUNT(OBJ_NUM)  AS outbaljuCount
+		FROM OBJ
+		WHERE 1 = 1
+
+		<![CDATA[
+			 AND DATE_FORMAT(OBJ_DATE,'%Y-%m-%d') >= #topStartDate#
+			 AND DATE_FORMAT(OBJ_DATE,'%Y-%m-%d') <= #topEndDate#
+			 ]]>
+		) AS d,
+		(
+		SELECT COUNT(OBJ_NUM)  AS outbaljuIncomCount
+		FROM OBJ
+		WHERE 1 = 1
+		AND OBJ_CONFIRM = '입고완료'
+		<![CDATA[
+			 AND DATE_FORMAT(OBJ_DATE,'%Y-%m-%d') >= #topStartDate#
+			 AND DATE_FORMAT(OBJ_DATE,'%Y-%m-%d') <= #topEndDate#
+			 ]]>
+		) AS e,
+		(
+		SELECT COUNT(SU_NUM)  AS sujuCount
+		FROM SU
+		WHERE 1 = 1
+		<![CDATA[
+			 AND DATE_FORMAT(SU_DATE,'%Y-%m-%d') >= #topStartDate#
+			 AND DATE_FORMAT(SU_DATE,'%Y-%m-%d') <= #topEndDate#
+			 ]]>
+		) AS f,
+		(
+		SELECT COUNT(ORD_NUM) AS sendCount
+		FROM ORD
+		WHERE 1 = 1
+		AND ORD_GUBUN = '지시관리'
+		<![CDATA[
+			 AND DATE_FORMAT(ORD_DATE,'%Y-%m-%d') >= #topStartDate#
+			 AND DATE_FORMAT(ORD_DATE,'%Y-%m-%d') <= #topEndDate#
+			 ]]>
+		) AS g
+		)
+	</select>
+</sqlMap>

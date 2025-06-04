@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN" "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+
+	<sqlMap resource="egovframework/sqlmap/rndp/admin/Rndp_Admin_Admin_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/rndp/admin/Rndp_Admin_Env_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/rndp/admin/Rndp_Admin_Menu_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/rndp/admin/Rndp_Admin_Auth_SQL.xml" />
+	<sqlMap resource="egovframework/sqlmap/rndp/admin/Rndp_Position_SQL.xml" />
+	
+	<sqlMap resource="egovframework/sqlmap/rndp/admin/intra/Rndp_Admin_Intra_StaffIntra_SQL.xml" />
+	
+</sqlMapConfig>

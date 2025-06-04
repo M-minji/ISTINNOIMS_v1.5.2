@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap>
+	<typeAlias alias="mesIssueVO" type="egovframework.rndp.mes.issue.service.MesIssueVO" />
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	
+	<select id="mesIssueDAO.mesIssueInfoList" parameterClass="mesIssueVO" resultClass="mesIssueVO">
+		/* mesIssueDAO.mesIssueInfoList */
+		SELECT 
+				ISSUE_NUM AS eIssueKey,
+				eAuthorKey,
+			    eAuthor,
+			    eCreationDate,
+			    eIssueSelect1,
+			    eIssueSelect2,
+			    eIssueSelect3,
+			    eIssueSelect4,
+			    eIssueType,
+			    eIssueTypeName,
+			    eAssetType,
+			    eAssetTypeName,
+			    eProcessingType,
+			    eProcessingTypeName,
+			    getContentLfNew(eRequester, 6) AS eRequester,
+			    getContentLfNew(eRequesterOrg, 6) AS eRequesterOrg,
+			    eRequestDate,
+			    eHandler AS eHandler,
+			    eHandlerOrg AS eHandlerOrg,
+			    eProcessingDate,
+			    eIssueContent AS eIssueContent ,
+			    eIssueStatus,
+			    eActualWorkDate,
+			    (SELECT GREATEST(COUNT(ISSUE_HANDLER_NUM)-1,0)  FROM I_ISSUE_HANDLER AS iis WHERE iis.eIssueKey =  ISSUE_NUM) AS aAssetCost,
+   				 CASE 
+			        WHEN eActualWorker IS NOT NULL AND eActualWorker != '' THEN getContentLfNew(eActualWorker, 8)
+			        WHEN eHandler IS NOT NULL AND eHandler != '' THEN getContentLfNew(eHandler, 8) 
+			        ELSE ''
+			    END AS eActualWorker,
+		        kStaffKey,
+		        kStaffName,
+				IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress,
+		         CASE 
+			        WHEN SIGN_PROGRESS = SIGN_PROGRESS_CNT THEN '승인'
+			        ELSE sSignStatus
+			   		END AS sSignStatus,
+	   			IF(
+					(SELECT COUNT(*) 
+					FROM S_SIGN_ITEM AS ssi 
+					WHERE ssi.SIGN_TABLE_NUM = ISSUE_NUM and ssi.SIGN_TABLE_NAME = 'I_ISSUE'
+					AND ssi.SIGN_DECISON = '결재대기'
+					AND ssi.SIGN_STAFF_NUM = #kStaffKey#
+				) > 0, 'Y', 'N') AS eViewGubun
+		FROM I_ISSUE 
+		LEFT JOIN S_SIGN AS s ON(s.SIGN_TABLE_NUM = ISSUE_NUM  and s.SIGN_TABLE_NAME = 'I_ISSUE')
+		WHERE 1=1 AND eIssueStatus != '삭제'
+		<isNotEmpty property="eSearchWordB">
+			AND LOWER(eAssetTypeName) LIKE CONCAT('%',LOWER(#eSearchWordB#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordC">
+			AND LOWER(eProcessingTypeName) LIKE CONCAT('%',LOWER(#eSearchWordC#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordD">
+			AND LOWER(eIssueTypeName) LIKE CONCAT('%',LOWER(#eSearchWordD#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="topStartDate">
+	    	AND DATE_FORMAT(eRequestDate, '%Y-%m-%d') >= DATE_FORMAT(#topStartDate#, '%Y-%m-%d')
+		</isNotEmpty>
+		<isNotEmpty property="topEndDate">
+			AND DATE_FORMAT(#topEndDate#, '%Y-%m-%d') >= DATE_FORMAT(eRequestDate, '%Y-%m-%d')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordE">
+				AND LOWER(eIssueContent) LIKE CONCAT('%',LOWER(#eSearchWordE#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordF">
+				AND LOWER(eHandler) LIKE CONCAT('%',LOWER(#eSearchWordF#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordG">
+				AND ( DATE_FORMAT(COALESCE(NULLIF(eActualWorkDate, ''), eProcessingDate), '%Y-%m-%d') >= DATE_FORMAT(#eSearchWordG#, '%Y-%m-%d'))
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordH">
+				AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#eSearchWordH#),'%')
+		</isNotEmpty>
+		ORDER BY ISSUE_NUM DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	
+	<select id="mesIssueDAO.mesIssueInfoListCnt" parameterClass="mesIssueVO" resultClass="int">
+		/* mesIssueDAO.mesIssueInfoListCnt */
+		SELECT 
+				COUNT(ISSUE_NUM )
+		FROM I_ISSUE
+		WHERE 1=1 AND eIssueStatus != '삭제'
+		<isNotEmpty property="eSearchWordB">
+			AND LOWER(eAssetTypeName) LIKE CONCAT('%',LOWER(#eSearchWordB#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordC">
+			AND LOWER(eProcessingTypeName) LIKE CONCAT('%',LOWER(#eSearchWordC#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordD">
+			AND LOWER(eIssueTypeName) LIKE CONCAT('%',LOWER(#eSearchWordD#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="topStartDate">
+	    	AND DATE_FORMAT(eRequestDate, '%Y-%m-%d') >= DATE_FORMAT(#topStartDate#, '%Y-%m-%d')
+		</isNotEmpty>
+		<isNotEmpty property="topEndDate">
+			AND DATE_FORMAT(#topEndDate#, '%Y-%m-%d') >= DATE_FORMAT(eRequestDate, '%Y-%m-%d')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordE">
+				AND LOWER(eIssueContent) LIKE CONCAT('%',LOWER(#eSearchWordE#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordF">
+				AND LOWER(eHandler) LIKE CONCAT('%',LOWER(#eSearchWordF#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordG">
+				AND ( DATE_FORMAT(COALESCE(NULLIF(eActualWorkDate, ''), eProcessingDate), '%Y-%m-%d') >= DATE_FORMAT(#eSearchWordG#, '%Y-%m-%d'))
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordH">
+				AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#eSearchWordH#),'%')
+		</isNotEmpty>
+	</select>
+	
+	
+	<select id="mesIssueDAO.mesIssueExcelInfoList" parameterClass="mesIssueVO" resultClass="mesIssueVO">
+		/* mesIssueDAO.mesIssueExcelInfoList */
+		SELECT 
+				ISSUE_NUM AS eIssueKey,
+				eAuthorKey,
+			    eAuthor,
+			    eCreationDate,
+			    eIssueSelect1,
+			    eIssueSelect2,
+			    eIssueSelect3,
+			    eIssueSelect4,
+<!-- 			    getCateNameTTxt(ISSUE_NUM) AS   eIssueCate, -->
+			    eIssueType,
+			    eIssueTypeName,
+			    eAssetType,
+			    eAssetTypeName,
+			    eProcessingType,
+			    eProcessingTypeName,
+			    eRequester,
+			    eRequesterOrg,
+			    eRequestDate,
+			    eHandler,
+			    eHandlerOrg,
+			    eProcessingDate,
+			    getContentLf(eIssueContent) AS eIssueContent,
+			    eIssueStatus,
+			    eActualWorkDate,
+   				eActualWorker,
+		        kStaffKey,
+		        kStaffName,
+				IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress,
+		         CASE 
+			        WHEN SIGN_PROGRESS = SIGN_PROGRESS_CNT THEN '승인'
+			        ELSE sSignStatus
+			   		END AS sSignStatus
+		FROM I_ISSUE 
+		LEFT JOIN S_SIGN AS s ON(s.SIGN_TABLE_NUM = ISSUE_NUM  and s.SIGN_TABLE_NAME = 'I_ISSUE')
+		WHERE 1=1 AND eIssueStatus != '삭제'
+		<isNotEmpty property="eSearchWordB">
+			AND LOWER(eAssetTypeName) LIKE CONCAT('%',LOWER(#eSearchWordB#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordC">
+			AND LOWER(eProcessingTypeName) LIKE CONCAT('%',LOWER(#eSearchWordC#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordD">
+			AND LOWER(eIssueTypeName) LIKE CONCAT('%',LOWER(#eSearchWordD#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="topStartDate">
+	    	AND DATE_FORMAT(eRequestDate, '%Y-%m-%d') >= DATE_FORMAT(#topStartDate#, '%Y-%m-%d')
+		</isNotEmpty>
+		<isNotEmpty property="topEndDate">
+			AND DATE_FORMAT(#topEndDate#, '%Y-%m-%d') >= DATE_FORMAT(eRequestDate, '%Y-%m-%d')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordE">
+				AND LOWER(eIssueContent) LIKE CONCAT('%',LOWER(#eSearchWordE#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordF">
+				AND LOWER(eHandler) LIKE CONCAT('%',LOWER(#eSearchWordF#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="eSearchWordG">
+				AND DATE_FORMAT(eProcessingDate, '%Y-%m-%d') >= DATE_FORMAT(#eSearchWordG#, '%Y-%m-%d')
+		</isNotEmpty>
+		ORDER BY w_date DESC
+		LIMIT 730
+	</select>
+	
+	<insert id="mesIssueDAO.insertIssueInfo" parameterClass="mesIssueVO">
+	 <selectKey type="post" keyProperty="eIssueKey" >
+        SELECT LAST_INSERT_ID() AS eIssueKey
+	  </selectKey>
+		/* mesIssueDAO.insertIssueInfo */
+		INSERT INTO I_ISSUE (
+		    eAuthorKey,
+		    eAuthor,
+		    eCreationDate,
+		    eIssueSelect1,
+		    eIssueSelect2,
+		    eIssueSelect3,
+		    eIssueSelect4,
+		    eIssueType,
+		    eIssueTypeName,
+		    eAssetType,
+		    eAssetTypeName,
+		    eProcessingType,
+		    eProcessingTypeName,
+		    eRequester,
+		    eRequesterOrg,
+		    eRequestDate,
+		    eHandler,
+		    eHandlerOrg,
+		    eProcessingDate,
+		    eActualWorkDate,
+		    eIssueContent,
+		    sSignStatus,
+		    kStaffKey,
+		    kStaffName
+		) VALUES (
+		    #eIssueStaffKey#,
+		    #eAuthor#,
+		    #eCreationDate#,
+		    #eIssueSelect1#,
+		    #eIssueSelect2#,
+		    #eIssueSelect3#,
+		    #eIssueSelect4#,
+		    #eIssueType#,
+		    #eIssueTypeName#,
+		    #eAssetType#,
+		    #eAssetTypeName#,
+		    #eProcessingType#,
+		    #eProcessingTypeName#,
+		    #eRequester#,
+		    #eRequesterOrg#,
+		    #eRequestDate#,
+		    #eHandler#,
+		    #eHandlerOrg#,
+		    #eProcessingDate#,
+		    #eProcessingDate#,
+		    #eIssueContent#,
+		    #sSignStatus#,
+		    #kStaffKey#,
+		    #kStaffName#
+		);
+
+	</insert>
+	
+	<insert id="mesIssueDAO.insertIssueHandlerInfo" parameterClass="mesIssueVO">
+		/* mesIssueDAO.insertIssueHandlerInfo */
+		INSERT INTO I_ISSUE_HANDLER (
+			  eIssueKey, 
+			  eRowWorker, 
+			  eRowDepartment, 
+			  eRowPosition, 
+			  eRowContact, 
+			  eRowNotes
+			) VALUES (
+			  #eIssueKey#, 
+			  #eRowWorker#, 
+			  #eRowDepartment#, 
+			  #eRowPosition#, 
+			  #eRowContact#, 
+			  #eRowNotes#
+			);
+	</insert>
+	<select id="mesIssueDAO.eIssueHandlerInfoList" parameterClass="mesIssueVO" resultClass="mesIssueVO">
+		/* mesIssueDAO.eIssueHandlerInfoList */
+	 	SELECT 
+   			 eIssueKey, 
+			  eRowWorker, 
+			  eRowDepartment, 
+			  eRowPosition, 
+			  eRowContact, 
+			  eRowNotes
+		FROM I_ISSUE_HANDLER
+		WHERE eIssueKey = #eIssueKey#
+	</select>
+	<delete id="mesIssueDAO.eIssueHandlerInfoDelete" parameterClass="mesIssueVO">
+		/* mesIssueDAO.eIssueHandlerInfoDelete*/
+		DELETE FROM I_ISSUE_HANDLER WHERE eIssueKey = #eIssueKey#
+	</delete>
+	<insert id="mesIssueDAO.insertIssueAssetInfo" parameterClass="mesIssueVO">
+		/* mesIssueDAO.insertIssueAssetInfo */
+		INSERT INTO I_ISSUE_ASSET (
+		    ISSUE_NUM,
+		    ASSET_NUM 
+		) VALUES (
+		    #eIssueKey#,
+		    #eAssetKey#
+		);
+
+	</insert>
+	
+	<select id="mesIssueDAO.eSelectIssueInfo" parameterClass="mesIssueVO" resultClass="mesIssueVO">
+		/* mesIssueDAO.eSelectIssueInfo */
+		SELECT 
+				ISSUE_NUM AS eIssueKey,
+				eAuthorKey,
+			    eAuthor,
+			    eCreationDate,
+			    eIssueSelect1,
+			    eIssueSelect2,
+			    eIssueSelect3,
+			    eIssueSelect4,
+			    eIssueType,
+			    eIssueTypeName,
+			    eAssetType,
+			    eAssetTypeName,
+			    eProcessingType,
+			    eProcessingTypeName,
+			    eRequester,
+			    eRequesterOrg,
+			    eRequestDate,
+			    eHandler,
+			    eHandlerOrg,
+			    eProcessingDate,
+			    eIssueContent,
+			    eIssueStatus,
+			    COALESCE(NULLIF(eActualWorkDate, ''), eProcessingDate) AS eActualWorkDate,
+   				COALESCE(NULLIF(eActualWorker, ''), eHandler) AS eActualWorker,
+				eActualDetails,
+				kStaffKey,
+		        kStaffName,
+				IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress,
+		         CASE 
+			        WHEN SIGN_PROGRESS = SIGN_PROGRESS_CNT THEN '승인'
+			        ELSE sSignStatus
+			   		END AS sSignStatus 
+		FROM I_ISSUE
+		LEFT JOIN S_SIGN AS s ON(s.SIGN_TABLE_NUM = ISSUE_NUM  and s.SIGN_TABLE_NAME = 'I_ISSUE')
+		WHERE 1=1 
+		 AND ISSUE_NUM =#eIssueKey#
+	</select>
+ 	<select id="mesIssueDAO.eSelectIssueInfoAssetList" parameterClass="mesIssueVO" resultClass="mesIssueVO">
+		/* mesIssueDAO.eSelectIssueInfoAssetList */
+		SELECT 
+				iis.ISSUE_NUM AS eIssueKey
+			,	iis.ASSET_NUM AS eAssetKey					
+	        ,	aa.ASSET_NUMBER				AS aAssetNumber
+	        ,	getContentLf(aa.ASSET_STATUS)				AS aAssetStatus
+	        ,	getContentLf(aa.ASSET_TYPE_NAME)			AS aAssetType
+	        ,	getContentLf(aa.ASSET_NAME)				    AS aAssetName
+	        ,	getContentLf(aa.ASSET_MAKER)				AS aAssetMaker
+	        ,	getContentLf(aa.ASSET_MODEL)				AS aAssetModel
+	        ,	aa.ASSET_MANUFACTURE_NUMBER	AS aAssetManufactureNumber
+	        ,	getContentLf(aa.ASSET_FORM)				AS aAssetForm
+	        ,	getContentLf(aa.ASSET_INTRODUCER)			AS aAssetIntroducer
+	        ,	aa.ASSET_DATE								AS aAssetDate
+	        ,	FORMAT(aa.ASSET_COST, 0)					AS aAssetCost
+	        ,	aa.ASSET_IMAGE_ID							AS aAssetImage
+	        ,	aa.ASSET_ETC								AS aAssetEtc
+	        ,	getNameTxt(aa.ASSET_NUM) 					AS ePositionName1
+	        ,	aa.ASSET_DEVICE_TYPE 						AS eDeviceType
+			,	aa.ASSET_PURPOSE 							AS eAssetPurpose
+			,	aa.ASSET_NETWORK_TYPE 						AS eNetworkType
+			,	aa.ASSET_HOST 								AS eHostName
+			,	aa.ASSET_IP 								AS eIp
+			,	aa.ASSET_OS 								AS eOs                         
+		FROM I_ISSUE_ASSET AS iis
+		LEFT JOIN A_ASSET AS aa ON (iis.ASSET_NUM = aa.ASSET_NUM)
+		WHERE 1=1 AND iis.ISSUE_NUM =#eIssueKey#
+	</select>
+	
+	<update id='mesIssueDAO.eIssueStatusUpdate'  parameterClass="mesIssueVO"     >
+	/* mesIssueDAO.eIssueStatusUpdate*/
+		UPDATE 	I_ISSUE SET 
+		eIssueStatus = #eIssueStatus#
+		WHERE  ISSUE_NUM =#eIssueKey#
+	</update>
+	
+	<delete id='mesIssueDAO.deleteIssueAssetInfo'  parameterClass="mesIssueVO"     >
+	/* mesIssueDAO.deleteIssueAssetInfo */
+		DELETE FROM  I_ISSUE_ASSET  WHERE  ISSUE_NUM =#eIssueKey#
+	</delete>
+	
+	
+	<update id='mesIssueDAO.eIssueProcessUpdate'  parameterClass="mesIssueVO"     >
+	/* mesIssueDAO.eIssueStatusUpdate*/
+		UPDATE 	I_ISSUE SET 
+		eIssueStatus = #eIssueStatus#,
+		eActualDetails = #eActualDetails#
+		WHERE  ISSUE_NUM =#eIssueKey#
+	</update>
+	
+	<update id='mesIssueDAO.eIssueInfoUpdate'  parameterClass="mesIssueVO"     >
+		/* mesIssueDAO.eIssueInfoUpdate*/
+		UPDATE I_ISSUE
+		SET
+		    eAuthor = #eAuthor#,
+		    eCreationDate = #eCreationDate#,
+		    eIssueSelect1 = #eIssueSelect1#,
+		    eIssueSelect2 = #eIssueSelect2#,
+		    eIssueSelect3 = #eIssueSelect3#,
+		    eIssueSelect4 = #eIssueSelect4#,
+		    eIssueType = #eIssueType#,
+		    eIssueTypeName = #eIssueTypeName#,
+		    eAssetType = #eAssetType#,
+		    eAssetTypeName = #eAssetTypeName#,
+		    eProcessingType = #eProcessingType#,
+		    eProcessingTypeName = #eProcessingTypeName#,
+		    eRequester = #eRequester#,
+		    eRequesterOrg = #eRequesterOrg#,
+		    eRequestDate = #eRequestDate#,
+		    eHandler = #eHandler#,
+		    eHandlerOrg = #eHandlerOrg#,
+		    eProcessingDate = #eProcessingDate#,
+		    eIssueContent = #eIssueContent#,
+		    eActualWorkDate = #eProcessingDate#,
+		    eActualWorker = IF(#eActualWorker# = '', #eHandler#, #eActualWorker#),
+			eActualDetails = IF(#eActualDetails# = '', NULL, #eActualDetails#),
+			sSignStatus = #sSignStatus#
+		WHERE
+		    ISSUE_NUM = #eIssueKey#
+	</update>
+	
+	
+	
+	<select id="mesIssueDAO.eMainIssueInfoList" parameterClass="mesIssueVO" resultClass="mesIssueVO">
+		/* mesIssueDAO.eMainIssueInfoList */
+		SELECT 
+				ISSUE_NUM AS eIssueKey,
+				eAuthorKey,
+			    eAuthor,
+			    eCreationDate,
+			    eIssueSelect1,
+			    eIssueSelect2,
+			    eIssueSelect3,
+			    eIssueSelect4,
+<!-- 			    getCateNameTTxt(ISSUE_NUM) AS   eIssueCate, -->
+			    eIssueType,
+			    eIssueTypeName,
+			    eAssetType,
+			    eAssetTypeName,
+			    eProcessingType,
+			    eProcessingTypeName,
+			    eRequester,
+			    eRequesterOrg,
+			    DATE_FORMAT(eRequestDate, '%y-%m-%d') AS eRequestDate  ,
+			    eHandler,
+			    eHandlerOrg,
+			    eProcessingDate,
+			    eIssueContent,
+			    eIssueStatus,
+			    eActualWorkDate,
+   				eActualWorker
+		FROM I_ISSUE 
+		WHERE eIssueStatus != '삭제' 
+		AND DATE_FORMAT(eRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		ORDER BY eRequestDate DESC 
+		LIMIT 10
+		
+	</select>
+	
+	
+	<select id="mesIssueDAO.eMainIssueInfo" parameterClass="mesIssueVO" resultClass="mesIssueVO">
+		/* mesIssueDAO.eMainIssueInfo */
+		SELECT 
+			   IFNULL(COUNT(*), 0) AS eSearchWordA, 
+			    IFNULL(SUM(CASE WHEN eIssueStatus = '요청등록' THEN 1 ELSE 0 END), 0) AS eSearchWordB, 
+			    IFNULL(SUM(CASE WHEN eIssueStatus = '처리등록' THEN 1 ELSE 0 END), 0) AS eSearchWordC 
+		FROM I_ISSUE AS ii
+		WHERE eIssueStatus != '삭제' AND DATE_FORMAT(ii.eRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		Limit 1
+	</select>
+	<select id="mesIssueDAO.eMainTotalsInfo" parameterClass="mesIssueVO" resultClass="mesIssueVO">
+		/* mesIssueDAO.eMainTotalsInfo */
+		SELECT 
+			(	
+			SELECT 
+				  COUNT(*) 
+			FROM I_ISSUE AS ii
+			WHERE eIssueStatus != '삭제' AND DATE_FORMAT(ii.eRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#   
+			Limit 1
+			)AS eSearchWordA,
+			(	
+			SELECT 
+				  COUNT(*) 
+			FROM I_CHANGE AS ic
+			WHERE ic.eStatus != '삭제' AND DATE_FORMAT(ic.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#   
+			Limit 1
+			)AS eSearchWordB,
+			(	
+			SELECT 
+				  COUNT(*) 
+			FROM I_BLUE_ISSUE AS ibi
+			WHERE ibi.eStatus != '삭제' AND DATE_FORMAT(ibi.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#   
+			Limit 1
+			)AS eSearchWordC,
+			(	
+			SELECT 
+				  COUNT(*) 
+			FROM I_BLUE_SR AS ibs
+			WHERE ibs.eStatus != '삭제' AND DATE_FORMAT(ibs.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#    
+			Limit 1
+			)AS eSearchWordD,
+			(	
+			SELECT 
+				  COUNT(*) 
+			FROM INSPECTION AS insp
+			WHERE insp.eStatus != '삭제' AND DATE_FORMAT(insp.eRegistrationDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#   
+			Limit 1
+			)AS eSearchWordE,
+			(SELECT 
+				  COUNT(*) 
+			FROM INSPECTION AS insp
+			WHERE insp.eStatus != '삭제' AND eInspectionCycle =  180 AND DATE_FORMAT(insp.eRegistrationDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#   
+			Limit 1
+			)AS eSearchWordF,
+			(SELECT 
+				  COUNT(*) 
+			FROM INSPECTION AS insp
+			WHERE insp.eStatus != '삭제' AND eInspectionCycle =  181 AND DATE_FORMAT(insp.eRegistrationDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#   
+			Limit 1
+			)AS eSearchWordG
+			,
+			(SELECT 
+				  COUNT(*) 
+			FROM INSPECTION AS insp
+			WHERE insp.eStatus != '삭제' AND eInspectionCycle =  182 AND DATE_FORMAT(insp.eRegistrationDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#   
+			Limit 1
+			)AS eSearchWordH
+			,
+			(SELECT  COUNT(*) 
+			FROM E_ENTRY_ITEM AS eei
+			LEFT JOIN E_ENTRY AS ee ON ee.ENTRY_NUM  =eei.ENTRY_NUM 
+			WHERE ee.ENTRY_STATUS != '삭제' AND  DATE_FORMAT(ee.eEntryExitDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#   
+			Limit 1
+			)AS eSearchWordI
+			,
+			(SELECT  COUNT(*) 
+			FROM E_ENTRY_ITEM AS eei
+			LEFT JOIN E_ENTRY AS ee ON ee.ENTRY_NUM  = eei.ENTRY_NUM 
+			WHERE ee.ENTRY_STATUS != '삭제' AND  DATE_FORMAT(ee.eEntryExitDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#   
+				AND eei.eEntryImportDate IS NOT NULL 
+			Limit 1
+			)AS eSearchWordJ
+			,
+			(SELECT  COUNT(*) 
+			FROM E_ENTRY_ITEM AS eei
+			LEFT JOIN E_ENTRY AS ee ON ee.ENTRY_NUM  =eei.ENTRY_NUM 
+			WHERE ee.ENTRY_STATUS != '삭제' AND  DATE_FORMAT(ee.eEntryExitDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#   
+			AND eei.eEntryImportDate IS NULL 
+			Limit 1
+			)AS eSearchWordK,
+			(SELECT  COUNT(*) 
+			FROM E_EQUIPMENT_IN_ITEM AS eeii
+			LEFT JOIN E_EQUIPMENT_IN AS eei ON eei.eEquipmentInKey  =eeii.eEquipmentInKey
+			WHERE eei.eStatus != '삭제' AND  DATE_FORMAT(eei.eEntryImportDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#   
+			Limit 1
+			)AS eSearchWordL,
+			(SELECT  COUNT(*) 
+			FROM E_EQUIPMENT_IN_ITEM AS eeii
+			LEFT JOIN E_EQUIPMENT_IN AS eei ON eei.eEquipmentInKey  =eeii.eEquipmentInKey
+			WHERE eei.eStatus != '삭제' AND  DATE_FORMAT(eei.eEntryImportDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#   
+			AND eeii.eEntryExporterDate IS NOT NULL  
+			Limit 1
+			)AS eSearchWordM,
+			(SELECT  COUNT(*) 
+			FROM E_EQUIPMENT_IN_ITEM AS eeii
+			LEFT JOIN E_EQUIPMENT_IN AS eei ON eei.eEquipmentInKey  =eeii.eEquipmentInKey
+			WHERE eei.eStatus != '삭제' AND  DATE_FORMAT(eei.eEntryImportDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#   
+			AND eeii.eEntryExporterDate IS NULL  
+			Limit 1
+			)AS eSearchWordN
+		from dual;
+	</select>
+	<update id='mesIssueDAO.mesSignIssueStatus'  parameterClass="mesIssueVO"     >
+		/* mesIssueDAO.mesSignIssueStatus */
+		UPDATE I_ISSUE
+		SET
+		    sSignStatus =#sSignStatus#
+		WHERE
+		    ISSUE_NUM = #eIssueKey#
+	</update>
+	
+	<insert id="mesIssueDAO.IssueFileInsert" parameterClass="mesIssueVO">
+		/* mesIssueDAO.IssueFileInsert */
+		INSERT INTO I_ISSUE_FILEINFO
+			(
+				 ISSUE_FILE_ID
+				 , ISSUE_FILE_NAME
+				 , ISSUE_FILE_EXT
+				 , ISSUE_NUM
+		)
+		VALUES( #eFileID#, #eFileName#, #eFileExt#, #eIssueKey#);
+	</insert>
+	<select id="mesIssueDAO.eFileInfoList" parameterClass="mesIssueVO" resultClass="mesIssueVO">
+		/* mesIssueDAO.eFileInfoList */
+		SELECT 
+			 ISSUE_FILE_ID AS eFileID
+			, ISSUE_FILE_NAME AS eFileName
+			, ISSUE_FILE_EXT AS eFileExt
+			, ISSUE_NUM AS eIssueKey
+			FROM I_ISSUE_FILEINFO
+		WHERE 1=1 AND ISSUE_NUM = #eIssueKey#
+	</select>
+	<delete id="mesIssueDAO.IssueFileDelete" parameterClass="mesIssueVO" >
+		/* mesIssueDAO.IssueFileDelete */
+		DELETE FROM I_ISSUE_FILEINFO WHERE ISSUE_NUM = #eIssueKey#
+	</delete>
+	
+	
+	
+</sqlMap>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap>
+	<typeAlias 	alias="mesPositionVO" type="egovframework.rndp.mes.position.service.MesPositionVO" />
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<select id="mesPositionDAO.selectPositionList"  parameterClass="mesPositionVO" resultClass="mesPositionVO">
+		/* mesPositionDAO.selectPositionList */
+		SELECT 
+			P.POSITION_NUM														AS kPositionKey
+		,	IFNULL(getSectorPath(P.POSITION_NUM), '최상위')					AS kPositionPath
+		,	P.POSITION_NAME														AS kPositionName
+		,	P.POSITION_UP_NUM													AS kPositionUpKey
+	    ,	GROUP_CONCAT(k_staff_name ORDER BY k_class_key SEPARATOR ', ')		AS kPositionStaffName 
+	    ,	CONCAT(K.k_staff_name, ' 포함 총 ', COUNT(*) - 1, '명')					AS kPositionStaffList 
+		,	COUNT(K.k_staff_key)												AS kPositionStaffCount
+	    FROM K_POSITION P
+	    LEFT JOIN k_staff K ON (P.POSITION_NUM = K.k_position_key)
+	    WHERE 1=1
+	    AND	IF(ISNULL(K.k_staff_name), true, K.k_staff_state_flag = 1)
+	    GROUP BY P.POSITION_NUM
+		ORDER BY getSectorPath(P.POSITION_NUM)
+	</select>
+	
+	<select id="mesPositionDAO.selectUpdatePositionList"  parameterClass="mesPositionVO" resultClass="mesPositionVO">
+		/* mesPositionDAO.selectUpdatePositionList */
+	    SELECT 
+			P.POSITION_NUM														AS kPositionKey
+		,	P.POSITION_NAME														AS kPositionName
+		,	P.POSITION_UP_NUM													AS kPositionUpKey
+	    ,	GROUP_CONCAT(k_staff_name ORDER BY k_class_key SEPARATOR ', ')		AS kPositionStaffName 
+	    ,	CONCAT(K.k_staff_name, ' 포함 총 ', COUNT(*) - 1, '명')					AS kPositionStaffList 
+		,	COUNT(K.k_staff_key)												AS kPositionStaffCount
+	    FROM K_POSITION P
+	    LEFT JOIN k_staff K ON (P.POSITION_NUM = K.k_position_key)
+	    WHERE 1=1
+	    AND	IF(ISNULL(K.k_staff_name), true, K.k_staff_state_flag = 1)
+	    AND P.POSITION_UP_NUM = #kPositionUpKeySave#
+	    GROUP BY P.POSITION_NUM
+		ORDER BY P.POSITION_RANK
+	</select>
+	
+	<select id="mesPositionDAO.getMaxPositionKey"  parameterClass="mesPositionVO" resultClass="String">
+		/* mesPositionDAO.getMaxPositionKey */
+	    SELECT 
+			IFNULL(MAX(POSITION_NUM), 0) + 1	
+	    FROM K_POSITION
+	    WHERE 1=1
+	</select>
+	
+	<select id="mesPositionDAO.getPositionPath"  parameterClass="mesPositionVO" resultClass="String">
+		/* mesPositionDAO.getPositionPath */
+	    SELECT getSectorPath(#kPositionKey#)		AS kPositionPath
+	</select>
+	
+	<delete id="mesPositionDAO.deletePositionAjax"  parameterClass="mesPositionVO">
+		/* mesPositionDAO.deletePositionAjax */
+	    DELETE FROM K_POSITION
+	    WHERE 1=1
+	    AND POSITION_NUM = #kPositionKey#
+	</delete>
+	
+	<delete id="mesPositionDAO.deletePositionHighAjax"  parameterClass="mesPositionVO">
+		/* mesPositionDAO.deletePositionHighAjax */
+		DELETE k1
+		FROM K_POSITION AS k1
+		LEFT JOIN K_POSITION AS k2 ON k1.POSITION_UP_NUM = k2.POSITION_NUM
+		WHERE 1=1
+        AND ISNULL(k2.POSITION_NAME)
+        AND k1.POSITION_UP_NUM != 0
+	</delete>
+	
+	
+	<insert id="mesPositionDAO.savePositionAjax"  parameterClass="mesPositionVO">
+		/* mesPositionDAO.savePositionAjax */
+		INSERT INTO K_POSITION(
+			POSITION_NUM
+		,	POSITION_NAME
+		,	POSITION_UP_NUM
+		,	POSITION_RANK
+		)VALUES(
+			#kPositionKey#
+		,	#kPositionName#
+		,	#kPositionUpKey#
+		,	(SELECT IFNULL(MAX(K.POSITION_RANK), 0) + 1 FROM K_POSITION K WHERE 1=1 AND K.POSITION_UP_NUM = #kPositionUpKey#)
+		)
+	</insert>
+</sqlMap>

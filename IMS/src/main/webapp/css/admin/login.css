@@ -1,0 +1,393 @@
+ @charset "utf-8";
+@import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css");
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard-dynamic-subset.css");
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/variable/pretendardvariable-dynamic-subset.css");
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/variable/pretendardvariable.css");
+
+
+body{font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;color:#303030; }
+input[type="text"], input[type="password"], .inputTxt{color: #ccc;font-size: 10pt;}
+
+html{BACKGROUND: #fcfcfc;}
+     
+     
+.login_wrap {
+    min-height: 860px;
+}
+
+header {
+	padding-top: 120px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+.inner {
+    width: 500px;
+    margin: 0 auto;
+}
+.inner > img {
+    min-width: 200px;
+    max-height: 150px;
+    max-width: 500px;
+    width: 250px;
+    height: 110px;
+}
+ 
+ section {
+    display: block;
+}
+
+.tab_login{
+    height: 56px;
+    border-top-left-radius: 6px;
+    display: block;
+    height: 100%;
+    line-height: 56px;
+    text-align: center;   
+   
+}
+
+.tab_btn_area {
+    box-sizing: border-box;
+    border-top: 0;
+    border-radius: 0 0 6px 6px;
+    display: flex;
+    justify-content: space-between;
+}
+.tab_cont_area {
+    height: 330px;
+    padding-bottom: 15px;
+    box-sizing: border-box;
+    border: 1px solid #b9c3cb;
+    border-top: 0;
+    border-radius: 0 0 6px 6px;
+    padding: 50px 30px 30px;
+    background: #fff;
+}
+.tab_btn:first-child {
+    border-top-left-radius: 6px;
+}
+.login .tab_login .tab_btn:last-child {
+    border-top-right-radius: 6px;
+    }
+    
+.tab_btn{
+	width: 100%;    
+	display: inline-block;
+    box-sizing: border-box;
+    vertical-align: middle;
+    height: 56px;
+    background-color: #e6edf2;
+    border-bottom: 1px solid #b9c3cb;
+    overflow: hidden;}
+    
+.tab_btn a {
+    display: block;
+    height: 100%;
+    line-height: 56px;
+    text-align: center;
+}
+
+.tab_btn.on{
+	 border-top-right-radius: 6px;
+	border: 1px solid #b9c3cb;
+    border-bottom-color: #fff;
+    background-color: #fff;
+}
+
+.tab_login {
+    font-weight: 700;
+    color: #0098d9; 
+}
+
+.tab_btn.on a span {
+    font-weight: 700;
+    color: #0098d9; 
+}
+
+
+.tab_btn.id.on a span::before {
+    content: url(../images/login/icon_id.png);
+}
+     
+  .input_wrap{
+      height: 48px;
+  }
+     
+  .input_wrap label {
+    margin-top: -24px;
+    vertical-align: middle;
+    display: inline-block;
+    margin-bottom: .5rem;
+
+}   
+ .input_wrap input.inputbox{
+     background-image: url('https://accounts.gnu.ac.kr/images/login/icon_id_black.png');
+}
+ .input_wrap input#password{background-image: url('https://accounts.gnu.ac.kr/images/login/icon_pw.png ');
+}
+
+.input_wrap > input {
+    display: block;
+    width: 100%;
+    height: 48px !important;
+    line-height: 48px;
+    box-sizing: border-box;
+    padding: 0 20px 0 42px !important;
+    border: 1px solid #0098d9 !important;
+    border-radius: 6px;
+    font-size: 15px !important;
+    background: left 20px center no-repeat;
+}   
+     
+  .input_wrap:nth-child(2) > input{
+       margin-top: 10px;
+        margin-bottom: 20px; 
+     }
+     
+     
+     
+     
+     .btn_login {
+    display: block;
+    height: 60px;
+    line-height: 60px;
+    border-radius: 6px;
+    background-color: #0098d9;
+    text-align: center;
+    margin-top: 10px;
+    color:#fff;
+}
+
+.find_area select {
+    display: inline-block;
+    vertical-align: top;
+    width: 68px;
+    background: url(../images/login/select_arrow.png) right center no-repeat;
+    color: #005a81;
+    cursor: pointer;
+}     
+.find_wrap {
+    float: right;
+}    
+.find_wrap li {
+    display: inline-block;
+    vertical-align: middle;
+}    
+.find_wrap li a {
+    color: #005a81;
+}      
+ .inner>p{ font-size:14px; color:#919191; font-weight:400; }    
+ .inner>p:nth-child(2){ padding-bottom :10px;}    
+ 
+ 
+ 
+
+
+
+ @media all and (max-width:320px){
+
+} 
+ 
+@media all and (min-width:320px) and(max-width:500px){
+
+
+}
+
+ 
+@media all and (min-width:500px) and (max-width:840px){
+
+}
+ 
+@media (min-width: 640px) and (max-width: 1024px) {
+    input[type="text"], input[type="password"], .inputTxt {
+        height: 48px !important;
+    }
+} 
+
+
+
+/* 추가 */
+.login_type_a * {
+	box-sizing:border-box;
+}
+.login_type_a {
+	position: relative; 
+	background: url(../../images/img/bg_login_a.webp) no-repeat center/cover;
+	box-sizing:border-box;
+}
+.login_type_a .login_wrap {
+	position: absolute; 
+	z-index: 1; 
+	left: 50%; 
+	top: 50%; 
+	width: 460px; 
+	min-height: initial;
+	padding: 40px 50px 50px; 
+	transform: translate(-50%, -50%); 
+	border-radius: 24px; 
+	background:#fff;
+	box-shadow: 4px 4px 70px 0px rgba(0, 0, 0, 0.55);
+}
+.login_type_a .login_wrap header {
+	padding-top: 0;
+	margin-bottom: 32px;
+}
+.login_type_a .login_wrap header h1 {
+	width: 140px;
+	margin: 0 auto;
+}
+.login_type_a .login_wrap header h1 img {
+	display: block; 
+	max-width: 100%;
+}
+ .login_type_a .login_tabs {
+ 	display: flex;
+ }
+ .login_type_a .login_tabs li {
+ 	flex-grow: 1;
+ 	padding: 16px 0;
+ 	font-size: 16px;
+ 	font-weight: 600; 	
+ 	text-align: center;
+ 	opacity: 0.2;
+ 	border-bottom: 1px solid #000;
+ }
+ .login_type_a .login_tabs li a {
+ 	width: 100%;
+ 	height: 100%;
+ 	display: block;
+ }
+ .login_type_a .login_tabs li.on {
+ 	opacity: 1;
+ 	color: #4869FB;
+ 	border-bottom: 2px solid #4869FB;
+ }
+ .login_type_a .login_form {
+	margin-top: 32px;
+}
+ .login_type_a .login_form input {
+ 	width: 100%;
+ 	height: 50px;
+ 	border-radius: 8px;
+ 	font-size: 15px;
+ 	padding: 0 16px;
+ 	border: 1px solid #eaeaea;
+ }
+ .login_type_a .login_form input::placeholder {
+ 	font-size: 15px;
+ 	color: #AAAAAA;
+ }
+  .login_type_a .login_form .inp + .inp {
+  	margin-top: 8px;
+  }
+  .login_type_a .login_btn {
+  	margin-top: 24px;
+  	width: 100%;
+  	height: 50px;
+  	border-radius: 8px;
+  	color:#fff;
+  	background: #4869FB;
+  	border: 0;
+  	font-size: 16px;
+  	font-weight: 600;
+  }
+ 
+ 
+ 
+ .login_type_b {
+ 	width: 100vw;
+	height: 100vh;
+	position: relative; 
+ 	background: #fefefe;
+}
+.login_type_b .login_wrap {
+	position: relative; 
+	z-index: 1; 
+	left: 50%; 
+	top: 50%; 
+	width: 440px; 
+	min-height: initial;
+	transform: translate(-50%, -50%); 
+}
+.login_type_b .login_wrap header {
+	padding-top: 0;
+	margin-bottom: 50px;
+}
+.login_type_b .login_wrap .login_area {
+	padding: 20px 40px 50px;
+	border-radius: 24px;
+	box-shadow: 4px 14px 70px 0px rgba(0, 0, 0, 0.10);
+}
+.login_type_b .login_wrap header h1 {
+	width: 140px;
+	margin: 0 auto;
+}
+.login_type_b .login_wrap header h1 img {
+	display: block; 
+	max-width: 100%;
+}
+.login_type_b .login_tabs {
+ 	display: flex;
+ 	justify-content: center;
+}
+.login_type_b .login_tabs li {
+ 	padding: 20px 16px;
+ 	font-size: 16px;
+ 	font-weight: 600; 	
+ 	text-align: center;
+ 	opacity: 0.2;
+ 	border-bottom: 1px solid #000;
+}
+.login_type_b .login_tabs li a {
+ 	width: 100%;
+ 	height: 100%;
+ 	display: block;
+}
+.login_type_b .login_tabs li.on {
+ 	opacity: 1;
+ 	color: #000;
+ 	border-bottom: 2px solid #000;
+}
+.login_type_b .login_form {
+	margin-top: 32px;
+}
+.login_type_b .login_form input {
+ 	width: 100%;
+ 	height: 50px;
+ 	border-radius: 8px;
+ 	font-size: 15px;
+ 	padding: 0 16px;
+ 	border: 1px solid #eaeaea;
+ }
+.login_type_b .login_form input::placeholder {
+ 	font-size: 15px;
+ 	color: #AAAAAA;
+}
+.login_type_b .login_form .inp + .inp {
+  	margin-top: 8px;
+}
+.login_type_b .login_btn {
+  	margin-top: 24px;
+  	width: 100%;
+  	height: 50px;
+  	border-radius: 8px;
+  	color:#fff;
+  	background: #000;
+  	border: 0;
+  	font-size: 16px;
+  	cursor: pointer;
+  	font-weight: 600;
+}
+.login_type_b .register {
+	margin-top: 40px;
+  	display: flex;
+  	justify-content: center;
+  	gap: 8px;
+	color: #888;
+	font-size: 15px;
+}
+.login_type_b .register a {
+ 	color: #000;
+	font-weight: 600;
+}

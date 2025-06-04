@@ -1,0 +1,3073 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>	
+	<typeAlias alias="mesAssetVO" type="egovframework.rndp.mes.asset.service.MesAssetVO" />
+	
+	
+	<!-- 	AND DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate# -->
+	<select id="mesAssetDAO.selectMesAssetList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectMesAssetList */
+		SELECT 
+			ASSET_NUM AS eAssetKey,
+			ASSET_NUMBER  AS eAssetNumber,
+			ASSET_STATUS_NAME AS eAssetStatusName,
+			ASSET_STATUS AS eAssetStatus,
+			ASSET_TYPE_NAME AS eAssetTypeName,
+			ASSET_TYPE AS eAssetType,
+			ASSET_NAME AS eAssetName,
+			getNameTxt(ASSET_NUM) AS ePositionName1,
+			ASSET_SELECT1 AS eMaintanceSelect1,
+			ASSET_SELECT2 AS eMaintanceSelect2,
+			ASSET_SELECT3 AS eMaintanceSelect3,
+			ASSET_SELECT4 AS eMaintanceSelect4,
+			CASE 
+		        WHEN LENGTH(CONCAT(getContentLfNew(ASSET_SELECT1, 7),'>',getContentLfNew(ASSET_SELECT2, 7),'>',getContentLfNew(ASSET_SELECT3, 7),'>',ASSET_SELECT4)) > 25 THEN CONCAT('...', LEFT(CONCAT(getContentLfNew(ASSET_SELECT1, 7),'>',getContentLfNew(ASSET_SELECT2, 7),'>',getContentLfNew(ASSET_SELECT3, 7),'>',ASSET_SELECT4), 25))
+		        ELSE ASSET_SELECT4
+		    END  	  AS ePositionName1,
+			ASSET_MAKER AS eAssetMaker,
+			ASSET_MODEL AS eAssetModel,
+			ASSET_MANUFACTURE_NUMBER AS eAssetSNumber,
+			ASSET_FORM AS aAssetForm,
+			ASSET_INTRODUCER AS aAssetIntroducer,
+			DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') AS eAssetDate,
+			IF(ASSET_COST = '', 0, FORMAT(ASSET_COST, 0)) AS eAssetCost,
+			ASSET_DEVICE_TYPE AS eDeviceType,
+			ASSET_PURPOSE AS eAssetPurpose,
+			ASSET_NETWORK_TYPE AS eNetworkType,
+			ASSET_HOST AS eHostName,
+			ASSET_IP AS eIp,
+			ASSET_OS AS eOs,
+			ASSET_ETC AS eAssetEtc,
+			ASSET_STAFF_NAME AS kStaffName,
+			ASSET_STAFF_NUM AS kStaffKey,
+			DATE_FORMAT(ASSET_WDATE, '%Y-%m-%d')  AS eAssetWdate,
+			ASSET_IMAGE_ID AS eAssetImageId,
+			ASSET_IMAGE_NAME AS eAssetImageName,
+			ASSET_IMAGE_EXT AS eAssetImageExt,
+			ASSET_LIFE AS eLifespan,
+			ASSET_LIFE_TYPE AS eLifeType,
+			ASSET_EOS AS eEosDate,
+			ASSET_EOL AS eEolDate,
+			 CASE 
+		        WHEN SIGN_PROGRESS = SIGN_PROGRESS_CNT THEN '승인'
+		        ELSE sSignStatus
+		   		END AS sSignStatus,
+			IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress, 
+			IF(
+				(SELECT COUNT(*) 
+					FROM S_SIGN_ITEM AS ssi 
+					WHERE ssi.SIGN_TABLE_NUM = A.ASSET_NUM and ssi.SIGN_TABLE_NAME = 'A_ASSET'
+					AND ssi.SIGN_DECISON = '결재대기'
+					AND ssi.SIGN_STAFF_NUM = #kStaffKey#
+					) > 0, 'Y', 'N') AS eViewGubun
+			<!-- 	) > 0, 'Y', 'N')AS gubun  -->
+		FROM A_ASSET AS A 
+		LEFT JOIN S_SIGN AS s 
+		ON (s.SIGN_TABLE_NUM = A.ASSET_NUM and	s.SIGN_TABLE_NAME = 'A_ASSET')
+		WHERE 1=1 AND ASSET_DEL_STATUS  = '사용'
+	
+		<isNotEmpty property="searchType">
+			AND ASSET_STATUS    = #searchType#
+		</isNotEmpty>
+		<isNotEmpty property="searchWord">
+			AND LOWER(ASSET_NUMBER)    LIKE CONCAT('%',LOWER(#searchWord#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet1">
+			AND ASSET_TYPE    = #searchTypeSet1#
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+			AND LOWER(ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4">
+			AND LOWER(ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet4#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5">
+			AND LOWER(ASSET_MANUFACTURE_NUMBER) LIKE CONCAT('%',LOWER(#searchTypeSet5#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">
+			AND LOWER(ASSET_HOST) LIKE CONCAT('%',LOWER(#searchTypeSet6#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet7">
+			AND LOWER(ASSET_IP) LIKE CONCAT('%',LOWER(#searchTypeSet7#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet8">
+			AND LOWER(ASSET_OS) LIKE CONCAT('%',LOWER(#searchTypeSet8#),'%')
+		</isNotEmpty>
+		 <isNotEmpty property="searchTypeSet9">
+			AND LOWER(ASSET_LIFE_TYPE) LIKE CONCAT('%',LOWER(#searchTypeSet9#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+				AND  ( 
+				     DATE_FORMAT(#topStartDate#, '%Y-%m-%d')  >= DATE_FORMAT(ASSET_EOS, '%Y-%m-%d') 
+    			OR  DATE_FORMAT(#topEndDate#, '%Y-%m-%d') >= DATE_FORMAT(ASSET_EOL, '%Y-%m-%d') 		
+				)
+			</isNotEmpty>
+		</isNotEmpty>
+		<isEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+				AND  ( 
+    			  	DATE_FORMAT(#topEndDate#, '%Y-%m-%d') >= DATE_FORMAT(ASSET_EOL, '%Y-%m-%d') 		
+				)
+			</isNotEmpty>
+		</isEmpty>
+		<isEmpty property="topEndDate">
+			<isNotEmpty property="topStartDate">
+				AND  ( 
+    			  	DATE_FORMAT(#topStartDate#, '%Y-%m-%d') >= DATE_FORMAT(ASSET_EOS, '%Y-%m-%d') 		
+				)
+			</isNotEmpty>
+		</isEmpty>
+        ORDER BY ASSET_NUM DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<!-- 데이터개수 조회 -->
+	<select id="mesAssetDAO.selectMesAssetListCnt" parameterClass="mesAssetVO" resultClass="int">
+		/* mesAssetDAO.selectMesAssetListCnt */
+		SELECT 
+			COUNT(*)
+        FROM A_ASSET
+		WHERE 1=1 AND ASSET_DEL_STATUS  = '사용'
+		<isNotEmpty property="searchType">
+			AND ASSET_STATUS    = #searchType#
+		</isNotEmpty>
+		<isNotEmpty property="searchWord">
+			AND LOWER(ASSET_NUMBER)   LIKE CONCAT('%',LOWER(#searchWord#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet1">
+			AND ASSET_TYPE    = #searchTypeSet1#
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+			AND LOWER(ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4">
+			AND LOWER(ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet4#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5">
+			AND LOWER(ASSET_MANUFACTURE_NUMBER) LIKE CONCAT('%',LOWER(#searchTypeSet5#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">
+			AND LOWER(ASSET_HOST) LIKE CONCAT('%',LOWER(#searchTypeSet6#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet7">
+			AND LOWER(ASSET_IP) LIKE CONCAT('%',LOWER(#searchTypeSet7#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet8">
+			AND LOWER(ASSET_OS) LIKE CONCAT('%',LOWER(#searchTypeSet8#),'%')
+		</isNotEmpty>
+		 <isNotEmpty property="searchTypeSet9">
+			AND LOWER(ASSET_LIFE_TYPE) LIKE CONCAT('%',LOWER(#searchTypeSet9#),'%')
+		</isNotEmpty> 
+		<isNotEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+				AND  ( 
+				     DATE_FORMAT(#topStartDate#, '%Y-%m-%d')  >= DATE_FORMAT(ASSET_EOS, '%Y-%m-%d') 
+    			OR  DATE_FORMAT(#topEndDate#, '%Y-%m-%d') >= DATE_FORMAT(ASSET_EOL, '%Y-%m-%d') 		
+				)
+			</isNotEmpty>
+		</isNotEmpty>
+		<isEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+				AND  ( 
+    			  	DATE_FORMAT(#topEndDate#, '%Y-%m-%d') >= DATE_FORMAT(ASSET_EOL, '%Y-%m-%d') 		
+				)
+			</isNotEmpty>
+		</isEmpty>
+		<isEmpty property="topEndDate">
+			<isNotEmpty property="topStartDate">
+				AND  ( 
+    			  	DATE_FORMAT(#topStartDate#, '%Y-%m-%d') >= DATE_FORMAT(ASSET_EOS, '%Y-%m-%d') 		
+				)
+			</isNotEmpty>
+		</isEmpty>
+	</select>
+
+	<select id="mesAssetDAO.selectMesAssetExcelList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectMesAssetExcelList */
+		SELECT 
+			ASSET_NUM AS eAssetKey,
+			getContentLfNew(ASSET_NUMBER,14) AS eAssetNumber,
+			ASSET_STATUS_NAME AS eAssetStatusName,
+			ASSET_STATUS AS eAssetStatus,
+			ASSET_TYPE_NAME AS eAssetTypeName,
+			ASSET_TYPE AS eAssetType,
+			getContentLfNew(ASSET_NAME,14) AS eAssetName,
+			getNameTxt(ASSET_NUM) AS ePositionName1,
+			ASSET_SELECT1 AS eMaintanceSelect1,
+			ASSET_SELECT2 AS eMaintanceSelect2,
+			ASSET_SELECT3 AS eMaintanceSelect3,
+			ASSET_SELECT4 AS eMaintanceSelect4,
+			CASE 
+		        WHEN LENGTH(CONCAT(getContentLfNew(ASSET_SELECT1, 7),'>',getContentLfNew(ASSET_SELECT2, 7),'>',getContentLfNew(ASSET_SELECT3, 7),'>',ASSET_SELECT4)) > 25 THEN CONCAT('...', LEFT(CONCAT(getContentLfNew(ASSET_SELECT1, 7),'>',getContentLfNew(ASSET_SELECT2, 7),'>',getContentLfNew(ASSET_SELECT3, 7),'>',ASSET_SELECT4), 25))
+		        ELSE ASSET_SELECT4
+		    END  	  AS ePositionName1,
+			getContentLfNew(ASSET_MAKER, 14) AS eAssetMaker,
+			getContentLfNew(ASSET_MODEL, 14) AS eAssetModel,
+			getContentLfNew(ASSET_MANUFACTURE_NUMBER,14) AS eAssetSNumber,
+			ASSET_FORM AS aAssetForm,
+			ASSET_INTRODUCER AS aAssetIntroducer,
+			DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') AS eAssetDate,
+			IF(ASSET_COST = '', 0, FORMAT(ASSET_COST, 0)) AS eAssetCost,
+			ASSET_DEVICE_TYPE AS eDeviceType,
+			ASSET_PURPOSE AS eAssetPurpose,
+			ASSET_NETWORK_TYPE AS eNetworkType,
+			ASSET_HOST AS eHostName,
+			ASSET_IP AS eIp,
+			ASSET_OS AS eOs,
+			ASSET_ETC AS eAssetEtc,
+			ASSET_STAFF_NAME AS kStaffName,
+			ASSET_STAFF_NUM AS kStaffKey,
+			DATE_FORMAT(ASSET_WDATE, '%Y-%m-%d')  AS eAssetWdate,
+			ASSET_IMAGE_ID AS eAssetImageId,
+			ASSET_IMAGE_NAME AS eAssetImageName,
+			ASSET_IMAGE_EXT AS eAssetImageExt,
+			ASSET_LIFE AS eLifespan,
+			ASSET_LIFE_TYPE AS eLifeType,
+			ASSET_EOS AS eEosDate,
+			ASSET_EOL AS eEolDate,
+			 CASE 
+		        WHEN SIGN_PROGRESS = SIGN_PROGRESS_CNT THEN '승인'
+		        ELSE sSignStatus
+		   		END AS sSignStatus,
+			IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress, 
+			IF(
+				(SELECT COUNT(*) 
+					FROM S_SIGN_ITEM AS ssi 
+					WHERE ssi.SIGN_TABLE_NUM = A.ASSET_NUM and ssi.SIGN_TABLE_NAME = 'A_ASSET'
+					AND ssi.SIGN_DECISON = '결재대기'
+					AND ssi.SIGN_STAFF_NUM = #kStaffKey#
+				) > 0, 'Y', 'N')AS gubun
+		FROM A_ASSET AS A 
+		LEFT JOIN S_SIGN AS s 
+		ON (s.SIGN_TABLE_NUM = A.ASSET_NUM and	s.SIGN_TABLE_NAME = 'A_ASSET')
+		WHERE 1=1 AND ASSET_DEL_STATUS  = '사용'
+	
+		<isNotEmpty property="searchType">
+			AND ASSET_STATUS    = #searchType#
+		</isNotEmpty>
+		<isNotEmpty property="searchWord">
+			AND LOWER(ASSET_NUMBER)   LIKE CONCAT('%',LOWER(#searchWord#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet1">
+			AND ASSET_TYPE    = #searchTypeSet1#
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+			AND LOWER(ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4">
+			AND LOWER(ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet4#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5">
+			AND LOWER(ASSET_MANUFACTURE_NUMBER) LIKE CONCAT('%',LOWER(#searchTypeSet5#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">
+			AND LOWER(ASSET_HOST) LIKE CONCAT('%',LOWER(#searchTypeSet6#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet7">
+			AND LOWER(ASSET_IP) LIKE CONCAT('%',LOWER(#searchTypeSet7#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet8">
+			AND LOWER(ASSET_OS) LIKE CONCAT('%',LOWER(#searchTypeSet8#),'%')
+		</isNotEmpty>
+		 <isNotEmpty property="searchTypeSet9">
+			AND LOWER(ASSET_LIFE_TYPE) LIKE CONCAT('%',LOWER(#searchTypeSet9#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+				AND  ( 
+				     DATE_FORMAT(#topStartDate#, '%Y-%m-%d')  >= DATE_FORMAT(ASSET_EOS, '%Y-%m-%d') 
+    			OR  DATE_FORMAT(#topEndDate#, '%Y-%m-%d') >= DATE_FORMAT(ASSET_EOL, '%Y-%m-%d') 		
+				)
+			</isNotEmpty>
+		</isNotEmpty>
+		<isEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+				AND  ( 
+    			  	DATE_FORMAT(#topEndDate#, '%Y-%m-%d') >= DATE_FORMAT(ASSET_EOL, '%Y-%m-%d') 		
+				)
+			</isNotEmpty>
+		</isEmpty>
+		<isEmpty property="topEndDate">
+			<isNotEmpty property="topStartDate">
+				AND  ( 
+    			  	DATE_FORMAT(#topStartDate#, '%Y-%m-%d') >= DATE_FORMAT(ASSET_EOS, '%Y-%m-%d') 		
+				)
+			</isNotEmpty>
+		</isEmpty>
+		 
+        ORDER BY ASSET_NUM DESC
+        LIMIT 500
+	</select>
+	 <!-- 등록 -->
+	<insert id = "mesAssetDAO.insertMesAsset" parameterClass="mesAssetVO">
+		/* mesAssetDAO.insertMesAsset */
+		INSERT INTO	A_ASSET(
+			ASSET_NUMBER
+		,	ASSET_STATUS
+		,	ASSET_TYPE
+		,	ASSET_NAME
+		,	ASSET_MAKER
+		,	ASSET_MODEL
+		,	ASSET_MANUFACTURE_NUMBER
+		,	ASSET_FORM
+		,	ASSET_INTRODUCER
+		,	ASSET_DATE
+		,	ASSET_COST
+		,	ASSET_PURPOSE
+		,	ASSET_IMAGE_ID
+		,	ASSET_ETC
+		,	ASSET_STAFF_NAME
+		,	ASSET_STAFF_NUM
+		,	ASSET_WDATE
+		) VALUES(
+			#aAssetNumber#
+		,	#aAssetStatus#
+		,	#aAssetType#
+		,	#aAssetName#
+		,	#aAssetMaker#
+		,	#aAssetModel#
+		,	#aAssetManufactureNumber#
+		,	#aAssetForm#
+		,	#aAssetIntroducer#
+		,	IF(#aAssetDate# = '', now(), #aAssetDate#)
+		,	IF(#aAssetCost# = '', 0, #aAssetCost#) 
+		,	#aAssetPurpose#
+		,	#aAssetImage#
+		,	#aAssetEtc#
+		,	#kStaffName#
+		,	#kStaffKey#
+		,	now()
+		)
+	</insert>
+	
+	<!-- 수정  -->
+	<update id = "mesAssetDAO.updateMesAsset" parameterClass = "mesAssetVO">
+		/* mesAssetDAO.updateMesAsset */
+		UPDATE A_ASSET
+		SET			
+			ASSET_NUMBER				= #aAssetNumber#
+		,	ASSET_STATUS				= #aAssetStatus#
+		,	ASSET_TYPE					= #aAssetType#
+		,	ASSET_NAME					= #aAssetName#
+		,	ASSET_MAKER					= #aAssetMaker#
+		,	ASSET_MODEL					= #aAssetModel#
+		,	ASSET_MANUFACTURE_NUMBER	= #aAssetManufactureNumber#
+		,	ASSET_FORM					= #aAssetForm#
+		,	ASSET_INTRODUCER			= #aAssetIntroducer#
+		,	ASSET_DATE					= #aAssetDate#
+		,	ASSET_COST					= IF(#aAssetCost# = '', 0, #aAssetCost#) 
+		,	ASSET_PURPOSE				= #aAssetPurpose#
+		,	ASSET_IMAGE_ID					= #aAssetImage#
+		,	ASSET_ETC					= #aAssetEtc#
+		,	ASSET_WDATE					= #aAssetDate#
+		,   ASSET_TYPE_MAX =    (SELECT COUNT(*) + 1  FROM A_ASSET AS aa WHERE aa.ASSET_TYPE = #aAssetType#  AND DATE_FORMAT(aa.ASSET_WDATE, '%Y-%m-%d') = DATE_FORMAT(CURDATE(), '%Y-%m-%d'))  
+		WHERE 1=1
+		AND	ASSET_NUM = #aAssetKey#	
+	</update>
+	
+	<update id = "mesAssetDAO.deleteAssetUpdate" parameterClass = "mesAssetVO">
+		/* mesAssetDAO.deleteAssetUpdate */
+		UPDATE A_ASSET
+		SET			
+		    ASSET_DEL_STATUS = '삭제'
+			,ASSET_DEL_STAFF_KEY = #sSignStaffKey#
+			,ASSET_DEL_STAFF_NAME = #sSignStaffName#
+			,ASSET_DEL_DATE = NOW()
+		WHERE 1=1
+		AND	ASSET_NUM = #eAssetKey#	
+	</update>
+	<update id = "mesAssetDAO.updateMesAssetNew" parameterClass = "mesAssetVO">
+		/* mesAssetDAO.updateMesAssetNew */
+		UPDATE A_ASSET
+		SET
+		    ASSET_NUMBER = #eAssetNumber#
+		  , ASSET_STATUS_NAME = #eAssetStatusName#
+		  , ASSET_STATUS = #eAssetStatus#
+		  , ASSET_TYPE_NAME = #eAssetTypeName#
+		  , ASSET_TYPE = #eAssetType#
+		  , ASSET_NAME = #eAssetName#
+		  , ASSET_SELECT1 = #eMaintanceSelect1#
+		  , ASSET_SELECT2 = #eMaintanceSelect2#
+		  , ASSET_SELECT3 = #eMaintanceSelect3#
+		  , ASSET_SELECT4 = #eMaintanceSelect4#
+		  , ASSET_MAKER = #eAssetMaker#
+		  , ASSET_MODEL = #eAssetModel#
+		  , ASSET_MANUFACTURE_NUMBER = #eAssetSNumber#
+		  , ASSET_FORM = #aAssetForm#
+		  , ASSET_INTRODUCER = #aAssetIntroducer#
+		  , ASSET_DATE = IF(#eAssetDate# = '', NOW(), #eAssetDate#)
+		  , ASSET_COST = IF(#eAssetCost# = '', 0, #eAssetCost#)
+		  , ASSET_DEVICE_TYPE = #eDeviceType#
+		  , ASSET_PURPOSE = #eAssetPurpose#
+		  , ASSET_NETWORK_TYPE = #eNetworkType#
+		  , ASSET_HOST = #eHostName#
+		  , ASSET_IP = #eIp#
+		  , ASSET_OS = #eOs#
+		  , ASSET_ETC = #eAssetEtc#
+		  , ASSET_STAFF_NAME = #kStaffName#
+		  , ASSET_STAFF_NUM = #kStaffKey#
+		  , ASSET_IMAGE_ID = #eAssetImageId#
+		  , ASSET_IMAGE_NAME = #eAssetImageName#
+		  , ASSET_IMAGE_EXT = #eAssetImageExt#
+		  , ASSET_EOS = IF(#eEosDate# IS NULL OR #eEosDate# = '', '2999-01-01', #eEosDate#)
+		  , ASSET_EOL = IF(#eEolDate# IS NULL OR #eEolDate# = '', '2999-01-01', #eEolDate#)
+		  , ASSET_LIFE = IF(#eLifespan# = '', NULL, #eLifespan#)
+		  , ASSET_LIFE_TYPE  = #eLifeType#
+		  , sSignStatus =#sSignStatus#
+		  WHERE
+		    ASSET_NUM = #eAssetKey#
+	</update>
+	<!-- 삭제 -->
+	<delete id = "mesAssetDAO.deleteMesAsset">
+		/* mesAssetDAO.deleteMesAsset */
+		DELETE FROM A_ASSET
+		WHERE 1=1
+		AND	ASSET_NUM = #aAssetKey#	
+	</delete>
+	
+	<!-- 파일 -->
+	<select id = "mesAssetDAO.selectComtnFileDetail" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectComtnFileDetail */
+		SELECT 
+			atch_file_id			AS atchFileId
+		,	file_stre_cours			AS fileStreCours
+		,	stre_file_nm			AS streFileNm
+		,	orignl_file_nm			AS orignlFileNm
+		,	file_extsn				AS fileExtsn
+		,	file_cn					AS fileCn
+		,	file_size				AS fileSize
+		FROM comtnfiledetail
+	</select>
+	
+	
+	<select id = "mesAssetDAO.selectMaxAssetUseKey" parameterClass="mesAssetVO" resultClass="String">
+		/* mesAssetDAO.selectMaxAssetUseHKey */
+		SELECT IFNULL(MAX(ASSET_USE_H_KEY), 0) + 1 FROM A_ASSET_USE_H
+	</select>
+
+	<insert id="mesAssetDAO.insertMesAssetUseHeader" parameterClass="mesAssetVO">
+		/* mesAssetDAO.insertMesAssetUseHeader */
+		INSERT INTO	A_ASSET_USE_H(
+			ASSET_USE_H_KEY
+		,	ASSET_NUM
+		,	ASSET_NUMBER
+		,	ASSET_NAME
+		,	ASSET_MAKER
+		,	ASSET_MODEL
+		,	ASSET_MANUFACTURE_NUMBER
+		,	ASSET_INTRODUCER
+		,	ASSET_DATE
+		,	ASSET_USE_H_DATE
+		,	ASSET_USE_H_WDATE
+		,	ASSET_USE_H_STAFF
+		,	ASSET_USE_ITEM_CNT
+		,	O_SIGN_PASS
+		,	SIGN_NUM
+		,	SIGN_STATUS
+		) VALUES(
+			#aAssetUseHKey#
+		,	#aAssetKey#
+		,	#aAssetNumber#
+		,	#aAssetName#
+		,	#aAssetMaker#
+		,	#aAssetModel#
+		,	#aAssetManufactureNumber#
+		,	#aAssetIntroducer#
+		,	#aAssetDate#
+		,	#aAssetUseDate#
+		,	now()
+		,	#kStaffName#
+		,	#aAssetUseItemCnt#
+		,	#oSignPass#
+		,	if(#sSignKey# = "",0,#sSignKey#)
+		,	#sSignStatus#
+		)
+	</insert>
+		
+	
+	<insert id="mesAssetDAO.insertMesAssetUse" parameterClass="mesAssetVO">
+		/* mesAssetDAO.insertMesAssetUse */
+		INSERT INTO	A_ASSET_USE(
+			ASSET_USE_H_KEY
+		,	ASSET_NUM
+		,	ASSET_USE_TYPE
+		,	ASSET_REQUEST_DATE
+		,	ASSET_INSTALL_PLACE
+		,	ASSET_INSTALL_PLACE_DETAIL
+		,	ASSET_USE_HOST
+		,	ASSET_USE_NET
+		,	ASSET_USE_IP
+		,	ASSET_USE_MAC
+		,	ASSET_USE_OS
+		,	ASSET_USE_SECTOR
+		,	ASSET_USE_MANAGER
+		,	ASSET_USE_PHONE
+		,	O_SIGN_PASS
+		,	SIGN_NUM
+		,	SIGN_STATUS
+		) VALUES(
+			#aAssetUseHKey#
+		,	#aAssetKey#
+		,	#aAssetUseType#
+		,	#aAssetRequestDate#
+		,	#aAssetInstallPlace#
+		,	#aAssetInstallPlaceDetail#
+		,	#aAssetUseHost#
+		,	#aAssetUseNet#
+		,	#aAssetUseIp#
+		,	#aAssetUseMac#
+		,	#aAssetUseOS#
+		,	#aAssetUseSector#
+		,	#aAssetUseManager#
+		,	#aAssetUsePhone#
+		,	#oSignPass#
+		,	if(#sSignKey# = "",0,#sSignKey#)
+		,	#sSignStatus#
+		)
+	</insert>
+	
+	
+	
+	<update id = "mesAssetDAO.updateMesAssetUseHeader" parameterClass="mesAssetVO">
+		/* mesAssetDAO.updateMesAssetUseHeader */
+		UPDATE A_ASSET_USE_H
+		SET			
+			ASSET_NUM               		= #aAssetKey#                      
+		,	ASSET_NUMBER            		= #aAssetNumber#                   
+		,	ASSET_NAME              		= #aAssetName#                     
+		,	ASSET_MAKER             		= #aAssetMaker#                    
+		,	ASSET_MODEL             		= #aAssetModel#                    
+		,	ASSET_MANUFACTURE_NUMBER		= #aAssetManufactureNumber#        
+		,	ASSET_INTRODUCER        		= #aAssetIntroducer#               
+		,	ASSET_DATE              		= #aAssetDate#                     
+		,	ASSET_USE_H_DATE        		= #aAssetUseDate#                  
+		,	ASSET_USE_H_WDATE       		= now()                            
+		,	ASSET_USE_H_STAFF       		= #kStaffName#                     
+		,	ASSET_USE_ITEM_CNT      		= #aAssetUseItemCnt#               
+		,	O_SIGN_PASS             		= #oSignPass#                      
+		,	SIGN_NUM                		= if(#sSignKey# = "",0,#sSignKey#) 
+		,	SIGN_STATUS             		= #sSignStatus#                    
+		WHERE 1=1
+		AND ASSET_USE_H_KEY = #aAssetUseHKey#		
+	</update>
+	
+		
+	<!-- 상세페이지 -->
+	<select id = "mesAssetDAO.selectMesAssetInfo" parameterClass = "mesAssetVO" resultClass ="mesAssetVO">
+		/* mesAssetDAO.selectMesAssetInfo */
+		SELECT 
+			ASSET_NUM AS eAssetKey,
+			ASSET_NUMBER AS eAssetNumber,
+			ASSET_STATUS_NAME AS eAssetStatusName,
+			ASSET_STATUS AS eAssetStatus,
+			ASSET_TYPE_NAME AS eAssetTypeName,
+			ASSET_TYPE AS eAssetType,
+			ASSET_NAME AS eAssetName,
+			ASSET_SELECT1 AS eMaintanceSelect1,
+			getNameTxt(ASSET_NUM) AS ePositionName1,
+		    A.ASSET_SELECT2 AS eMaintanceSelect2,
+		    A.ASSET_SELECT3 AS eMaintanceSelect3,
+		    A.ASSET_SELECT4 AS eMaintanceSelect4,
+			ASSET_MAKER AS eAssetMaker,
+			ASSET_MODEL AS eAssetModel,
+			ASSET_MANUFACTURE_NUMBER AS eAssetSNumber,
+			ASSET_FORM AS aAssetForm,
+			ASSET_INTRODUCER AS aAssetIntroducer,
+			DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') AS eAssetDate,
+			IF(ASSET_COST = '', 0, ASSET_COST) AS eAssetCost,
+			ASSET_DEVICE_TYPE AS eDeviceType,
+			ASSET_PURPOSE AS eAssetPurpose,
+			ASSET_NETWORK_TYPE AS eNetworkType,
+			ASSET_HOST AS eHostName,
+			ASSET_IP AS eIp,
+			ASSET_OS AS eOs,
+			ASSET_ETC AS eAssetEtc,
+			ASSET_STAFF_NAME AS kStaffName,
+			ASSET_STAFF_NUM AS kStaffKey,
+			DATE_FORMAT(ASSET_WDATE, '%Y-%m-%d')  AS eAssetWdate,
+			ASSET_IMAGE_ID AS eAssetImageId,
+			ASSET_IMAGE_NAME AS eAssetImageName,
+			ASSET_IMAGE_EXT AS eAssetImageExt,
+			ASSET_LIFE AS eLifespan,
+			ASSET_LIFE_TYPE AS eLifeType,
+			ASSET_EOS AS eEosDate,
+			ASSET_EOL AS eEolDate,
+			A.sSignStatus,
+			IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		FROM A_ASSET AS A 
+		LEFT JOIN S_SIGN AS s 
+		ON (s.SIGN_TABLE_NUM = A.ASSET_NUM and	s.SIGN_TABLE_NAME = 'A_ASSET')
+		WHERE  ASSET_NUM = #eAssetKey#
+	</select>
+	
+
+
+
+
+	<!-- 리스트-->
+	<select id="mesAssetDAO.selectMesAssetUseList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectMesAssetUseList */
+		SELECT 
+			ASSET_NUM								AS aAssetKey
+		,	ASSET_USE_H_KEY							AS aAssetUseHKey	
+        ,	getContentLf(ASSET_NUMBER)				AS aAssetNumber
+        ,	getContentLf(ASSET_NAME)				AS aAssetName
+        ,	getContentLf(ASSET_MAKER)				AS aAssetMaker
+        ,	getContentLf(ASSET_MODEL)				AS aAssetModel
+        ,	getContentLf(ASSET_MANUFACTURE_NUMBER)	AS aAssetManufactureNumber
+        ,	getContentLf(ASSET_INTRODUCER)			AS aAssetIntroducer
+        ,	DATE_FORMAT(ASSET_DATE, '%Y-%m-%d')								AS aAssetDate
+        ,	DATE_FORMAT(ASSET_USE_H_DATE, '%Y-%m-%d')						AS aAssetUseDate
+        ,	ASSET_USE_H_STAFF						AS aAssetUseStaff
+        ,	ASSET_USE_ITEM_CNT						AS aAssetUseItemCnt
+        ,	SIGN_STATUS								AS sSignStatus
+        ,	SIGN_NUM								AS sSignkey
+        FROM A_ASSET_USE_H
+		WHERE 1=1
+		AND DATE_FORMAT(ASSET_USE_H_DATE, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		<isNotEmpty property="searchTypeSet1">
+			AND LOWER(ASSET_NUMBER) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+			<isNotEqual property="searchTypeSet3" compareValue="all">
+			AND LOWER(SIGN_STATUS) = #searchTypeSet3#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4">
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5">	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">	
+			AND LOWER(ASSET_MAKER) LIKE CONCAT('%',LOWER(#ASSET_MAKER#),'%')		
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet7">	
+			AND LOWER(ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet7#),'%')		
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet8">	
+			AND LOWER(ASSET_MANUFACTURE_NUMBER) LIKE CONCAT('%',LOWER(#searchTypeSet8#),'%')		
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet9">	
+			AND LOWER(ASSET_INTRODUCER) LIKE CONCAT('%',LOWER(#searchTypeSet9#),'%')		
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet10">	
+			AND LOWER(ASSET_USE_H_STAFF) LIKE CONCAT('%',LOWER(#searchTypeSet10#),'%')		
+		</isNotEmpty>
+        ORDER BY ASSET_NUM DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<!-- 데이터개수 조회 -->
+	<select id="mesAssetDAO.selectMesAssetUseListCnt" parameterClass="mesAssetVO" resultClass="int">
+		/* mesAssetDAO.selectMesAssetUseListCnt */
+		SELECT 
+			COUNT(*)
+        FROM A_ASSET_USE_H
+		WHERE 1=1
+		AND DATE_FORMAT(ASSET_USE_H_DATE, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		<isNotEmpty property="searchTypeSet1">
+			AND LOWER(ASSET_NUMBER) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+			<isNotEqual property="searchTypeSet3" compareValue="all">
+			AND LOWER(SIGN_STATUS) = #searchTypeSet3#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4">
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5">	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">	
+			AND LOWER(ASSET_MAKER) LIKE CONCAT('%',LOWER(#ASSET_MAKER#),'%')		
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet7">	
+			AND LOWER(ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet7#),'%')		
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet8">	
+			AND LOWER(ASSET_MANUFACTURE_NUMBER) LIKE CONCAT('%',LOWER(#searchTypeSet8#),'%')		
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet9">	
+			AND LOWER(ASSET_INTRODUCER) LIKE CONCAT('%',LOWER(#searchTypeSet9#),'%')		
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet10">	
+			AND LOWER(ASSET_USE_H_STAFF) LIKE CONCAT('%',LOWER(#searchTypeSet10#),'%')		
+		</isNotEmpty>
+	</select>
+	
+
+	
+	<select id = "mesAssetDAO.selectMesAssetUseInfo" parameterClass = "mesAssetVO" resultClass ="mesAssetVO">
+		/* mesAssetDAO.selectMesAssetUseInfo */
+		SELECT
+			ASSET_NUM								AS aAssetKey
+		,	ASSET_USE_H_KEY							AS aAssetUseHKey	
+        ,	ASSET_NUMBER							AS aAssetNumber
+        ,	ASSET_NAME								AS aAssetName
+        ,	ASSET_MAKER								AS aAssetMaker
+        ,	ASSET_MODEL								AS aAssetModel
+        ,	ASSET_MANUFACTURE_NUMBER				AS aAssetManufactureNumber
+        ,	ASSET_INTRODUCER						AS aAssetIntroducer
+        ,	DATE_FORMAT(ASSET_DATE, '%Y-%m-%d')								AS aAssetDate
+        ,	DATE_FORMAT(ASSET_USE_H_DATE, '%Y-%m-%d')						AS aAssetUseDate
+        ,	IFNULL(ASSET_IMAGE_ID,'')					AS aAssetImage
+        ,	ASSET_USE_H_STAFF						AS aAssetUseStaff
+        ,	ASSET_USE_ITEM_CNT						AS aAssetUseItemCnt
+        ,	SIGN_STATUS								AS sSignStatus		
+        ,	SIGN_NUM								AS sSignkey	
+		FROM
+			A_ASSET_USE_H A
+		WHERE 1=1
+		AND ASSET_USE_H_KEY = #aAssetUseHKey#		
+	</select>
+	
+	<select id = "mesAssetDAO.selectMesAssetUseItemList" parameterClass = "mesAssetVO" resultClass ="mesAssetVO">
+		/* mesAssetDAO.selectMesAssetUseItemList */
+		SELECT
+			ASSET_USE_NUM						AS aAssetUseKey
+		,	ASSET_USE_H_KEY						AS aAssetUseHKey	
+		,	ASSET_NUM							AS aAssetKey
+		,	ASSET_USE_TYPE						AS aAssetUseType
+		,	ASSET_REQUEST_DATE					AS aAssetRequestDate
+		,	ASSET_INSTALL_PLACE					AS aAssetInstallPlace
+		,	ASSET_INSTALL_PLACE_DETAIL			AS aAssetInstallPlaceDetail
+		,	ASSET_USE_HOST						AS aAssetUseHost
+		,	ASSET_USE_NET						AS aAssetUseNet
+		,	ASSET_USE_IP						AS aAssetUseIp
+		,	ASSET_USE_MAC						AS aAssetUseMac
+		,	ASSET_USE_OS						AS aAssetUseOS
+		,	ASSET_USE_SECTOR					AS aAssetUseSector
+		,	ASSET_USE_MANAGER					AS aAssetUseManager
+		,	ASSET_USE_PHONE						AS aAssetUsePhone
+		,	SIGN_NUM							AS sSignkey
+		,	SIGN_STATUS							AS sSignStatus		
+		FROM
+			A_ASSET_USE A
+		WHERE 1=1
+		AND ASSET_USE_H_KEY = #aAssetUseHKey#	
+	</select>
+	
+	
+	
+	
+	<delete id="mesAssetDAO.deleteMesAssetUseHeader" parameterClass="mesAssetVO">
+		/* mesAssetDAO.deleteMesAssetUseHeader */
+		DELETE FROM A_ASSET_USE_H WHERE ASSET_USE_H_KEY = #aAssetUseHKey#
+	</delete>
+	
+	<delete id="mesAssetDAO.deleteMesAssetUse" parameterClass="mesAssetVO">
+		/* mesAssetDAO.deleteMesAssetUse */
+		DELETE FROM A_ASSET_USE WHERE ASSET_USE_H_KEY = #aAssetUseHKey#
+	</delete>
+	
+	
+	
+	<!-- 자산 반입/반출 시 상태 변경  -->
+<!-- 	<update id = "mesAssetDAO.updateAssetStatus" parameterClass="mesAssetVO"> -->
+<!-- 		/* mesAssetDAO.updateAssetStatus  mesAssetDAO.updateAssetSignStatusTwo 사용*/ -->
+<!-- 		UPDATE A_ASSET -->
+<!-- 		SET			 -->
+<!-- 			ASSET_STATUS				= #aAssetUseType# -->
+<!-- 		WHERE 1=1 -->
+<!-- 		AND	ASSET_NUM = #aAssetKey#	 -->
+<!-- 	</update> -->
+	
+	
+	<update id = "mesAssetDAO.updateMesSignDecison" parameterClass="mesAssetVO">
+		/* mesAssetDAO.updateMesSignDecison */
+		UPDATE A_ASSET_USE_H
+		SET			
+			SIGN_STATUS	 = #sSignStatus#
+		WHERE 1=1
+		AND	ASSET_USE_H_KEY = #aAssetUseHKey#	
+	</update>
+	
+	
+	
+	
+	<update id="mesAssetDAO.updateAssetSignStatus" parameterClass="mesAssetVO">
+		/* mesAssetDAO.updateAssetSignStatus */
+		UPDATE A_ASSET_USE_H
+		SET
+			SIGN_STATUS	 = returnSignStatus(SIGN_NUM)
+		WHERE 1=1
+		AND ASSET_USE_H_KEY = #aAssetUseHKey#	
+	</update>
+	
+	
+	
+	<update id = "mesAssetDAO.updateNullFileInfo" parameterClass="mesAssetVO">
+		/* mesAssetDAO.updateNullFileInfo */
+		UPDATE A_ASSET
+		SET			
+			ASSET_IMAGE_ID	 = NULL
+		WHERE 1=1
+		AND	ASSET_NUM = #aAssetKey#	
+	</update>
+	
+	
+	
+	
+	<!-- 팝업 대상장비 리스트-->
+	<select id="mesAssetDAO.selectMesAssetInfoList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectMesAssetInfoList */
+		SELECT 
+			ASSET_NUM								AS aAssetKey
+        ,	ASSET_NUMBER			AS aAssetNumber
+        ,	getContentLf(ASSET_STATUS)				AS aAssetStatus
+        ,	getContentLf(ASSET_TYPE_NAME)			AS aAssetType
+        ,	getContentLf(ASSET_NAME)				AS aAssetName
+        ,	getContentLf(ASSET_MAKER)				AS aAssetMaker
+        ,	getContentLf(ASSET_MODEL)				AS aAssetModel
+        ,	ASSET_MANUFACTURE_NUMBER	AS aAssetManufactureNumber
+        ,	getContentLf(ASSET_FORM)				AS aAssetForm
+        ,	getContentLf(ASSET_INTRODUCER)			AS aAssetIntroducer
+        ,	ASSET_DATE								AS aAssetDate
+        ,	FORMAT(ASSET_COST, 0)					AS aAssetCost
+        ,	ASSET_IMAGE_ID								AS aAssetImage
+        ,	ASSET_ETC								AS aAssetEtc
+        ,	getNameTxt(ASSET_NUM) AS ePositionName1
+        ,	ASSET_DEVICE_TYPE AS eDeviceType
+		,	ASSET_PURPOSE AS eAssetPurpose
+		,	ASSET_NETWORK_TYPE AS eNetworkType
+		,	ASSET_HOST AS eHostName
+		,	ASSET_IP AS eIp
+		,	ASSET_OS AS eOs
+        FROM A_ASSET
+		WHERE 1=1  AND ASSET_TYPE != 172 
+		AND  ASSET_DEL_STATUS  = '사용'
+		AND (sSignStatus = '제외' OR sSignStatus = '승인') 
+		<isEqual property="searchType" compareValue="Y">
+		   
+			AND (  ASSET_STATUS_NAME = '사용' 
+				OR ASSET_IM_EX_STATUS = '반입완료' 
+			   ) 
+		</isEqual>	 
+		<isEqual property="searchType" compareValue="N">
+			AND (  ASSET_IM_EX_STATUS = '반출완료'	   ) 
+		</isEqual>	 
+		<isEqual property="searchType" compareValue="F">
+			AND (  ASSET_STATUS_NAME LIKE CONCAT('%',LOWER('불용'),'%')  ) 
+		</isEqual>	 
+		<isNotEmpty property="searchTypeSet1" >
+			AND LOWER(ASSET_NUMBER) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2" >
+			AND LOWER(ASSET_TYPE) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3" >
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4" >
+			AND LOWER(ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet4#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5" >
+			AND LOWER(ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet5#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">
+			AND ASSET_TYPE    = #searchTypeSet6#
+		</isNotEmpty>
+        ORDER BY ASSET_NUMBER DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<!-- 데이터개수 조회 -->
+	<select id="mesAssetDAO.selectMesAssetInfoListCnt" parameterClass="mesAssetVO" resultClass="int">
+		/* mesAssetDAO.selectMesAssetInfoListCnt */
+		SELECT 
+			COUNT(*)
+        FROM A_ASSET
+		WHERE 1=1 AND  ASSET_TYPE != 172
+		AND (sSignStatus = '제외' OR sSignStatus = '승인') 
+		<isEqual property="searchType" compareValue="Y">
+		   
+			AND (  ASSET_STATUS_NAME = '사용' 
+				OR ASSET_IM_EX_STATUS = '반입완료' 
+			   ) 
+		</isEqual>	 
+		<isEqual property="searchType" compareValue="N">
+			AND (  ASSET_IM_EX_STATUS = '반출완료'	   ) 
+		</isEqual>	 
+		<isEqual property="searchType" compareValue="F">
+			AND (  ASSET_STATUS_NAME LIKE CONCAT('%',LOWER('불용'),'%')  ) 
+		</isEqual>	 
+
+		<isNotEmpty property="searchTypeSet1" >
+			AND LOWER(ASSET_NUMBER) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2" >
+			AND LOWER(ASSET_TYPE) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3" >
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4" >
+			AND LOWER(ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet4#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5" >
+			AND LOWER(ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet5#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">
+			AND ASSET_TYPE    = #searchTypeSet6#
+		</isNotEmpty>
+	</select>
+	
+	<insert id = "mesAssetDAO.insertAssetSoftwareInfo" parameterClass="mesAssetVO">
+		<selectKey keyProperty="eSWRegisterKey">
+			/* s_gubun pk */
+			SELECT IFNULL(MAX(asset_sw_key), 0) + 1 FROM A_ASSET_SW
+		</selectKey>
+		/* mesAssetDAO.insertAssetSoftwareInfo */
+		INSERT INTO A_ASSET_SW
+		(
+			 asset_product_name
+			, asset_product_ver
+			, asset_purchase_date
+			, asset_start_date
+			, asset_end_date
+			, asset_product_qty
+			, asset_remarks
+			, asset_manufacturer
+			, asset_author
+			, asset_reg_date
+			, asset_wdate
+			, eStatus
+			, kStaffKey
+			, kStaffName
+			)
+			VALUES(
+			
+			  #eProductName#
+			, #eVersion#
+			, CASE WHEN #ePurchaseDate# = '' THEN NOW() ELSE #ePurchaseDate# END
+		    , CASE WHEN #eStartDate# = '' THEN NOW() ELSE #eStartDate# END
+		    , CASE WHEN #eEndDate# = '' THEN NOW() ELSE #eEndDate# END
+			, CASE WHEN #eLicenseQuantity# IS NULL OR #eLicenseQuantity# = '' THEN 0
+                        ELSE #eLicenseQuantity#
+                        END
+			, #eRemarks#
+			, #eManufacturer#
+			, #eAuthor#
+			, CASE WHEN #aAssetDate# = '' THEN NOW() ELSE #aAssetDate# END
+			, NOW()
+			, #eStatus#
+			, #kStaffKey#
+			, #kStaffName#
+			
+			);
+	</insert>
+	
+	
+	
+	<!-- 리스트-->
+	<select id="mesAssetDAO.mesSoftwareList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.mesSoftwareList*/
+		SELECT 
+			asset_sw_key AS eSWRegisterKey,
+		    new_special(asset_product_name) AS eProductName,
+		    new_special(asset_product_ver) AS eVersion,
+		    asset_purchase_date AS ePurchaseDate,
+		    asset_start_date AS eStartDate,
+		    asset_end_date AS eEndDate,
+		    asset_product_qty AS eLicenseQuantity,
+		    new_special(asset_remarks) AS eRemarks,
+		    new_special(asset_manufacturer) AS eManufacturer,
+		    new_special(asset_author) AS eAuthor,
+		    asset_reg_date AS aAssetDate,
+		    kStaffKey,
+		    kStaffName,
+		     CASE 
+		        WHEN SIGN_PROGRESS = SIGN_PROGRESS_CNT THEN '승인'
+		        ELSE eStatus
+		    END AS eStatus,
+		    IF(
+					(SELECT COUNT(*) 
+					FROM S_SIGN_ITEM AS ssi 
+					WHERE ssi.SIGN_TABLE_NUM = asset_sw_key and ssi.SIGN_TABLE_NAME = 'A_ASSET_SW'
+					AND ssi.SIGN_DECISON = '결재대기'
+					AND ssi.SIGN_STAFF_NUM = #kStaffKey#
+				) > 0, 'Y', 'N') AS eViewGubun,
+		    IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress,
+		    <![CDATA[
+		     CASE 
+		        WHEN DATEDIFF(STR_TO_DATE(asset_end_date, '%Y-%m-%d'), NOW()) < 0 THEN '만료'
+		        ELSE CONCAT(DATEDIFF(STR_TO_DATE(asset_end_date, '%Y-%m-%d'), NOW()), '일')
+		    END AS eValidityPeriod
+		    ]]>
+		    , 
+		     (SELECT SUM(IFNULL(aal.eLicenseQuantity,0)) 
+		      FROM A_ASSET_LICENSE AS aal WHERE aal.eSWRegisterKey = aas.asset_sw_key) AS eUsedLicenseQuantity
+		FROM A_ASSET_SW AS aas
+		LEFT JOIN S_SIGN AS s ON (SIGN_TABLE_NUM = asset_sw_key AND  SIGN_TABLE_NAME = 'A_ASSET_SW')
+		WHERE 1=1
+        
+		<isNotEmpty property="searchTypeSet1">
+			AND LOWER(asset_manufacturer) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(asset_product_name) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+		AND (  
+		 <![CDATA[
+			CASE 
+	        WHEN DATEDIFF(STR_TO_DATE(aas.asset_end_date, '%Y-%m-%d'), NOW()) < 0 THEN 0
+     		ELSE DATEDIFF(STR_TO_DATE(aas.asset_end_date, '%Y-%m-%d'), NOW())  
+      		END <= #searchTypeSet3# 
+		  ]]>
+		  )
+		</isNotEmpty>
+        ORDER BY asset_sw_key DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="mesAssetDAO.mesSoftwareListCnt" parameterClass="mesAssetVO" resultClass="int">
+		/* mesAssetDAO.mesSoftwareListCnt*/
+		SELECT 
+			COUNT(asset_sw_key) 
+		FROM A_ASSET_SW
+		WHERE 1=1
+<!-- 		<isNotEmpty property="topStartDate"> -->
+<!-- 		    <isNotEmpty property="topEndDate"> -->
+<!-- 		         <![CDATA[ -->
+<!-- 		        AND (DATE_FORMAT(asset_start_date, '%Y-%m-%d') >= #topStartDate#  -->
+<!-- 		        OR DATE_FORMAT(asset_end_date, '%Y-%m-%d') <= #topEndDate#) -->
+<!-- 		         ]]> -->
+<!-- 		    </isNotEmpty> -->
+<!-- 		    <isEmpty property="topEndDate"> -->
+<!-- 		        AND DATE_FORMAT(asset_start_date, '%Y-%m-%d') >= #topStartDate# -->
+<!-- 		    </isEmpty> -->
+<!-- 		</isNotEmpty> -->
+<!-- 		<isEmpty property="topStartDate"> -->
+<!-- 		    <isNotEmpty property="topEndDate"> -->
+<!-- 		    	 <![CDATA[ -->
+<!-- 		        AND DATE_FORMAT(asset_end_date, '%Y-%m-%d') <= #topEndDate# -->
+<!-- 		          ]]> -->
+<!-- 		    </isNotEmpty> -->
+<!-- 		</isEmpty> -->
+		<isNotEmpty property="searchTypeSet1">
+			AND LOWER(asset_manufacturer) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(asset_product_name) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+		AND ( 
+		 <![CDATA[
+			CASE 
+	        WHEN DATEDIFF(STR_TO_DATE(asset_end_date, '%Y-%m-%d'), NOW()) < 0 THEN 0
+     		ELSE DATEDIFF(STR_TO_DATE(asset_end_date, '%Y-%m-%d'), NOW())  
+      		END <= #searchTypeSet3# 
+      		)
+		  ]]>
+		  </isNotEmpty>
+	</select>
+	<select id="mesAssetDAO.mesSoftwareInfo" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.mesSoftwareInfo*/
+		SELECT 
+			aas.asset_sw_key AS eSWRegisterKey,
+		    new_special(aas.asset_product_name) AS eProductName,
+		    new_special(aas.asset_product_ver) AS eVersion,
+		    aas.asset_purchase_date AS ePurchaseDate,
+		    aas.asset_start_date AS eStartDate,
+		    aas.asset_end_date AS eEndDate,
+		    aas.asset_product_qty AS eLicenseQuantity,
+		    new_special(aas.asset_remarks) AS eRemarks,
+		    new_special(aas.asset_manufacturer) AS eManufacturer,
+		    new_special(aas.asset_author) AS eAuthor,
+		    aas.asset_reg_date AS aAssetDate,
+		    eStatus,
+			kStaffKey,
+			kStaffName,
+			IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress,
+		    <![CDATA[
+		     CASE 
+		        WHEN DATEDIFF(STR_TO_DATE(aas.asset_end_date, '%Y-%m-%d'), NOW()) < 0 THEN '만료'
+		        ELSE CONCAT(DATEDIFF(STR_TO_DATE(aas.asset_end_date, '%Y-%m-%d'), NOW()), '일')
+		    END AS eValidityPeriod
+		    ]]>
+		     ,
+		     (SELECT SUM(aal.eLicenseQuantity) 
+		      FROM A_ASSET_LICENSE AS aal WHERE aal.eSWRegisterKey = aas.asset_sw_key) AS eUsedLicenseQuantity
+		FROM A_ASSET_SW AS aas
+		LEFT JOIN S_SIGN AS s 
+		ON (s.SIGN_TABLE_NUM = aas.asset_sw_key and	s.SIGN_TABLE_NAME = 'A_ASSET_SW')
+		WHERE 1=1 AND  aas.asset_sw_key   = #eSWRegisterKey#
+	</select>
+	
+	
+	<select id="mesAssetDAO.mesSoftwareExcelList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.mesSoftwareExcelList*/
+		SELECT 
+			asset_sw_key AS eSWRegisterKey,
+		    reverse_special(asset_product_name) AS eProductName,
+		    reverse_special(asset_product_ver) AS eVersion,
+		    asset_purchase_date AS ePurchaseDate,
+		    asset_start_date AS eStartDate,
+		    asset_end_date AS eEndDate,
+		    asset_product_qty AS eLicenseQuantity,
+		    reverse_special(asset_remarks) AS eRemarks,
+		    reverse_special(asset_manufacturer) AS eManufacturer,
+		    reverse_special(asset_author) AS eAuthor,
+		    asset_reg_date AS aAssetDate,
+		     kStaffKey,
+		    kStaffName,
+		    <![CDATA[
+		     CASE 
+		        WHEN DATEDIFF(STR_TO_DATE(asset_end_date, '%Y-%m-%d'), NOW()) < 0 THEN 'EoL'
+		        ELSE CONCAT(DATEDIFF(STR_TO_DATE(asset_end_date, '%Y-%m-%d'), NOW()), '일')
+		    END AS eValidityPeriod
+		    ]]>
+		FROM A_ASSET_SW
+		WHERE 1=1
+		<isNotEmpty property="topStartDate">
+		    <isNotEmpty property="topEndDate">
+		   	  <![CDATA[
+		        AND (DATE_FORMAT(asset_start_date, '%Y-%m-%d') >= #topStartDate# 
+		        OR DATE_FORMAT(asset_end_date, '%Y-%m-%d') <= #topEndDate#)
+		         ]]>
+		    </isNotEmpty>
+		    <isEmpty property="topEndDate">
+		        AND DATE_FORMAT(asset_start_date, '%Y-%m-%d') >= #topStartDate#
+		    </isEmpty>
+		</isNotEmpty>
+		<isEmpty property="topStartDate">
+		    <isNotEmpty property="topEndDate">
+		    	 <![CDATA[
+		        AND DATE_FORMAT(asset_end_date, '%Y-%m-%d') <= #topEndDate#
+		          ]]>
+		    </isNotEmpty>
+		</isEmpty>
+		<isNotEmpty property="searchTypeSet1">
+			AND LOWER(asset_manufacturer) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(asset_product_name) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+		HAVING 
+		 <![CDATA[
+			CASE 
+	        WHEN DATEDIFF(STR_TO_DATE(asset_end_date, '%Y-%m-%d'), NOW()) < 0 THEN 0
+     		ELSE DATEDIFF(STR_TO_DATE(asset_end_date, '%Y-%m-%d'), NOW())  
+      		END <= #searchTypeSet3# 
+		  ]]>
+		</isNotEmpty>
+		 ORDER BY asset_sw_key DESC
+		 LIMIT 500
+	</select>
+	 
+	<delete id="mesAssetDAO.mesSoftwareAssetDelete" parameterClass="mesAssetVO" >
+	/* mesAssetDAO.mesSoftwareAssetDelete */
+	DELETE FROM A_ASSET_SW WHERE asset_sw_key   = #eSWRegisterKey#
+	</delete>
+	
+	<delete id="mesAssetDAO.mesSoftwareAssetLicenceDelete" parameterClass="mesAssetVO" >
+	/* mesAssetDAO.mesSoftwareAssetLicenceDelete */
+	DELETE FROM A_ASSET_LICENSE WHERE eSWRegisterKey   = #eSWRegisterKey#
+	</delete>
+	
+	<update id="mesAssetDAO.mesSoftwareAssetUdate" parameterClass="mesAssetVO" >
+	/* mesAssetDAO.mesSoftwareAssetUdate */
+	UPDATE A_ASSET_SW
+	SET 
+	    asset_product_name = #eProductName#,
+	    asset_product_ver = #eVersion#,
+	    asset_purchase_date = CASE WHEN #ePurchaseDate# = '' THEN NOW() ELSE #ePurchaseDate# END,
+	    asset_start_date = CASE WHEN #eStartDate# = '' THEN NOW() ELSE #eStartDate# END,
+	    asset_end_date = CASE WHEN #eEndDate# = '' THEN NOW() ELSE #eEndDate# END,
+	    asset_product_qty = CASE 
+                            WHEN #eLicenseQuantity# IS NULL OR #eLicenseQuantity# = '' THEN 0
+                            ELSE #eLicenseQuantity#
+                        END,
+	    asset_remarks = #eRemarks#,
+	    asset_manufacturer = #eManufacturer#,
+	    asset_author = #eAuthor#,
+	    eStatus = #eStatus#,
+	    asset_reg_date = CASE WHEN #aAssetDate# = '' THEN NOW() ELSE #aAssetDate# END
+	WHERE 
+	    asset_sw_key = #eSWRegisterKey#;
+	
+	
+	</update>	
+	
+		 <!-- 등록 -->
+	<insert id = "mesAssetDAO.insertInfoAsset" parameterClass="mesAssetVO">
+	 <selectKey type="post" keyProperty="eAssetKey" >
+        SELECT LAST_INSERT_ID() AS eAssetKey
+	  </selectKey>
+		/* mesAssetDAO.insertInfoAsset */
+		INSERT INTO	A_ASSET(
+			ASSET_NUMBER
+		,	ASSET_STATUS_NAME
+		,	ASSET_STATUS
+		,   ASSET_TYPE_NAME
+		,	ASSET_TYPE
+		,	ASSET_NAME
+		,	ASSET_SELECT1
+		,	ASSET_SELECT2
+		,	ASSET_SELECT3
+		,	ASSET_SELECT4
+		,	ASSET_MAKER
+		,	ASSET_MODEL
+		,	ASSET_MANUFACTURE_NUMBER
+		
+		,	ASSET_FORM
+		,	ASSET_INTRODUCER
+		,	ASSET_DATE
+		,	ASSET_COST
+		,	ASSET_DEVICE_TYPE
+		,	ASSET_PURPOSE
+		
+		,	ASSET_NETWORK_TYPE
+		,	ASSET_HOST
+		,	ASSET_IP
+		,	ASSET_OS
+		
+		,	ASSET_ETC
+		,	ASSET_STAFF_NAME
+		,	ASSET_STAFF_NUM
+		,	ASSET_WDATE
+		,	ASSET_IMAGE_ID
+		,	ASSET_IMAGE_NAME
+		,	ASSET_IMAGE_EXT
+		,	ASSET_EOS
+		,	ASSET_EOL
+		,	ASSET_LIFE
+		,	ASSET_LIFE_TYPE
+		,	sSignStatus
+		,   ASSET_TYPE_MAX
+		) VALUES(
+			#eAssetNumber#
+		,	#eAssetStatusName#
+		,	#eAssetStatus#
+		,	#eAssetTypeName#
+		,	#eAssetType#
+		,	#eAssetName#
+		,	#eMaintanceSelect1#
+		,	#eMaintanceSelect2#
+		,	#eMaintanceSelect3#
+		,	#eMaintanceSelect4#
+		,	#eAssetMaker#
+		,	#eAssetModel#
+		,	#eAssetSNumber#
+		
+		,	#aAssetForm#
+		,	#aAssetIntroducer#
+		,	IF(#eAssetDate# = '', now(), #eAssetDate#)
+		,	IF(#eAssetCost# = '', 0, #eAssetCost#) 
+		
+		,	#eDeviceType#
+		,	#eAssetPurpose#
+		
+		,	#eNetworkType#
+		,	#eHostName#
+		,	#eIp#
+		,	#eOs#
+		
+		,	#eAssetEtc#
+		,	#kStaffName#
+		,	#kStaffKey#
+		,	#aAssetDate#
+		,	#eAssetImageId#
+		,	#eAssetImageName#
+		,	#eAssetImageExt#
+		,	IF(#eEosDate# IS NULL OR #eEosDate# = '', '2999-01-01', #eEosDate#)
+		,	IF(#eEolDate# IS NULL OR #eEolDate# = '', '2999-01-01', #eEolDate#)
+		,	IF(#eLifespan# = '', NULL, #eLifespan#)
+		,	#eLifeType#
+		,	#sSignStatus#
+		,	 (SELECT COUNT(*) + 1 FROM A_ASSET AS aa WHERE aa.ASSET_TYPE = #eAssetType#  AND DATE_FORMAT(aa.ASSET_WDATE, '%Y-%m-%d') = DATE_FORMAT(CURDATE(), '%Y-%m-%d'))
+		)
+	</insert>
+		 <!-- 등록Excel 등록시처리 -->
+	<insert id = "mesAssetDAO.insertExcelInfoAsset" parameterClass="mesAssetVO">
+	 <selectKey type="post" keyProperty="eAssetKey" >
+        SELECT LAST_INSERT_ID() AS eAssetKey
+	  </selectKey>
+		/* mesAssetDAO.insertExcelInfoAsset */
+		INSERT INTO	A_ASSET(
+			ASSET_NUMBER
+		,	ASSET_STATUS_NAME
+		,	ASSET_STATUS
+		,   ASSET_TYPE_NAME
+		,	ASSET_TYPE
+		,	ASSET_NAME
+		,	ASSET_MAKER
+		,	ASSET_MODEL
+		,	ASSET_MANUFACTURE_NUMBER
+		
+		,	ASSET_FORM
+		,	ASSET_INTRODUCER
+		,	ASSET_DATE
+		,	ASSET_COST
+		,	ASSET_DEVICE_TYPE
+		,	ASSET_PURPOSE
+		
+		,	ASSET_NETWORK_TYPE
+		,	ASSET_HOST
+		,	ASSET_IP
+		,	ASSET_OS
+		
+		,	ASSET_ETC
+		,	ASSET_STAFF_NAME
+		,	ASSET_STAFF_NUM
+		,	ASSET_WDATE
+		,	ASSET_IMAGE_ID
+		,	ASSET_IMAGE_NAME
+		,	ASSET_IMAGE_EXT
+		,	ASSET_EOS
+		,	ASSET_EOL
+		,	ASSET_LIFE
+		,	ASSET_LIFE_TYPE
+		,	sSignStatus
+		,   ASSET_TYPE_MAX
+		) VALUES(
+			#eAssetNumber#
+		,	#eAssetStatusName#
+		,	(SELECT GC_NUM 
+			FROM GC
+			WHERE GU_NUM=37 AND  LOWER(REPLACE(GC_NAME, ' ', '')) = LOWER(REPLACE(#eAssetStatusName#, ' ', ''))
+			)
+		,	#eAssetTypeName#
+		,	(SELECT GC_NUM 
+			FROM GC
+			WHERE GU_NUM=36 AND  LOWER(REPLACE(GC_NAME, ' ', '')) = LOWER(REPLACE(#eAssetTypeName#, ' ', ''))
+			)
+		,	#eAssetName#
+		,	#eAssetMaker#
+		,	#eAssetModel#
+		,	#eAssetSNumber#
+		
+		,	#aAssetForm#
+		,	#aAssetIntroducer#
+		,	IF(#eAssetDate# = '', now(), #eAssetDate#)
+		,	IF(#eAssetCost# = '', 0, #eAssetCost#) 
+		
+		,	#eDeviceType#
+		,	#eAssetPurpose#
+		
+		,	#eNetworkType#
+		,	#eHostName#
+		,	#eIp#
+		,	#eOs#
+		
+		,	#eAssetEtc#
+		,	#kStaffName#
+		,	#kStaffKey#
+		,	#aAssetDate#
+		,	#eAssetImageId#
+		,	#eAssetImageName#
+		,	#eAssetImageExt#
+		,	IF(#eEosDate# IS NULL OR #eEosDate# = '', '2999-01-01', #eEosDate#)
+		,	IF(#eEolDate# IS NULL OR #eEolDate# = '', '2999-01-01', #eEolDate#)
+		,	IF(#eLifespan# = '', NULL, #eLifespan#)
+		,	#eLifeType#
+		,	IF(#sSignStatus# IS NULL OR #sSignStatus# = '', '제외', #sSignStatus#) 
+		,	 (SELECT COUNT(*) + 1 FROM A_ASSET AS aa WHERE aa.ASSET_TYPE = #eAssetType#  AND DATE_FORMAT(aa.ASSET_WDATE, '%Y-%m-%d') = DATE_FORMAT(CURDATE(), '%Y-%m-%d'))
+		)
+	</insert>
+	<update id = "mesAssetDAO.eAssetModelUpdate" parameterClass = "mesAssetVO">
+		/* mesAssetDAO.eAssetModelUpdate */
+		UPDATE A_ASSET
+		SET			
+	    	ASSET_EOS =IF(#eEosDate# IS NULL OR #eEosDate# = '', '2999-01-01', #eEosDate#)
+		,	ASSET_EOL =IF(#eEolDate# IS NULL OR #eEolDate# = '', '2999-01-01', #eEolDate#)
+		WHERE 1=1
+		AND LOWER(REPLACE(ASSET_MODEL, ' ', '')) = LOWER(REPLACE(#eAssetModel#, ' ', ''))
+	</update>
+	<insert id = "mesAssetDAO.insertInfoAssetLicenseInfo" parameterClass="mesAssetVO">
+		/* mesAssetDAO.insertInfoAssetLicenseInfo */
+		 INSERT INTO A_ASSET_LICENSE
+		 (
+				 A_ASSET_NUM
+				 , eSWRegisterKey
+				 , eLicenseQuantity
+		 )VALUES(
+		 		 #eAssetKey#
+		 		 , #eSWRegisterKey#
+		 		 , #eLicenseQuantity#
+		 	)
+	</insert>
+	
+	
+	
+	<select id="mesAssetDAO.selectAssetInfoList" parameterClass="java.util.Map" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectAssetInfoList */
+		SELECT 
+			ASSET_NUM								AS aAssetKey
+        ,	ASSET_NUMBER				AS aAssetNumber
+        ,	getContentLf(ASSET_STATUS)				AS aAssetStatus
+        ,	getContentLf(ASSET_TYPE_NAME)			AS aAssetType
+        ,	getContentLf(ASSET_NAME)				AS aAssetName
+        ,	getContentLf(ASSET_MAKER)				AS aAssetMaker
+        ,	getContentLf(ASSET_MODEL)				AS aAssetModel
+        ,	ASSET_MANUFACTURE_NUMBER	AS aAssetManufactureNumber
+        ,	getContentLf(ASSET_FORM)				AS aAssetForm
+        ,	getContentLf(ASSET_INTRODUCER)			AS aAssetIntroducer
+        ,	ASSET_DATE								AS aAssetDate
+        ,	FORMAT(ASSET_COST, 0)					AS aAssetCost
+        ,	ASSET_IMAGE_ID								AS aAssetImage
+        ,	ASSET_ETC								AS aAssetEtc
+        ,	getNameTxt(ASSET_NUM) AS ePositionName1
+        ,	ASSET_DEVICE_TYPE AS eDeviceType
+		,	ASSET_PURPOSE AS eAssetPurpose
+		,	ASSET_NETWORK_TYPE AS eNetworkType
+		,	ASSET_HOST AS eHostName
+		,	ASSET_IP AS eIp
+		,	ASSET_OS AS eOs
+        FROM A_ASSET
+		WHERE 1=1
+		 AND ASSET_NUM
+		 <iterate prepend="IN" property="keyList" open="(" close=")" conjunction=","> 
+		 	#keyList[]# 
+		 </iterate>
+        ORDER BY ASSET_NUM DESC
+	</select>
+	 
+	 <insert id = "mesAssetDAO.insertInfoCondition" parameterClass="mesAssetVO">
+		  <selectKey type="post" keyProperty="eEntryExitKey" >
+	        SELECT LAST_INSERT_ID() AS eEntryExitKey
+		  </selectKey>
+	 	/* mesAssetDAO.insertInfoCondition */
+			INSERT INTO E_ENTRY
+	 			(  
+	 			  eEntryExitDate
+	 			, eEntryStaff
+	 			, eEntryRequestReason
+	 			, w_date
+	 			, w_staff_name
+	 			, w_staff_key
+	 			, sSignStatus
+	 			, eEntryStaffOrg
+	 			, eExportLocation
+	 			)
+			VALUES(
+			  #eEntryExitDate#
+			 , #eEntryStaff#
+			 , #eEntryRequestReason#
+			 , #eAssetWdate#
+			 , #kStaffName#
+			 , #kStaffKey#
+			 , #sSignStatus#
+			 , #eEntryStaffOrg#
+			 , #eExportLocation#
+			 
+			 )
+			 
+
+		</insert>
+	 		 
+	 <insert id = "mesAssetDAO.insertInfoConditionItem" parameterClass="mesAssetVO">
+	 /* mesAssetDAO.insertInfoConditionItem */
+			INSERT INTO E_ENTRY_ITEM
+	 			(  
+					ENTRY_NUM
+				,	ASSET_NUM
+				,	sSignStatus
+	 			)
+			VALUES(
+			   #eEntryExitKey#
+			  ,#eAssetKey#
+			  ,#sSignStatus#
+			 )
+	</insert>
+	 
+	 <update id="mesAssetDAO.updateAssetOutIn" parameterClass="mesAssetVO">
+	 	/* mesAssetDAO.updateAssetOutIn*/
+	 		UPDATE A_ASSET SET 
+			ASSET_IM_EX_STATUS =#eEntryStatus#
+			
+			WHERE ASSET_NUM =#eAssetKey#
+	 </update>
+	 
+	<select id="mesAssetDAO.selectConditionList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectConditionList */
+		SELECT 
+		  eEI.ENTRY_ITEM_NUM AS eEntryExitItemKey
+		, eEI.ENTRY_NUM  AS eEntryExitKey
+		, eEI.ASSET_NUM  AS eAssetKey
+		, DATE_FORMAT(eE.eEntryExitDate, '%Y-%m-%d')  AS eEntryExitDate  
+		, eE.eEntryStaff   
+		, eE.eEntryRequestReason 
+		, eE.eEntryStaffOrg 
+		, eE.eExportLocation 
+		, eEI.eEntryImporter
+		, DATE_FORMAT(eEI.eEntryImportDate, '%Y-%m-%d') AS eEntryImportDate
+		, eEI.eEntryNote
+		,	getContentLfNew(ASSET_NUMBER,14) AS eAssetNumber 
+		,	getContentLf(ASSET_TYPE_NAME)			AS eAssetType
+		,	getContentLf(ASSET_NAME)				AS eAssetName
+		,	getContentLf(aA.ASSET_MAKER)				AS eAssetMaker
+		,	getContentLf(ASSET_MODEL)				AS eAssetModel
+		,	getContentLf(ASSET_MANUFACTURE_NUMBER)	AS eAssetSNumber
+		,	getContentLf(ASSET_FORM)				AS eAssetForm
+		,	getContentLf(ASSET_INTRODUCER)			AS eAssetIntroducer
+		,	ASSET_DATE								AS eAssetDate
+		,	FORMAT(ASSET_COST, 0)					AS eAssetCost
+		,	ASSET_IMAGE_ID							AS eAssetImage
+		,	ASSET_ETC								AS eAssetEtc
+		,	getNameTxt(aA.ASSET_NUM) AS ePositionName1
+		,	ASSET_DEVICE_TYPE AS eDeviceType
+		,	ASSET_PURPOSE AS eAssetPurpose
+		,	ASSET_NETWORK_TYPE AS eNetworkType
+		,	ASSET_HOST AS eHostName
+		,	ASSET_IP AS eIp
+		,	ASSET_OS AS eOs
+		, CASE 
+		        WHEN SIGN_PROGRESS = SIGN_PROGRESS_CNT THEN '승인'
+		        ELSE eE.sSignStatus
+			END    AS eStatus
+		, IF(
+					(SELECT COUNT(*) 
+					FROM S_SIGN_ITEM AS ssi 
+					WHERE ssi.SIGN_TABLE_NUM = eEI.ENTRY_NUM and ssi.SIGN_TABLE_NAME = 'E_ENTRY'
+					AND ssi.SIGN_DECISON = '결재대기'
+					AND ssi.SIGN_STAFF_NUM = #kStaffKey#
+				) > 0, 'Y', 'N') AS eViewGubun
+		,   IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		,   eE.w_staff_key AS kStaffKey
+		,   eE.w_staff_name AS kStaffName
+		FROM E_ENTRY_ITEM AS eEI
+		LEFT JOIN  E_ENTRY AS eE ON eE.ENTRY_NUM =eEI.ENTRY_NUM 
+		LEFT JOIN  A_ASSET AS aA ON eEI.ASSET_NUM =aA.ASSET_NUM
+		LEFT JOIN S_SIGN AS s  	ON (s.SIGN_TABLE_NUM = eE.ENTRY_NUM  and s.SIGN_TABLE_NAME = 'E_ENTRY')
+		WHERE 1=1  AND eE.ENTRY_STATUS != '삭제'
+		AND DATE_FORMAT(eE.eEntryExitDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		<isNotEmpty property="searchTypeSet1">
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(aA.ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+			 AND LOWER(ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet3#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4">
+			 AND LOWER(eEntryStaff) LIKE CONCAT('%',LOWER(#searchTypeSet4#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5">	
+			 AND LOWER(eEntryRequestReason) LIKE CONCAT('%',LOWER(#searchTypeSet5#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">	
+			 AND LOWER(eEntryImporter) LIKE CONCAT('%',LOWER(#searchTypeSet6#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet7">
+			AND LOWER(ASSET_NUMBER)   LIKE CONCAT('%',LOWER(#searchTypeSet7#),'%')
+		</isNotEmpty>
+	    ORDER BY eEI.ENTRY_NUM DESC, eEI.ENTRY_ITEM_NUM
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	 
+	
+	<select id="mesAssetDAO.selectConditionCnt" parameterClass="mesAssetVO" resultClass="int">
+		/* mesAssetDAO.selectConditionCnt */
+		SELECT 
+			COUNT(eEI.ENTRY_ITEM_NUM)
+        FROM E_ENTRY_ITEM AS eEI
+		LEFT JOIN  E_ENTRY AS eE ON eE.ENTRY_NUM =eEI.ENTRY_NUM 
+		LEFT JOIN  A_ASSET AS aA ON eEI.ASSET_NUM =aA.ASSET_NUM
+		WHERE 1=1  AND eE.ENTRY_STATUS != '삭제'
+			AND DATE_FORMAT(eE.eEntryExitDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		<isNotEmpty property="searchTypeSet1">
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(aA.ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+			 AND LOWER(ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet3#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4">
+			 AND LOWER(eEntryStaff) LIKE CONCAT('%',LOWER(#searchTypeSet4#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5">	
+			 AND LOWER(eEntryRequestReason) LIKE CONCAT('%',LOWER(#searchTypeSet5#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">	
+			 AND LOWER(eEntryImporter) LIKE CONCAT('%',LOWER(#searchTypeSet6#),'%')	
+		</isNotEmpty>
+       <isNotEmpty property="searchTypeSet7">
+			AND LOWER(ASSET_NUMBER)   LIKE CONCAT('%',LOWER(#searchTypeSet7#),'%')
+		</isNotEmpty>
+	</select>
+	
+	
+	<select id="mesAssetDAO.selectConditionExcelList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectConditionExcelList */
+		SELECT 
+		  eEI.ENTRY_ITEM_NUM AS eEntryExitItemKey
+		, eEI.ENTRY_NUM  AS eEntryExitKey
+		, eEI.ASSET_NUM  AS eAssetKey
+		, DATE_FORMAT(eE.eEntryExitDate, '%Y-%m-%d')  AS eEntryExitDate  
+		, eE.eEntryStaff   
+		, eE.eEntryRequestReason 
+		, eE.eEntryStaffOrg 
+		, eE.eExportLocation 
+		, eEI.eEntryImporter
+		, eE.w_date AS aAssetDate
+		, DATE_FORMAT(eEI.eEntryImportDate, '%Y-%m-%d') AS eEntryImportDate
+		, eEI.eEntryNote
+		,	getContentLfNew(ASSET_NUMBER,14) AS eAssetNumber 
+		,	getContentLf(ASSET_TYPE_NAME)			AS eAssetType
+		,	getContentLf(ASSET_NAME)				AS eAssetName
+		,	getContentLf(ASSET_MAKER)				AS eAssetMaker
+		,	getContentLf(ASSET_MODEL)				AS eAssetModel
+		,	getContentLf(ASSET_MANUFACTURE_NUMBER)	AS eAssetSNumber
+		,	getContentLf(ASSET_FORM)				AS eAssetForm
+		,	getContentLf(ASSET_INTRODUCER)			AS eAssetIntroducer
+		,	ASSET_DATE								AS eAssetDate
+		,	FORMAT(ASSET_COST, 0)					AS eAssetCost
+		,	ASSET_IMAGE_ID							AS eAssetImage
+		,	ASSET_ETC								AS eAssetEtc
+		,	getNameTxt(aA.ASSET_NUM) AS ePositionName1
+		,	ASSET_DEVICE_TYPE AS eDeviceType
+		,	ASSET_PURPOSE AS eAssetPurpose
+		,	ASSET_NETWORK_TYPE AS eNetworkType
+		,	ASSET_HOST AS eHostName
+		,	ASSET_IP AS eIp
+		,	ASSET_OS AS eOs
+		, CASE 
+		        WHEN SIGN_PROGRESS = SIGN_PROGRESS_CNT THEN '승인'
+		        ELSE eE.sSignStatus
+			END    AS eStatus
+		,   IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		,   eE.w_staff_key AS kStaffKey
+		,   eE.w_staff_name AS kStaffName
+		FROM E_ENTRY_ITEM AS eEI
+		LEFT JOIN  E_ENTRY AS eE ON eE.ENTRY_NUM =eEI.ENTRY_NUM 
+		LEFT JOIN  A_ASSET AS aA ON eEI.ASSET_NUM =aA.ASSET_NUM
+		LEFT JOIN S_SIGN AS s  	ON (s.SIGN_TABLE_NUM = eE.ENTRY_NUM  and s.SIGN_TABLE_NAME = 'E_ENTRY')
+		WHERE 1=1  AND eE.ENTRY_STATUS != '삭제'
+		AND DATE_FORMAT(eE.eEntryExitDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		<isNotEmpty property="searchTypeSet1">
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(aA.ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+			 AND LOWER(ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet3#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4">
+			 AND LOWER(eEntryStaff) LIKE CONCAT('%',LOWER(#searchTypeSet4#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5">	
+			 AND LOWER(eEntryRequestReason) LIKE CONCAT('%',LOWER(#searchTypeSet5#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">	
+			 AND LOWER(eEntryImporter) LIKE CONCAT('%',LOWER(#searchTypeSet6#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet7">
+			AND LOWER(ASSET_NUMBER)   LIKE CONCAT('%',LOWER(#searchTypeSet7#),'%')
+		</isNotEmpty>
+	    ORDER BY eEI.ENTRY_ITEM_NUM DESC 
+	     LIMIT 730
+	</select>
+	
+	
+	<select id="mesAssetDAO.selectConditionInfo" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectConditionInfo */
+		SELECT 
+		  eEI.ENTRY_ITEM_NUM AS eEntryExitItemKey
+		, eEI.ENTRY_NUM  AS eEntryExitKey
+		, eEI.ASSET_NUM  AS eAssetKey
+		, DATE_FORMAT(eE.eEntryExitDate, '%Y-%m-%d')  AS eEntryExitDate  
+		, eE.eEntryStaff   
+		, eE.eEntryRequestReason
+		, eE.eEntryStaffOrg 
+		, eE.eExportLocation  
+		, eEI.eEntryImporter
+		, DATE_FORMAT(eEI.eEntryImportDate, '%Y-%m-%d') AS eEntryImportDate
+		, eEI.eEntryNote
+		,	getContentLfNew(ASSET_NUMBER,16) AS eAssetNumber 
+		,	getContentLf(ASSET_TYPE_NAME)			AS eAssetType
+		,	getContentLf(ASSET_NAME)				AS eAssetName
+		,	getContentLf(ASSET_MAKER)				AS eAssetMaker
+		,	getContentLf(ASSET_MODEL)				AS eAssetModel
+		,	getContentLf(ASSET_MANUFACTURE_NUMBER)	AS eAssetSNumber
+		,	getContentLf(ASSET_FORM)				AS eAssetForm
+		,	getContentLf(ASSET_INTRODUCER)			AS eAssetIntroducer
+		,	ASSET_DATE								AS eAssetDate
+		,	FORMAT(ASSET_COST, 0)					AS eAssetCost
+		,	ASSET_IMAGE_ID							AS eAssetImage
+		,	ASSET_ETC								AS eAssetEtc
+		,	getNameTxt(aA.ASSET_NUM) AS ePositionName1
+		,	ASSET_DEVICE_TYPE AS eDeviceType
+		,	ASSET_PURPOSE AS eAssetPurpose
+		,	ASSET_NETWORK_TYPE AS eNetworkType
+		,	ASSET_HOST AS eHostName
+		,	ASSET_IP AS eIp
+		,	ASSET_OS AS eOs
+		, 	eE.sSignStatus
+		FROM E_ENTRY_ITEM AS eEI
+		LEFT JOIN  E_ENTRY AS eE ON eE.ENTRY_NUM =eEI.ENTRY_NUM 
+		LEFT JOIN  A_ASSET AS aA ON eEI.ASSET_NUM =aA.ASSET_NUM
+		WHERE 1=1 AND eEI.ENTRY_NUM =#eEntryExitKey#
+	</select>
+	
+	<update id="mesAssetDAO.eDeleteInfoCondition"    parameterClass="mesAssetVO">
+	/*mesAssetDAO.eDeleteInfoCondition*/
+			UPDATE E_ENTRY
+			SET  ENTRY_STATUS = '삭제'
+		WHERE
+		    ENTRY_NUM = #eEntryExitKey#
+	</update>
+	
+	<update id="mesAssetDAO.updateInfoCondition"    parameterClass="mesAssetVO">
+		/*mesAssetDAO.updateInfoCondition*/
+		UPDATE E_ENTRY
+		SET
+		    eEntryExitDate = #eEntryExitDate#,
+		    eEntryStaff = #eEntryStaff#,
+		    eEntryRequestReason = #eEntryRequestReason#,
+		    w_date = NOW(),
+		    w_staff_name = #kStaffName#,
+		    w_staff_key = #kStaffKey#,
+		    sSignStatus = #sSignStatus#,
+		    eEntryStaffOrg = #eEntryStaffOrg#,
+		    eExportLocation = #eExportLocation#
+		WHERE 
+		    ENTRY_NUM = #eEntryExitKey#;
+	</update>
+	<update id="mesAssetDAO.updateImportInfo"    parameterClass="mesAssetVO">
+	/*mesAssetDAO.updateImportInfo*/
+			UPDATE E_ENTRY_ITEM
+		SET 
+		    eEntryImporter = #eEntryImporter#,
+		    eEntryImportDate = #eEntryImportDate# 
+		WHERE
+		    ENTRY_ITEM_NUM = #eEntryExitItemKey#
+	</update>
+	 
+	<delete id="mesAssetDAO.eDeleteEntryItem"    parameterClass="mesAssetVO">
+		/*mesAssetDAO.eDeleteEntryItem*/
+		DELETE FROM E_ENTRY_ITEM WHERE ENTRY_NUM = #eEntryExitKey#
+	
+	</delete>
+
+	 
+	 <insert id = "mesAssetDAO.insertInfoReplacement" parameterClass="mesAssetVO">
+		  <selectKey type="post" keyProperty="eReplacedKey" >
+	        SELECT LAST_INSERT_ID() AS eReplacedKey
+		  </selectKey>
+	 	/* mesAssetDAO.insertInfoCondition */
+			INSERT INTO E_REPLACEMENT
+				(
+					eReplacementRequestDate
+					, eReplacementRequester
+					, ePartReplacementReason
+					, ePartReplacementItem
+					, eReplacementDate
+					, eReplacedBy
+					, w_date
+					, w_staff_name
+					, w_staff_key
+					, eReqContent
+					, sSignStatus
+				)
+			VALUES(
+			  #eReplacementRequestDate#
+			 , #eReplacedByOrg#
+			 , #ePartReplacementReason#
+			 , #ePartReplacementItem#
+			 , #eReplacementDate#
+			 , #eReplacedBy#
+			 , NOW()
+			 , #kStaffName#
+			 , #kStaffKey#
+			 , #eReqContent#
+			 , #sSignStatus#
+			 
+			 )
+		 
+		</insert>
+	 		 
+	 <insert id = "mesAssetDAO.insertInfoReplacementItem" parameterClass="mesAssetVO">
+	 /* mesAssetDAO.insertInfoConditionItem */
+			INSERT INTO E_REPLACEMENT_ITEM
+	 			(  
+					E_REPLACEMENT_NUM
+					,ASSET_NUM
+	 			)
+			VALUES(
+			   #eReplacedKey#
+			  ,#eAssetKey#
+			 )
+	</insert>
+	
+	<select id="mesAssetDAO.selectReplacementList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectReplacementList */
+		SELECT 
+		  	eR.E_REPLACEMENT_NUM AS eReplacedKey
+		,  	eRI.E_REPLACEMENT_ITEM_NUM AS eReplacedItemKey
+		,	DATE_FORMAT(eR.eReplacementRequestDate, '%Y-%m-%d') AS eReplacementRequestDate
+		,	eR.eReplacementRequester AS eReplacedByOrg
+		,	eR.ePartReplacementReason  AS ePartReplacementReason
+		,	eR.ePartReplacementItem			AS ePartReplacementItem
+		,	eR.eReqContent		AS eReqContent
+		,	DATE_FORMAT(eR.eReplacementDate, '%Y-%m-%d') AS eReplacementDate
+		,	eR.eReplacedBy
+		,	ASSET_NUMBER AS eAssetNumber 
+		,	getContentLf(ASSET_TYPE_NAME)			AS eAssetType
+		,	getContentLf(ASSET_NAME)				AS eAssetName
+		,	getContentLf(ASSET_MAKER)				AS eAssetMaker
+		,	getContentLf(ASSET_MODEL)				AS eAssetModel
+		,	getContentLf(ASSET_MANUFACTURE_NUMBER)	AS eAssetSNumber
+		,	getContentLf(ASSET_FORM)				AS eAssetForm
+		,	getContentLf(ASSET_INTRODUCER)			AS eAssetIntroducer
+		,	ASSET_DATE								AS eAssetDate
+		,	FORMAT(ASSET_COST, 0)					AS eAssetCost
+		,	ASSET_IMAGE_ID							AS eAssetImage
+		,	ASSET_ETC								AS eAssetEtc
+		,	getNameTxt(aA.ASSET_NUM) AS ePositionName1
+		,	ASSET_DEVICE_TYPE AS eDeviceType
+		,	ASSET_PURPOSE AS eAssetPurpose
+		,	ASSET_NETWORK_TYPE AS eNetworkType
+		,	ASSET_HOST AS eHostName
+		,	ASSET_IP AS eIp
+		,	ASSET_OS AS eOs
+		,	eR.w_staff_key AS kStaffKey
+		,	eR.w_staff_name AS kStaffName
+		,	DATE_FORMAT(eR.w_date, '%Y-%m-%d') AS eAssetWdate
+		,   CASE 
+		        WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		        ELSE eR.sSignStatus
+		   		END AS sSignStatus
+		,	IF(
+					(SELECT COUNT(*) 
+					FROM S_SIGN_ITEM AS ssi 
+					WHERE ssi.SIGN_TABLE_NUM = eR.E_REPLACEMENT_NUM and ssi.SIGN_TABLE_NAME = 'E_REPLACEMENT'
+					AND ssi.SIGN_DECISON = '결재대기'
+					AND ssi.SIGN_STAFF_NUM = #kStaffKey#
+				) > 0, 'Y', 'N') AS eViewGubun
+		 ,	IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		FROM E_REPLACEMENT_ITEM AS eRI
+		LEFT JOIN  E_REPLACEMENT AS eR ON eR.E_REPLACEMENT_NUM =eRI.E_REPLACEMENT_NUM 
+		LEFT JOIN  A_ASSET AS aA ON eRI.ASSET_NUM =aA.ASSET_NUM
+		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = eR.E_REPLACEMENT_NUM  AND	s.SIGN_TABLE_NAME = 'E_REPLACEMENT')
+		WHERE 1=1
+		AND eR.eStatus = '등록'
+		AND DATE_FORMAT(eR.eReplacementRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		<isNotEmpty property="searchTypeSet1">
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+			AND LOWER(ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4">
+			 AND LOWER(ePartReplacementReason) LIKE CONCAT('%',LOWER(#searchTypeSet4#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5">	
+			 AND LOWER(ePartReplacementItem) LIKE CONCAT('%',LOWER(#searchTypeSet5#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">	
+			 AND LOWER(eReqContent) LIKE CONCAT('%',LOWER(#searchTypeSet6#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet7">
+			AND LOWER(ASSET_NUMBER)   LIKE CONCAT('%',LOWER(#searchTypeSet7#),'%')
+		</isNotEmpty>
+	    ORDER BY eR.E_REPLACEMENT_NUM DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	 
+	 
+	<select id="mesAssetDAO.selectReplacementExcelList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectReplacementExcelList */
+		SELECT 
+		  	eR.E_REPLACEMENT_NUM AS eReplacedKey
+		,  	eRI.E_REPLACEMENT_ITEM_NUM AS eReplacedItemKey
+		,	DATE_FORMAT(eR.eReplacementRequestDate, '%Y-%m-%d') AS eReplacementRequestDate
+		,	eR.eReplacementRequester AS eReplacedByOrg
+		,	eR.ePartReplacementReason
+		,	getContentLf(eR.ePartReplacementItem)			AS ePartReplacementItem
+		,	getContentLf(eR.eReqContent)			AS eReqContent
+		,	DATE_FORMAT(eR.eReplacementDate, '%Y-%m-%d') AS eReplacementDate
+		,	eR.eReplacedBy
+		,	getContentLfNew(ASSET_NUMBER,14) AS eAssetNumber 
+		,	getContentLf(ASSET_TYPE_NAME)			AS eAssetType
+		,	getContentLf(ASSET_NAME)				AS eAssetName
+		,	getContentLf(ASSET_MAKER)				AS eAssetMaker
+		,	getContentLf(ASSET_MODEL)				AS eAssetModel
+		,	getContentLf(ASSET_MANUFACTURE_NUMBER)	AS eAssetSNumber
+		,	getContentLf(ASSET_FORM)				AS eAssetForm
+		,	getContentLf(ASSET_INTRODUCER)			AS eAssetIntroducer
+		,	ASSET_DATE								AS eAssetDate
+		,	FORMAT(ASSET_COST, 0)					AS eAssetCost
+		,	ASSET_IMAGE_ID							AS eAssetImage
+		,	ASSET_ETC								AS eAssetEtc
+		,	getNameTxt(aA.ASSET_NUM) AS ePositionName1
+		,	ASSET_DEVICE_TYPE AS eDeviceType
+		,	ASSET_PURPOSE AS eAssetPurpose
+		,	ASSET_NETWORK_TYPE AS eNetworkType
+		,	ASSET_HOST AS eHostName
+		,	ASSET_IP AS eIp
+		,	ASSET_OS AS eOs
+		,	eR.w_staff_key AS kStaffKey
+		,	eR.w_staff_name AS kStaffName
+		,	DATE_FORMAT(eR.w_date, '%Y-%m-%d') AS eAssetWdate
+		,   CASE 
+		        WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		        ELSE eR.sSignStatus
+		   		END AS sSignStatus
+		 ,	IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress 
+		FROM E_REPLACEMENT_ITEM AS eRI
+		LEFT JOIN  E_REPLACEMENT AS eR ON eR.E_REPLACEMENT_NUM =eRI.E_REPLACEMENT_NUM 
+		LEFT JOIN  A_ASSET AS aA ON eRI.ASSET_NUM =aA.ASSET_NUM
+		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = eR.E_REPLACEMENT_NUM  AND	s.SIGN_TABLE_NAME = 'E_REPLACEMENT')
+		WHERE 1=1
+		AND eR.eStatus = '등록'
+		AND DATE_FORMAT(eR.eReplacementRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		<isNotEmpty property="searchTypeSet1">
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+			AND LOWER(ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4">
+			 AND LOWER(ePartReplacementReason) LIKE CONCAT('%',LOWER(#searchTypeSet4#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5">	
+			 AND LOWER(ePartReplacementItem) LIKE CONCAT('%',LOWER(#searchTypeSet5#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">	
+			 AND LOWER(eReqContent) LIKE CONCAT('%',LOWER(#searchTypeSet6#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet7">
+			AND LOWER(ASSET_NUMBER)   LIKE CONCAT('%',LOWER(#searchTypeSet7#),'%')
+		</isNotEmpty>
+	    ORDER BY eReplacementRequestDate DESC, eR.E_REPLACEMENT_NUM DESC
+	    LIMIT 730
+	</select>
+	<select id="mesAssetDAO.selectReplacementCnt" parameterClass="mesAssetVO" resultClass="int">
+		/* mesAssetDAO.selectReplacementCnt */
+		SELECT 
+			COUNT(eRI.E_REPLACEMENT_ITEM_NUM)
+        FROM E_REPLACEMENT_ITEM AS eRI
+		LEFT JOIN  E_REPLACEMENT AS eR ON eR.E_REPLACEMENT_NUM =eRI.E_REPLACEMENT_NUM 
+		LEFT JOIN  A_ASSET AS aA ON eRI.ASSET_NUM =aA.ASSET_NUM
+		WHERE 1=1
+		AND eR.eStatus = '등록'
+		AND DATE_FORMAT(eR.eReplacementRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		<isNotEmpty property="searchTypeSet1">
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+			AND LOWER(ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4">
+			 AND LOWER(ePartReplacementReason) LIKE CONCAT('%',LOWER(#searchTypeSet4#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5">	
+			 AND LOWER(ePartReplacementItem) LIKE CONCAT('%',LOWER(#searchTypeSet5#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">	
+			 AND LOWER(eReqContent) LIKE CONCAT('%',LOWER(#searchTypeSet6#),'%')	
+		</isNotEmpty>
+       <isNotEmpty property="searchTypeSet7">
+			AND LOWER(ASSET_NUMBER)   LIKE CONCAT('%',LOWER(#searchTypeSet7#),'%')
+		</isNotEmpty>
+	</select>
+	
+	<select id="mesAssetDAO.selectReplacementItemList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectReplacementItemList */
+		SELECT 
+		  	eR.E_REPLACEMENT_NUM AS eReplacedKey
+		,  	eRI.E_REPLACEMENT_ITEM_NUM AS eReplacedItemKey
+		,	DATE_FORMAT(eR.eReplacementRequestDate, '%Y-%m-%d') AS eReplacementRequestDate
+		,	eR.eReplacementRequester AS eReplacedByOrg
+		,	eR.ePartReplacementReason
+		,	eR.ePartReplacementItem			AS ePartReplacementItem
+		,	eR.eReqContent			AS eReqContent
+		,	DATE_FORMAT(eR.eReplacementDate, '%Y-%m-%d') AS eReplacementDate
+		,	eR.eReplacedBy
+		,	getContentLfNew(ASSET_NUMBER,8) AS eAssetNumber 
+		,	getContentLf(ASSET_TYPE_NAME)			AS eAssetType
+		,	getContentLf(ASSET_NAME)				AS eAssetName
+		,	getContentLf(ASSET_MAKER)				AS eAssetMaker
+		,	getContentLf(ASSET_MODEL)				AS eAssetModel
+		,	getContentLf(ASSET_MANUFACTURE_NUMBER)	AS eAssetSNumber
+		,	getContentLf(ASSET_FORM)				AS eAssetForm
+		,	getContentLf(ASSET_INTRODUCER)			AS eAssetIntroducer
+		,	ASSET_DATE								AS eAssetDate
+		,	FORMAT(ASSET_COST, 0)					AS eAssetCost
+		,	ASSET_IMAGE_ID							AS eAssetImage
+		,	ASSET_ETC								AS eAssetEtc
+		,	getNameTxt(aA.ASSET_NUM) AS ePositionName1
+		,	ASSET_DEVICE_TYPE AS eDeviceType
+		,	ASSET_PURPOSE AS eAssetPurpose
+		,	ASSET_NETWORK_TYPE AS eNetworkType
+		,	ASSET_HOST AS eHostName
+		,	ASSET_IP AS eIp
+		,	ASSET_OS AS eOs
+		,	eR.w_staff_key AS kStaffKey
+		,	eR.w_staff_name AS kStaffName
+		,	DATE_FORMAT(eR.w_date, '%Y-%m-%d') AS eAssetWdate
+		FROM E_REPLACEMENT_ITEM AS eRI
+		LEFT JOIN  E_REPLACEMENT AS eR ON eR.E_REPLACEMENT_NUM =eRI.E_REPLACEMENT_NUM 
+		LEFT JOIN  A_ASSET AS aA ON eRI.ASSET_NUM =aA.ASSET_NUM
+		WHERE 1=1  AND
+		 eR.E_REPLACEMENT_NUM  = #eReplacedKey#
+	</select>
+	<select id="mesAssetDAO.selectReplacementInfo" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectReplacementInfo */
+		SELECT 
+		  	eR.E_REPLACEMENT_NUM AS eReplacedKey
+		,	DATE_FORMAT(eR.eReplacementRequestDate, '%Y-%m-%d') AS eReplacementRequestDate
+		,	eR.eReplacementRequester AS eReplacedByOrg
+		,	eR.ePartReplacementReason
+		,	eR.ePartReplacementItem			AS ePartReplacementItem
+		,	eR.eReqContent			AS eReqContent
+		,	DATE_FORMAT(eR.eReplacementDate, '%Y-%m-%d') AS eReplacementDate
+		,	eR.eReplacedBy
+		,	eR.w_staff_key AS kStaffKey
+		,   geKeyListTxt(eR.E_REPLACEMENT_NUM) AS eAssetKeyList
+		,	eR.w_staff_key AS kStaffKey
+		,	eR.w_staff_name AS kStaffName
+		,	DATE_FORMAT(eR.w_date, '%Y-%m-%d') AS eAssetWdate
+		,   CASE 
+		        WHEN s.SIGN_PROGRESS = s.SIGN_PROGRESS_CNT THEN '승인'
+		        ELSE eR.sSignStatus
+		   		END AS sSignStatus
+		 ,	IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		FROM   E_REPLACEMENT AS eR  
+		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = eR.E_REPLACEMENT_NUM  AND	s.SIGN_TABLE_NAME = 'E_REPLACEMENT')
+		WHERE 1=1 AND
+		 eR.E_REPLACEMENT_NUM  = #eReplacedKey#
+	</select>
+	
+	<select id="mesAssetDAO.selectConditionPopList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectConditionPopList */
+		SELECT 
+		  eEI.ENTRY_ITEM_NUM AS eEntryExitItemKey
+		, eEI.ENTRY_NUM  AS eEntryExitKey
+		, eEI.ASSET_NUM  AS eAssetKey
+		, DATE_FORMAT(eE.eEntryExitDate, '%Y-%m-%d')  AS eEntryExitDate  
+		, eE.eEntryStaff   
+		, eE.eEntryRequestReason 
+		, eEI.eEntryImporter
+		, DATE_FORMAT(eEI.eEntryImportDate, '%Y-%m-%d') AS eEntryImportDate
+		, eEI.eEntryNote
+		,	getContentLfNew(ASSET_NUMBER,8) AS eAssetNumber 
+		,	getContentLf(ASSET_TYPE_NAME)			AS eAssetType
+		,	getContentLf(ASSET_NAME)				AS eAssetName
+		,	getContentLf(ASSET_MAKER)				AS eAssetMaker
+		,	getContentLf(ASSET_MODEL)				AS eAssetModel
+		,	getContentLf(ASSET_MANUFACTURE_NUMBER)	AS eAssetSNumber
+		,	getContentLf(ASSET_FORM)				AS eAssetForm
+		,	getContentLf(ASSET_INTRODUCER)			AS eAssetIntroducer
+		,	ASSET_DATE								AS eAssetDate
+		,	FORMAT(ASSET_COST, 0)					AS eAssetCost
+		,	ASSET_IMAGE_ID							AS eAssetImage
+		,	ASSET_ETC								AS eAssetEtc
+		,	getNameTxt(aA.ASSET_NUM) AS ePositionName1
+		,	ASSET_DEVICE_TYPE AS eDeviceType
+		,	ASSET_PURPOSE AS eAssetPurpose
+		,	ASSET_NETWORK_TYPE AS eNetworkType
+		,	ASSET_HOST AS eHostName
+		,	ASSET_IP AS eIp
+		,	ASSET_OS AS eOs
+		FROM E_ENTRY_ITEM AS eEI
+		LEFT JOIN  E_ENTRY AS eE ON eE.ENTRY_NUM =eEI.ENTRY_NUM 
+		LEFT JOIN  A_ASSET AS aA ON eEI.ASSET_NUM =aA.ASSET_NUM
+		WHERE 1=1
+		
+		AND DATE_FORMAT(eE.eEntryExitDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		AND eEI.ASSET_NUM = #eAssetKey# AND eE.ENTRY_STATUS != '삭제'
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	 
+	 
+	<select id="mesAssetDAO.selectConditionPopCnt" parameterClass="mesAssetVO" resultClass="int">
+		/* mesAssetDAO.selectConditionPopCnt */
+		SELECT 
+			COUNT(eEI.ENTRY_ITEM_NUM)
+        FROM E_ENTRY_ITEM AS eEI
+		LEFT JOIN  E_ENTRY AS eE ON eE.ENTRY_NUM =eEI.ENTRY_NUM 
+		LEFT JOIN  A_ASSET AS aA ON eEI.ASSET_NUM =aA.ASSET_NUM
+		WHERE 1=1
+			AND DATE_FORMAT(eE.eEntryExitDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		 AND eEI.ASSET_NUM = #eAssetKey# AND eE.ENTRY_STATUS != '삭제'
+       
+	</select>
+	
+	
+	<select id="mesAssetDAO.selectReplacementPopList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectReplacementPopList */
+		SELECT 
+		  	eR.E_REPLACEMENT_NUM AS eReplacedKey
+		,  	eRI.E_REPLACEMENT_ITEM_NUM AS eReplacedItemKey
+		,	DATE_FORMAT(eR.eReplacementRequestDate, '%Y-%m-%d') AS eReplacementRequestDate
+		,	eR.eReplacementRequester AS eReplacedByOrg
+		,	eR.ePartReplacementReason
+		,	getContentLf(eR.ePartReplacementItem)			AS ePartReplacementItem
+		,	getContentLf(eR.eReqContent)			AS eReqContent
+		,	DATE_FORMAT(eR.eReplacementDate, '%Y-%m-%d') AS eReplacementDate
+		,	eR.eReplacedBy
+		,	getContentLfNew(ASSET_NUMBER,14) AS eAssetNumber 
+		,	getContentLf(ASSET_TYPE_NAME)			AS eAssetType
+		,	getContentLf(ASSET_NAME)				AS eAssetName
+		,	getContentLf(ASSET_MAKER)				AS eAssetMaker
+		,	getContentLf(ASSET_MODEL)				AS eAssetModel
+		,	getContentLf(ASSET_MANUFACTURE_NUMBER)	AS eAssetSNumber
+		,	getContentLf(ASSET_FORM)				AS eAssetForm
+		,	getContentLf(ASSET_INTRODUCER)			AS eAssetIntroducer
+		,	ASSET_DATE								AS eAssetDate
+		,	FORMAT(ASSET_COST, 0)					AS eAssetCost
+		,	ASSET_IMAGE_ID							AS eAssetImage
+		,	ASSET_ETC								AS eAssetEtc
+		,	getNameTxt(aA.ASSET_NUM) AS ePositionName1
+		,	ASSET_DEVICE_TYPE AS eDeviceType
+		,	ASSET_PURPOSE AS eAssetPurpose
+		,	ASSET_NETWORK_TYPE AS eNetworkType
+		,	ASSET_HOST AS eHostName
+		,	ASSET_IP AS eIp
+		,	ASSET_OS AS eOs
+		FROM E_REPLACEMENT_ITEM AS eRI
+		LEFT JOIN  E_REPLACEMENT AS eR ON eR.E_REPLACEMENT_NUM =eRI.E_REPLACEMENT_NUM 
+		LEFT JOIN  A_ASSET AS aA ON eRI.ASSET_NUM =aA.ASSET_NUM
+		WHERE 1=1
+		AND eR.eStatus = '등록'
+		AND DATE_FORMAT(eR.eReplacementRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+	    AND eRI.ASSET_NUM = #eAssetKey# 
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	 
+	 
+	<select id="mesAssetDAO.selectReplacementPopCnt" parameterClass="mesAssetVO" resultClass="int">
+		/* mesAssetDAO.selectReplacementPopCnt */
+		SELECT 
+			COUNT(eRI.E_REPLACEMENT_ITEM_NUM)
+        FROM E_REPLACEMENT_ITEM AS eRI
+		LEFT JOIN  E_REPLACEMENT AS eR ON eR.E_REPLACEMENT_NUM =eRI.E_REPLACEMENT_NUM 
+		LEFT JOIN  A_ASSET AS aA ON eRI.ASSET_NUM =aA.ASSET_NUM
+		WHERE 1=1
+		
+		AND DATE_FORMAT(eR.eReplacementRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+        AND eRI.ASSET_NUM = #eAssetKey#
+	</select>
+	
+	
+	
+	<select id="mesAssetDAO.selectMaintancePopList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectMaintancePopList */
+		SELECT 
+			 iis.ASSET_NUM AS eAssetKey,										 
+					eAuthorKey,
+			    eAuthor,
+			    eCreationDate,
+			    eIssueSelect1,
+			    eIssueSelect2,
+			    eIssueSelect3,
+			    eIssueSelect4,
+			    getCateNameTTxt(ii.ISSUE_NUM) AS   eIssueCate,
+			    eIssueType,
+			    eIssueTypeName,
+			    eAssetType,
+			    eAssetTypeName,
+			    eProcessingType,
+			    eProcessingTypeName,
+			    eRequester,
+			    eRequestDate,
+			    eHandler,
+			    eProcessingDate,
+			    eIssueContent,
+			    eIssueStatus,
+			    eActualWorkDate,
+   				eActualWorker
+		FROM I_ISSUE_ASSET AS iis
+			LEFT JOIN I_ISSUE AS ii ON (iis.ISSUE_NUM = ii.ISSUE_NUM)
+		WHERE 1=1
+		AND DATE_FORMAT(ii.eRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND  #topEndDate#
+		 
+	     AND iis.ASSET_NUM = #eAssetKey#
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	 
+	 
+	<select id="mesAssetDAO.selectMaintancePopListCnt" parameterClass="mesAssetVO" resultClass="int">
+		/* mesAssetDAO.selectMaintancePopListCnt */
+		SELECT 
+			 COUNT(iis.ISSUE_NUM)
+	 	FROM I_ISSUE_ASSET AS iis
+			LEFT JOIN I_ISSUE AS ii ON (iis.ISSUE_NUM = ii.ISSUE_NUM)
+		WHERE 1=1
+		 AND DATE_FORMAT(ii.eRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND  #topEndDate#
+	     AND iis.ASSET_NUM = #eAssetKey#
+	</select>
+	
+	
+
+	 <insert id = "mesAssetDAO.mesSoftwareDateInsert" parameterClass="mesAssetVO">
+		 /* mesAssetDAO.mesSoftwareDateInsert */
+			INSERT INTO A_ASSET_SW_LOG
+				(
+				A_ASSET_SW_NUM
+				, eOldExpiryDate
+				, eNewExpiryDate
+				, wDate
+				)
+			VALUES(
+				 	#eSWRegisterKey#
+				 ,  #eOldExpiryDate#
+				 ,	#eNewExpiryDate#
+				 ,	NOW()
+				 )
+	
+	</insert>
+	<update id="mesAssetDAO.mesSoftwareDateUpdate" parameterClass="mesAssetVO" >
+		/* mesAssetDAO.mesSoftwareDateUpdate */
+		UPDATE A_ASSET_SW
+		SET 
+		    asset_end_date = CASE WHEN #eNewExpiryDate# = '' THEN NOW() ELSE #eNewExpiryDate# END
+		WHERE 
+		    asset_sw_key = #eSWRegisterKey#;
+	</update>	
+	<select id="mesAssetDAO.mesSoftwareUpdateList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.mesSoftwareUpdateList */
+		SELECT 
+			 A_ASSET_SW_LOG_NUM AS eSWRegisterLogKey
+			, eOldExpiryDate
+			, eNewExpiryDate
+			, wDate AS eSWRegisterLogWDate
+	 	FROM A_ASSET_SW_LOG
+		WHERE 1=1  AND A_ASSET_SW_NUM = #eSWRegisterKey#
+		AND VIEW_STATUS = 'Y'
+		ORDER BY eNewExpiryDate ASC
+	</select>
+	<update id="mesAssetDAO.mesSoftwareStatusUpdate" parameterClass="mesAssetVO" >
+		/* mesAssetDAO.mesSoftwareStatusUpdate */
+		UPDATE A_ASSET_SW_LOG
+		SET 
+		    VIEW_STATUS = 'N'
+		WHERE 
+		    A_ASSET_SW_LOG_NUM = #eSWRegisterLogKey#;
+	</update>
+	<select id="mesAssetDAO.selectLicenseInfoList" parameterClass="java.util.Map" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectLicenseInfoList */
+		SELECT 
+			asset_sw_key AS eSWRegisterKey,
+		    new_special(asset_product_name) AS eProductName,
+		    new_special(asset_product_ver) AS eVersion,
+		    asset_purchase_date AS ePurchaseDate,
+		    asset_start_date AS eStartDate,
+		    asset_end_date AS eEndDate,
+		    asset_product_qty AS eLicenseQuantity,
+		    new_special(asset_remarks) AS eRemarks,
+		    new_special(asset_manufacturer) AS eManufacturer,
+		    new_special(asset_author) AS eAuthor,
+		    asset_reg_date AS aAssetDate,
+		    <![CDATA[
+		     CASE 
+		        WHEN DATEDIFF(STR_TO_DATE(asset_end_date, '%Y-%m-%d'), NOW()) < 0 THEN '만료'
+		        ELSE CONCAT(DATEDIFF(STR_TO_DATE(asset_end_date, '%Y-%m-%d'), NOW()), '일')
+		    END AS eValidityPeriod
+		    ]]>
+		FROM A_ASSET_SW
+		WHERE 1=1
+		 AND asset_sw_key
+		 <iterate prepend="IN" property="keyList" open="(" close=")" conjunction=","> 
+		 	#keyList[]# 
+		 </iterate>
+        ORDER BY asset_sw_key DESC
+	</select>	
+	
+	<select id="mesAssetDAO.eModelInfoCheck" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.eModelInfoCheck */
+		SELECT 
+			ASSET_NUM AS eAssetKey,
+			getContentLfNew(ASSET_NUMBER,8) AS eAssetNumber,
+			ASSET_STATUS_NAME AS eAssetStatusName,
+			ASSET_STATUS AS eAssetStatus,
+			ASSET_TYPE_NAME AS eAssetTypeName,
+			ASSET_TYPE AS eAssetType,
+			ASSET_NAME AS eAssetName,
+			getNameTxt(ASSET_NUM) AS ePositionName1,
+			ASSET_SELECT1 AS eMaintanceSelect1,
+			ASSET_SELECT2 AS eMaintanceSelect2,
+			ASSET_SELECT3 AS eMaintanceSelect3,
+			ASSET_SELECT4 AS eMaintanceSelect4,
+			CONCAT(getContentLfNew(ASSET_SELECT1, 10),'>',getContentLfNew(ASSET_SELECT2, 10),'>',getContentLfNew(ASSET_SELECT3, 10),'>',getContentLfNew(ASSET_SELECT4, 10)) AS ePositionName1,
+			getContentLfNew(ASSET_MAKER, 10) AS eAssetMaker,
+			ASSET_MODEL AS eAssetModel,
+			getContentLfNew(ASSET_MANUFACTURE_NUMBER,8) AS eAssetSNumber,
+			ASSET_FORM AS aAssetForm,
+			ASSET_INTRODUCER AS aAssetIntroducer,
+			DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') AS eAssetDate,
+			IF(ASSET_COST = '', 0, FORMAT(ASSET_COST, 0)) AS eAssetCost,
+			ASSET_DEVICE_TYPE AS eDeviceType,
+			ASSET_PURPOSE AS eAssetPurpose,
+			ASSET_NETWORK_TYPE AS eNetworkType,
+			ASSET_HOST AS eHostName,
+			ASSET_IP AS eIp,
+			ASSET_OS AS eOs,
+			ASSET_ETC AS eAssetEtc,
+			ASSET_STAFF_NAME AS kStaffName,
+			ASSET_STAFF_NUM AS kStaffKey,
+			DATE_FORMAT(ASSET_WDATE, '%Y-%m-%d')  AS eAssetWdate,
+			ASSET_IMAGE_ID AS eAssetImageId,
+			ASSET_IMAGE_NAME AS eAssetImageName,
+			ASSET_IMAGE_EXT AS eAssetImageExt,
+			ASSET_LIFE AS eLifespan,
+			ASSET_LIFE_TYPE AS eLifeType,
+			ASSET_EOS AS eEosDate,
+			ASSET_EOL AS eEolDate,
+			sSignStatus
+        FROM A_ASSET
+		WHERE 1=1    
+		<isNotEmpty property="eAssetModel">
+			   AND TRIM(LOWER(ASSET_MODEL)) = TRIM(LOWER(#eAssetModel#))
+		</isNotEmpty>
+		
+		ORDER BY ASSET_WDATE DESC
+		LIMIT 1
+	</select>
+	
+	<select id="mesAssetDAO.eAssetSNumberInfoCheck" parameterClass="mesAssetVO" resultClass="int">
+		/* mesAssetDAO.eAssetSNumberInfoCheck */
+		SELECT 
+			COUNT(ASSET_NUM) 
+        FROM A_ASSET
+		WHERE 1=1    
+		<isNotEmpty property="eAssetSNumber">
+			   AND TRIM(LOWER(ASSET_MANUFACTURE_NUMBER)) = TRIM(LOWER(#eAssetSNumber#))
+		</isNotEmpty>
+		<isNotEmpty property="eAssetKey">
+			   AND A_ASSET_NUM != #eAssetKey#
+		</isNotEmpty>
+	</select>
+	
+	<select id="mesAssetDAO.selectMesAssetLicenseList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectMesAssetLicenseList */
+		SELECT 
+		    aal.A_ASSET_NUM AS eAssetKey,
+		    aal.eLicenseQuantity AS eLicenseQuantity,
+			asw.asset_sw_key AS eSWRegisterKey,
+		    new_special(asw.asset_product_name) AS eProductName,
+		    new_special(asw.asset_product_ver) AS eVersion,
+		    asw.asset_purchase_date AS ePurchaseDate,
+		    asw.asset_start_date AS eStartDate,
+		    asw.asset_end_date AS eEndDate,
+		    asw.asset_product_qty AS eLicenseQuantity,
+		    new_special(asw.asset_remarks) AS eRemarks,
+		    new_special(asw.asset_manufacturer) AS eManufacturer,
+		    new_special(asw.asset_author) AS eAuthor,
+		    asw.asset_reg_date AS aAssetDate,
+		    <![CDATA[
+		     CASE 
+		        WHEN DATEDIFF(STR_TO_DATE(asw.asset_end_date, '%Y-%m-%d'), NOW()) < 0 THEN '만료'
+		        ELSE CONCAT(DATEDIFF(STR_TO_DATE(asw.asset_end_date, '%Y-%m-%d'), NOW()), '일')
+		    END AS eValidityPeriod
+		    ]]>
+		FROM A_ASSET_LICENSE AS aal
+		LEFT JOIN A_ASSET_SW AS asw ON aal.eSWRegisterKey = asw.asset_sw_key 
+		WHERE 1=1 AND aal.A_ASSET_NUM = #eAssetKey#
+	</select>
+	
+	<update id = "mesAssetDAO.updateAssetSignStatusTwo" parameterClass="mesAssetVO">
+		/* mesAssetDAO.updateAssetSignStatusTwo */
+		UPDATE A_ASSET 
+		SET			
+			sSignStatus	 = #sSignStatus#
+		WHERE 1=1
+		AND	ASSET_NUM = #eAssetKey#	
+	</update>
+	
+	
+	<delete id = "mesAssetDAO.eDeleteAssetLicenseInfo" parameterClass = "mesAssetVO">
+		/* mesAssetDAO.eDeleteAssetLicenseInfo */
+		DELETE FROM  A_ASSET_LICENSE
+		WHERE  A_ASSET_NUM = #eAssetKey#	
+	</delete>
+	
+	<select id="mesAssetDAO.selectMesAssetAndLicenseInfoList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectMesAssetAndLicenseInfoList */
+		SELECT 
+					ASSET_NUM								AS aAssetKey
+		        ,	getContentLf(ASSET_NUMBER)				AS aAssetNumber
+		        ,	getContentLf(ASSET_STATUS)				AS aAssetStatus
+		        ,	getContentLf(ASSET_TYPE_NAME)			AS aAssetType
+		        ,	getContentLf(ASSET_NAME)				AS aAssetName
+		        ,	getContentLf(ASSET_MAKER)				AS aAssetMaker
+		        ,	getContentLf(ASSET_MODEL)				AS aAssetModel
+		        ,	getContentLf(ASSET_MANUFACTURE_NUMBER)	AS aAssetManufactureNumber
+		        ,	getContentLf(ASSET_FORM)				AS aAssetForm
+		        ,	getContentLf(ASSET_INTRODUCER)			AS aAssetIntroducer
+		        ,	ASSET_DATE								AS aAssetDate
+		        ,	FORMAT(ASSET_COST, 0)					AS aAssetCost
+		        ,	ASSET_IMAGE_ID								AS aAssetImage
+		        ,	ASSET_ETC								AS aAssetEtc
+		        ,	getNameTxt(ASSET_NUM) AS ePositionName1
+		        ,	ASSET_DEVICE_TYPE AS eDeviceType
+				,	ASSET_PURPOSE AS eAssetPurpose
+				,	ASSET_NETWORK_TYPE AS eNetworkType
+				,	ASSET_HOST AS eHostName
+				,	ASSET_IP AS eIp
+				,	ASSET_OS AS eOs
+				,	aasl.eSWRegisterKey
+				,	aasl.eLicenseQuantity
+        FROM A_ASSET_LICENSE AS aasl 
+        LEFT JOIN A_ASSET   AS aas ON(  aas.ASSET_NUM = aasl.A_ASSET_NUM    ) 
+		WHERE 1=1 AND aasl.eSWRegisterKey = #eSWRegisterKey#
+		<isNotEmpty property="searchTypeSet1" >
+			AND LOWER(aas.ASSET_NUMBER) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		
+		<isNotEmpty property="searchTypeSet2" >
+			AND LOWER(aas.ASSET_TYPE) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		
+		<isNotEmpty property="searchTypeSet3" >
+			AND LOWER(aas.ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet3#),'%')
+		</isNotEmpty>
+		
+		<isNotEmpty property="searchTypeSet4" >
+			AND LOWER(aas.ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet4#),'%')
+		</isNotEmpty>
+		
+		<isNotEmpty property="searchTypeSet5" >
+			AND LOWER(aas.ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet5#),'%')
+		</isNotEmpty>
+        ORDER BY aas.ASSET_NUM DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="mesAssetDAO.selectMesAssetAndLicenseInfoListCnt" parameterClass="mesAssetVO" resultClass="int">
+		/* mesAssetDAO.selectMesAssetAndLicenseInfoListCnt */
+		SELECT 
+				COUNT(aasl.A_ASSET_LICENSE_NUM)
+        FROM A_ASSET_LICENSE AS aasl 
+        LEFT JOIN A_ASSET   AS aas ON(  aas.ASSET_NUM = aasl.A_ASSET_NUM    )
+		WHERE 1=1 AND aasl.eSWRegisterKey = #eSWRegisterKey#
+		<isNotEmpty property="searchTypeSet1" >
+			AND LOWER(aas.ASSET_NUMBER) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2" >
+			AND LOWER(aas.ASSET_TYPE) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3" >
+			AND LOWER(aas.ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4" >
+			AND LOWER(aas.ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet4#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5" >
+			AND LOWER(aas.ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet5#),'%')
+		</isNotEmpty>
+		
+	</select>
+	
+	
+	
+	 <insert id = "mesAssetDAO.insertInfoReceiving" parameterClass="mesAssetVO">
+		  <selectKey type="post" keyProperty="eEntryExitKey" >
+	        SELECT LAST_INSERT_ID() AS eEntryExitKey
+		  </selectKey>
+	 	/* mesAssetDAO.insertInfoReceiving */
+			 INSERT INTO E_IMPORT
+			(
+				eEntryImporter, 
+				eEntryImportDate, 
+				eEntryNote, 
+				sSignStatus,
+				w_date,
+	 			w_staff_name,
+	 			w_staff_key
+			)VALUES(
+				#eEntryStaff#, 
+				#eEntryExitDate#, 
+				#eEntryRequestReason#, 
+			    #sSignStatus#,
+				NOW(),
+			    #kStaffName#,
+			    #kStaffKey#
+			);
+
+		</insert>
+	 <insert id = "mesAssetDAO.insertInfoReceivingItem" parameterClass="mesAssetVO">
+		 /* mesAssetDAO.insertInfoReceivingItem */
+			INSERT INTO E_IMPORT_ITEM
+	 			(  
+					IMPORT_NUM
+				,	ASSET_NUM
+				,	eEntryImporter
+				,	eEntryImportDate
+				,	eEntryNote
+				,	sSignStatus
+	 			)
+			VALUES(
+			    #eEntryExitKey#,
+			    #eAssetKey#,
+			  	#eEntryStaff#, 
+				#eEntryExitDate#, 
+				#eEntryRequestReason#, 
+			    #sSignStatus#
+			 )
+			 
+	</insert>
+	 		 
+	<select id="mesAssetDAO.selectReceivingList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectReceivingList */
+		SELECT 
+		   eII.E_IMPORT_ITEM_NUM AS eEntryExitItemKey
+		,  eII.IMPORT_NUM  AS eEntryExitKey
+		,  eII.ASSET_NUM  AS eAssetKey
+		,  eI.eEntryImporter   
+		,  DATE_FORMAT(eII.eEntryImportDate, '%Y-%m-%d') AS eEntryImportDate
+		,  eI.eEntryNote
+		,	getContentLfNew(ASSET_NUMBER,8) AS eAssetNumber 
+		,	getContentLf(ASSET_TYPE_NAME)			AS eAssetType
+		,	getContentLf(ASSET_NAME)				AS eAssetName
+		,	getContentLf(ASSET_MAKER)				AS eAssetMaker
+		,	getContentLf(ASSET_MODEL)				AS eAssetModel
+		,	getContentLf(ASSET_MANUFACTURE_NUMBER)	AS eAssetSNumber
+		,	getContentLf(ASSET_FORM)				AS eAssetForm
+		,	getContentLf(ASSET_INTRODUCER)			AS eAssetIntroducer
+		,	ASSET_DATE								AS eAssetDate
+		,	FORMAT(ASSET_COST, 0)					AS eAssetCost
+		,	ASSET_IMAGE_ID							AS eAssetImage
+		,	ASSET_ETC								AS eAssetEtc
+		,	getNameTxt(aA.ASSET_NUM) AS ePositionName1
+		,	ASSET_DEVICE_TYPE AS eDeviceType
+		,	ASSET_PURPOSE AS eAssetPurpose
+		,	ASSET_NETWORK_TYPE AS eNetworkType
+		,	ASSET_HOST AS eHostName
+		,	ASSET_IP AS eIp
+		,	ASSET_OS AS eOs
+		, 	eI.sSignStatus
+		FROM E_IMPORT_ITEM AS eII
+		LEFT JOIN  E_IMPORT AS eI ON eI.IMPORT_NUM =eII.IMPORT_NUM 
+		LEFT JOIN  A_ASSET AS aA ON eII.ASSET_NUM =aA.ASSET_NUM
+		WHERE 1=1 AND eII.IMPORT_NUM  =#eEntryExitKey#
+	</select>
+	<update id="mesAssetDAO.eDeleteInfoReceiving"    parameterClass="mesAssetVO">
+	/*mesAssetDAO.eDeleteInfoReceiving*/
+			UPDATE E_IMPORT
+			SET  IMPORT_STATUS = '삭제'
+		WHERE
+		    IMPORT_NUM = #eEntryExitKey#
+	</update>
+	
+	
+	<select id="mesAssetDAO.selectReceivingInfoList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectReceivingInfoList */
+		SELECT 
+		   eII.E_IMPORT_ITEM_NUM AS eEntryExitItemKey
+		,  eII.IMPORT_NUM  AS eEntryExitKey
+		,  eII.ASSET_NUM  AS eAssetKey
+		,  eI.eEntryImporter   
+		,  DATE_FORMAT(eII.eEntryImportDate, '%Y-%m-%d') AS eEntryImportDate
+		,  eI.eEntryNote
+		,	getContentLfNew(ASSET_NUMBER,8) AS eAssetNumber 
+		,	getContentLf(ASSET_TYPE_NAME)			AS eAssetType
+		,	getContentLf(ASSET_NAME)				AS eAssetName
+		,	getContentLf(ASSET_MAKER)				AS eAssetMaker
+		,	getContentLf(ASSET_MODEL)				AS eAssetModel
+		,	getContentLf(ASSET_MANUFACTURE_NUMBER)	AS eAssetSNumber
+		,	getContentLf(ASSET_FORM)				AS eAssetForm
+		,	getContentLf(ASSET_INTRODUCER)			AS eAssetIntroducer
+		,	ASSET_DATE								AS eAssetDate
+		,	FORMAT(ASSET_COST, 0)					AS eAssetCost
+		,	ASSET_IMAGE_ID							AS eAssetImage
+		,	ASSET_ETC								AS eAssetEtc
+		,	getNameTxt(aA.ASSET_NUM) AS ePositionName1
+		,	ASSET_DEVICE_TYPE AS eDeviceType
+		,	ASSET_PURPOSE AS eAssetPurpose
+		,	ASSET_NETWORK_TYPE AS eNetworkType
+		,	ASSET_HOST AS eHostName
+		,	ASSET_IP AS eIp
+		,	ASSET_OS AS eOs
+		, 	eI.sSignStatus
+		FROM E_IMPORT_ITEM AS eII
+		LEFT JOIN  E_IMPORT AS eI ON eI.IMPORT_NUM =eII.IMPORT_NUM 
+		LEFT JOIN  A_ASSET AS aA ON eII.ASSET_NUM =aA.ASSET_NUM
+		WHERE 1=1   AND eI.IMPORT_STATUS != '삭제'
+		AND DATE_FORMAT(eII.eEntryImportDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		<isNotEmpty property="searchTypeSet1">
+			AND LOWER(ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+			 AND LOWER(ASSET_HOST) LIKE CONCAT('%',LOWER(#ASSET_MAKER#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4">
+			 AND LOWER(ASSET_IP) LIKE CONCAT('%',LOWER(#ASSET_MAKER#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5">	
+			 AND LOWER(ASSET_OS) LIKE CONCAT('%',LOWER(#ASSET_MAKER#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">	
+				
+		</isNotEmpty>
+	 
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="mesAssetDAO.selectReceivingInfoListCnt" parameterClass="mesAssetVO" resultClass="int">
+		/* mesAssetDAO.selectReceivingInfoListCnt */
+		SELECT 
+		  COUNT(eII.E_IMPORT_ITEM_NUM)
+		FROM E_IMPORT_ITEM AS eII
+		LEFT JOIN  E_IMPORT AS eI ON eI.IMPORT_NUM =eII.IMPORT_NUM 
+		LEFT JOIN  A_ASSET AS aA ON eII.ASSET_NUM =aA.ASSET_NUM
+		WHERE 1=1   AND eI.IMPORT_STATUS != '삭제'
+		AND DATE_FORMAT(eII.eEntryImportDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		<isNotEmpty property="searchTypeSet1">
+			AND LOWER(ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+			 AND LOWER(ASSET_HOST) LIKE CONCAT('%',LOWER(#ASSET_MAKER#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4">
+			 AND LOWER(ASSET_IP) LIKE CONCAT('%',LOWER(#ASSET_MAKER#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5">	
+			 AND LOWER(ASSET_OS) LIKE CONCAT('%',LOWER(#ASSET_MAKER#),'%')	
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">	
+				
+		</isNotEmpty>
+	 
+	</select>
+	
+		 
+	<delete id="mesAssetDAO.eDeleteImportItem"    parameterClass="mesAssetVO">
+		/*mesAssetDAO.eDeleteImportItem*/
+		DELETE FROM E_IMPORT_ITEM WHERE IMPORT_NUM = #eEntryExitKey#
+	
+	</delete>
+		
+	<update id="mesAssetDAO.updateInfoImport"    parameterClass="mesAssetVO">
+		/*mesAssetDAO.updateInfoImport*/
+		UPDATE E_IMPORT
+		SET
+		    eEntryImportDate = #eEntryExitDate#,
+		    eEntryImporter = #eEntryStaff#,
+		    eEntryNote = #eEntryRequestReason#,
+		    w_date = NOW(),
+		    w_staff_name = #kStaffName#,
+		    w_staff_key = #kStaffKey#,
+		    sSignStatus = #sSignStatus#
+		WHERE 
+		    IMPORT_NUM = #eEntryExitKey#;
+	</update>
+	
+	<select  id="mesAssetDAO.eAssetCountList"    parameterClass="mesAssetVO" resultClass="mesAssetVO">
+	 /* mesAssetDAO.eAssetCountList */
+		SELECT
+		G.GC_ETC AS aAssetType,
+		    CONCAT(
+		        G.GC_ETC,
+		        '-',
+		        DATE_FORMAT(NOW(), '%y%m%d'),
+		        '-',
+		        LPAD(IFNULL(MAX(IFNULL(A.ASSET_TYPE_MAX,0)) + 1, 0), 4, '0')
+		    ) AS aAssetTypeMax
+		FROM
+		    GC G
+		LEFT JOIN
+		    (
+		        SELECT ASSET_TYPE, ASSET_TYPE_MAX
+		        FROM A_ASSET
+		        WHERE DATE_FORMAT(ASSET_DATE, '%y%m%d') = DATE_FORMAT(NOW(), '%y%m%d')
+		    ) A ON A.ASSET_TYPE = G.GC_NUM
+		    
+		    WHERE G.GU_NUM =  36
+		GROUP BY
+            G.GC_ETC;
+	</select>
+	<select id="mesAssetDAO.eAssetNumberCheck" parameterClass="mesAssetVO" resultClass="int">
+		/* mesAssetDAO.eAssetNumberCheck */
+		SELECT 
+			COUNT(ASSET_NUM) 
+        FROM A_ASSET
+		WHERE 1=1    
+		<isNotEmpty property="eAssetSNumber">
+			   AND TRIM(LOWER(ASSET_NUMBER)) = TRIM(LOWER(#eAssetSNumber#))
+		</isNotEmpty>
+		<isNotEmpty property="eAssetKey">
+			   AND A_ASSET_NUM != #eAssetKey#
+		</isNotEmpty>
+	</select>
+	
+	
+	 <update id = "mesAssetDAO.deleteInfoReplacement" parameterClass="mesAssetVO">
+	 	/* mesAssetDAO.deleteInfoReplacement */
+			UPDATE E_REPLACEMENT SET  
+			 eStatus = '삭제'
+			 WHERE E_REPLACEMENT_NUM = #eReplacedKey#
+	</update>
+	
+	 <update id = "mesAssetDAO.updateInfoReplacement" parameterClass="mesAssetVO">
+	 	/* mesAssetDAO.updateInfoReplacement */
+		UPDATE E_REPLACEMENT SET  
+			eReplacementRequestDate = #eReplacementRequestDate#
+			, eReplacementRequester = #eReplacedByOrg#
+			, ePartReplacementReason =#ePartReplacementReason#
+			, ePartReplacementItem =#ePartReplacementItem#
+			, eReqContent =#eReqContent#
+			, eReplacementDate =#eReplacementDate#
+			, eReplacedBy =#eReplacedBy# 
+			, w_date =NOW()
+			, w_staff_name =#kStaffName# 
+			, w_staff_key = #kStaffKey#
+			, sSignStatus	 = #sSignStatus#
+		 WHERE E_REPLACEMENT_NUM = #eReplacedKey#
+	</update>
+	<delete id = "mesAssetDAO.deleteInfoReplacementItem" parameterClass="mesAssetVO">
+		/*mesAssetDAO.deleteInfoReplacementItem*/
+		DELETE FROM E_REPLACEMENT_ITEM WHERE E_REPLACEMENT_NUM =  #eReplacedKey#
+	</delete>
+	
+	<select id="mesAssetDAO.eMainAssetMakerInfoList" parameterClass="mesAssetVO"  resultClass="mesAssetVO">
+		/*mesAssetDAO.eMainAssetMakerInfoList*/
+		 WITH dateTemplate AS (
+	         SELECT
+	            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
+	         FROM 
+	            e_tmpyear, e_month, e_date 
+	         WHERE 1=1  
+	         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN #topStartDate# AND #topEndDate#
+	         ORDER BY e_year, e_month, e_date
+	      ) SELECT 
+         	d.eDate				AS aAssetDate
+      	,   ASSET_MAKER         AS aAssetMaker
+        ,   COUNT(A.ASSET_NUM) AS aAssetCost
+      FROM dateTemplate d
+        LEFT JOIN A_ASSET A ON (DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') = d.eDate)
+        WHERE   A.ASSET_MAKER IS NOT NULL 
+	    AND A.ASSET_MAKER != '' 
+	    AND A.ASSET_DEL_STATUS != '삭제'
+        GROUP BY A.ASSET_MAKER
+        ORDER BY d.eDate ASC;
+     </select>
+	
+	<select id="mesAssetDAO.eMainAssetTypeInfoList" parameterClass="mesAssetVO"  resultClass="mesAssetVO">
+		/*mesAssetDAO.eMainAssetTypeInfoList*/
+		 WITH dateTemplate AS (
+	         SELECT
+	            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
+	         FROM 
+	            e_tmpyear, e_month, e_date 
+	         WHERE 1=1  
+	         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN #topStartDate# AND #topEndDate#
+	         ORDER BY e_year, e_month, e_date
+	      ) SELECT 
+         	d.eDate				AS aAssetDate
+      	,   ASSET_TYPE_NAME         AS aAssetType
+        ,   COUNT(A.ASSET_NUM) AS aAssetCost
+      FROM dateTemplate d
+        LEFT JOIN A_ASSET A ON (DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') = d.eDate)
+        WHERE   A.ASSET_TYPE_NAME IS NOT NULL 
+	    AND A.ASSET_TYPE_NAME != '' 
+	    AND A.ASSET_DEL_STATUS != '삭제'
+        GROUP BY A.ASSET_TYPE_NAME
+        ORDER BY d.eDate ASC;
+     </select>
+		
+	 <update id = "mesAssetDAO.updateProcessAssetInfo" >
+	 	/* mesAssetDAO.updateProcessAssetInfo */
+			 <![CDATA[
+			UPDATE A_ASSET
+			SET ASSET_LIFE_TYPE = CASE
+			    WHEN ASSET_LIFE IS NULL THEN '일반장비'
+			    WHEN CURDATE() >= DATE_ADD(ASSET_DATE, INTERVAL ASSET_LIFE YEAR) THEN '노후장비'
+			    ELSE '일반장비'
+			END;
+			  ]]>
+				
+	</update>
+	
+	<select id="mesAssetDAO.mainAssetEosList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.mainAssetEosList */
+		  <![CDATA[
+		SELECT 
+			ASSET_NUM AS eAssetKey,
+			getContentLfNew(ASSET_NUMBER,20) AS eAssetNumber,
+			ASSET_STATUS_NAME AS eAssetStatusName,
+			ASSET_STATUS AS eAssetStatus,
+			ASSET_TYPE_NAME AS eAssetTypeName,
+			ASSET_TYPE AS eAssetType,
+			getContentLfNew(ASSET_NAME,14) AS eAssetName,
+			getNameTxt(ASSET_NUM) AS ePositionName1,
+			getContentLfNew(ASSET_MAKER, 14) AS eAssetMaker,
+			getContentLfNew(ASSET_MODEL, 14) AS eAssetModel,
+			getContentLfNew(ASSET_MANUFACTURE_NUMBER,20) AS eAssetSNumber,
+			ASSET_FORM AS aAssetForm,
+			ASSET_INTRODUCER AS aAssetIntroducer,
+			IF(ASSET_COST = '', 0, FORMAT(ASSET_COST, 0)) AS eAssetCost,
+			ASSET_DEVICE_TYPE AS eDeviceType,
+			ASSET_PURPOSE AS eAssetPurpose,
+			ASSET_NETWORK_TYPE AS eNetworkType,
+			ASSET_HOST AS eHostName,
+			ASSET_IP AS eIp,
+			ASSET_OS AS eOs,
+			ASSET_ETC AS eAssetEtc,
+			ASSET_STAFF_NAME AS kStaffName,
+			ASSET_STAFF_NUM AS kStaffKey,
+			DATE_FORMAT(ASSET_WDATE, '%y-%m-%d')  AS eAssetWdate,
+			ASSET_IMAGE_ID AS eAssetImageId,
+			ASSET_IMAGE_NAME AS eAssetImageName,
+			ASSET_IMAGE_EXT AS eAssetImageExt,
+			ASSET_LIFE AS eLifespan,
+			ASSET_LIFE_TYPE AS eLifeType,
+			DATE_FORMAT(ASSET_EOS, '%y-%m-%d') AS eEosDate,
+			DATE_FORMAT(ASSET_EOL, '%y-%m-%d') AS eEolDate,
+			  CASE 
+			        WHEN ASSET_EOS < CURDATE() THEN '만료'
+			        ELSE CONCAT(DATEDIFF(ASSET_EOS, CURDATE()), '일')
+			    END AS searchTypeSet1, 
+			    CASE 
+			        WHEN ASSET_EOL < CURDATE() THEN '만료'
+			        ELSE CONCAT(DATEDIFF(ASSET_EOL, CURDATE()), '일')
+			    END AS searchTypeSet2    
+		FROM A_ASSET AS A 
+		 
+		WHERE 1=1 AND ASSET_DEL_STATUS  = '사용'
+	  
+	    AND ASSET_EOS >= CURDATE()  
+        AND ASSET_EOS <= DATE_ADD(CURDATE(), INTERVAL 5 YEAR)
+        GROUP BY ASSET_MODEL
+        ORDER BY  DATEDIFF(ASSET_EOS, CURDATE()) ASC
+		LIMIT 10  ]]>
+	</select>
+	
+	<select id="mesAssetDAO.mainAssetEolList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.mainAssetEolList */
+			<![CDATA[
+		SELECT 
+			ASSET_NUM AS eAssetKey,
+			getContentLfNew(ASSET_NUMBER,14) AS eAssetNumber,
+			ASSET_STATUS_NAME AS eAssetStatusName,
+			ASSET_STATUS AS eAssetStatus,
+			ASSET_TYPE_NAME AS eAssetTypeName,
+			ASSET_TYPE AS eAssetType,
+			getContentLfNew(ASSET_NAME,14) AS eAssetName,
+			getNameTxt(ASSET_NUM) AS ePositionName1,
+			getContentLfNew(ASSET_MAKER, 14) AS eAssetMaker,
+			getContentLfNew(ASSET_MODEL, 14) AS eAssetModel,
+			getContentLfNew(ASSET_MANUFACTURE_NUMBER,14) AS eAssetSNumber,
+			ASSET_FORM AS aAssetForm,
+			ASSET_INTRODUCER AS aAssetIntroducer,
+			DATE_FORMAT(ASSET_DATE, '%y-%m-%d') AS eAssetDate,
+			IF(ASSET_COST = '', 0, FORMAT(ASSET_COST, 0)) AS eAssetCost,
+			ASSET_DEVICE_TYPE AS eDeviceType,
+			ASSET_PURPOSE AS eAssetPurpose,
+			ASSET_NETWORK_TYPE AS eNetworkType,
+			ASSET_HOST AS eHostName,
+			ASSET_IP AS eIp,
+			ASSET_OS AS eOs,
+			ASSET_ETC AS eAssetEtc,
+			ASSET_STAFF_NAME AS kStaffName,
+			ASSET_STAFF_NUM AS kStaffKey,
+			ASSET_IMAGE_ID AS eAssetImageId,
+			ASSET_IMAGE_NAME AS eAssetImageName,
+			ASSET_IMAGE_EXT AS eAssetImageExt,
+			ASSET_LIFE AS eLifespan,
+			ASSET_LIFE_TYPE AS eLifeType,
+			DATE_FORMAT(ASSET_EOS, '%y-%m-%d') AS eEosDate,
+			DATE_FORMAT(ASSET_EOL, '%y-%m-%d') AS eEolDate,
+			 
+			  CASE 
+			        WHEN ASSET_EOS < CURDATE() THEN '만료'
+			        ELSE CONCAT(DATEDIFF(ASSET_EOS, CURDATE()), '일')
+			    END AS searchTypeSet1,  
+			    CASE 
+			        WHEN ASSET_EOL < CURDATE() THEN '만료'
+			        ELSE CONCAT(DATEDIFF(ASSET_EOL, CURDATE()), '일')
+			    END AS searchTypeSet2     
+		FROM A_ASSET AS A 
+		WHERE 1=1 AND ASSET_DEL_STATUS  = '사용'
+	  
+		    AND ASSET_EOL >= CURDATE()  
+	        AND ASSET_EOL <= DATE_ADD(CURDATE(), INTERVAL 5 YEAR)
+          
+	    GROUP BY ASSET_MODEL
+        ORDER BY   DATEDIFF(ASSET_EOL, CURDATE()) ASC
+		LIMIT 10  ]]>
+	</select>
+	
+	<select id="mesAssetDAO.mainSoftwareList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.mainSoftwareList*/
+		<![CDATA[
+		SELECT 
+		    aas.asset_sw_key AS eSWRegisterKey,
+		    getContentLfNew(new_special(aas.asset_product_name),14) AS eProductName,
+		    new_special(aas.asset_product_ver) AS eVersion,
+		    DATE_FORMAT(aas.asset_purchase_date, '%y-%m-%d')  AS ePurchaseDate,
+		    DATE_FORMAT(aas.asset_start_date, '%y-%m-%d')  AS eStartDate,
+		    DATE_FORMAT(aas.asset_end_date, '%y-%m-%d') AS eEndDate,
+		    CASE 
+		        WHEN aas.asset_end_date < CURDATE() THEN '만료'
+		        ELSE CONCAT(DATEDIFF(aas.asset_end_date, CURDATE()), '일')
+		    END AS searchTypeSet1
+		FROM A_ASSET_SW AS aas
+		WHERE aas.asset_end_date >= CURDATE()   
+		  AND aas.asset_end_date <= DATE_ADD(CURDATE(), INTERVAL 5 YEAR)
+		ORDER BY DATEDIFF(aas.asset_end_date, CURDATE()) ASC
+		LIMIT 10;
+		]]>
+	</select>
+	
+	<select id="mesAssetDAO.mainAssetLifeStatusList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.mainAssetLifeStatusList */
+		SELECT 
+			COUNT(ASSET_NUM) AS aAssetCost,
+			ASSET_TYPE_NAME AS eAssetTypeName,
+			ASSET_TYPE AS eAssetType,
+			SUM(CASE WHEN A.ASSET_LIFE_TYPE = '노후장비' THEN 1 ELSE 0 END) AS eCost
+		FROM A_ASSET AS A
+		WHERE A.ASSET_DEL_STATUS = '사용'
+		  	AND A.ASSET_TYPE_NAME IS NOT NULL
+  			AND A.ASSET_TYPE_NAME != ''
+		GROUP BY A.ASSET_TYPE
+		LIMIT 10  
+	</select>
+	
+	<select id="mesAssetDAO.mainAssetLifeStatusNewList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.mainAssetLifeStatusNewList */
+		SELECT 
+			ASSET_NAME AS aAssetName,
+			getContentLfNew(ASSET_MODEL,14) AS aAssetModel,
+			ASSET_TYPE_NAME AS eAssetTypeName,
+			ASSET_TYPE AS eAssetType,
+			ASSET_LIFE AS eLifespan,
+			DATE_FORMAT(DATE_ADD(ASSET_DATE, INTERVAL ASSET_LIFE YEAR), '%y-%m-%d') AS aAssetRequestDate,
+			DATE_FORMAT(ASSET_DATE, '%y-%m-%d') AS eAssetDate,
+			CASE 
+			        WHEN CURDATE() >= DATE_ADD(ASSET_DATE, INTERVAL ASSET_LIFE YEAR) THEN '노후장비'
+			        ELSE '일반장비'
+    		END AS eLifeType
+		FROM A_ASSET AS A
+		WHERE A.ASSET_DEL_STATUS = '사용'
+		 AND A.ASSET_LIFE IS NOT NULL
+  		 AND A.ASSET_LIFE != ''
+  		 AND DATE_FORMAT(DATE_ADD(ASSET_DATE, INTERVAL ASSET_LIFE YEAR), '%Y-%m-%d')  BETWEEN #topStartDate# AND #topEndDate#
+		ORDER BY DATE_ADD(ASSET_DATE, INTERVAL ASSET_LIFE YEAR) ASC 
+		LIMIT 10  
+	</select>
+	
+	<update id = "mesAssetDAO.updateSoftwareStatus" parameterClass="mesAssetVO">
+		/* mesAssetDAO.updateSoftwareStatus */
+		UPDATE A_ASSET_SW 
+		SET			
+			eStatus	 = #eStatus#
+		WHERE 1=1
+		AND	asset_sw_key = #eSWRegisterKey#	
+	</update>
+ 	<update id = "mesAssetDAO.updateConditionStatus" parameterClass="mesAssetVO">
+		/* mesAssetDAO.updateConditionStatus */
+		UPDATE E_ENTRY 
+		SET			
+			sSignStatus	 = #eStatus#
+		WHERE 1=1
+		AND	ENTRY_NUM = #eEntryExitKey#	
+	</update>
+	 
+	<select id="mesAssetDAO.selectConditionStatusInfo" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectConditionStatusInfo */
+		SELECT 
+		  eE.ENTRY_NUM  AS eEntryExitKey
+		, DATE_FORMAT(eE.eEntryExitDate, '%y-%m-%d')  AS eEntryExitDate  
+		, eE.eEntryStaff   
+		, eE.eEntryRequestReason 
+ 
+		, eE.sSignStatus  AS eStatus
+		, IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		,  eE.w_staff_key AS kStaffKey
+		,  eE.w_staff_name AS kStaffName
+		,  DATE_FORMAT(eE.w_date, '%Y-%m-%d') as eAssetWdate
+		FROM E_ENTRY AS eE  
+		LEFT JOIN S_SIGN AS s ON(s.SIGN_TABLE_NUM = eE.ENTRY_NUM  and s.SIGN_TABLE_NAME = 'E_ENTRY')
+		WHERE 1=1  AND eE.ENTRY_NUM =#eEntryExitKey# 
+		LIMIT 1
+	</select>
+	 <update id = "mesAssetDAO.updateReplacementStatus" parameterClass="mesAssetVO">
+		/* mesAssetDAO.updateReplacementStatus */
+		UPDATE E_REPLACEMENT 
+		SET			
+			sSignStatus	 = #sSignStatus#
+		WHERE 1=1
+		AND	E_REPLACEMENT_NUM = #eReplacedKey#	
+	</update>
+	
+	<select id="mesAssetDAO.accessInfoList" parameterClass="mesAssetVO"  resultClass="mesAssetVO">
+		/* mesAssetDAO.accessInfoList */
+		SELECT 
+			k_menu_key AS searchTypeSet1,
+			IFNULL(k_menu_auth_flag, 'F') AS searchTypeSet2
+		FROM k_menu_auth kma 
+			WHERE kma.k_staff_key  = #kStaffKey# AND 
+			k_menu_key IN (766, 763, 758, 746, 764, 742, 755, 754, 756, 767)
+	</select>
+	
+	<insert id="mesAssetDAO.eInsertFileInfo" parameterClass="mesAssetVO">
+		/* mesAssetDAO.eInsertFileInfo */
+		INSERT INTO A_ASSET_SW_FILE (
+		  SWKey, 
+		  eFileRowId, 
+		  eFileRowName, 
+		  eFileRowIndex
+		)
+		VALUES (
+		  #eSWRegisterKey#, 
+		  #eFileRowId#, 
+		  #eFileRowName#, 
+		  #eFileRowIndex#
+		);
+	</insert>
+	
+	<select id="mesAssetDAO.eSelectFileInfoList" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.eSelectFileInfoList */
+	 	SELECT 
+		  SW_FILE_NUM as eFileId, 
+		  eFileRowId, 
+		  eFileRowName, 
+		  eFileRowIndex
+		FROM A_ASSET_SW_FILE
+		WHERE SWKey = #eSWRegisterKey#
+	</select>
+	
+	<delete id="mesAssetDAO.eFileInfoDelete" parameterClass="mesAssetVO">
+		/* mesAssetDAO.eFileInfoDelete */
+		DELETE FROM A_ASSET_SW_FILE WHERE SWKey = #eSWRegisterKey#
+	</delete>
+	
+	<select id="mesAssetDAO.selectConditionDate" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectConditionDate */
+		SELECT w_date AS aAssetDate
+		FROM E_ENTRY
+		WHERE ENTRY_NUM = #eEntryExitKey#
+	</select>
+	
+	
+</sqlMap>
