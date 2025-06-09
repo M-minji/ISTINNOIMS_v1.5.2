@@ -613,7 +613,7 @@
 						</td>
 				</tr>
 				<tr>
-					<th>요청사유</th>
+					<th>반출사유</th>
 					<td colspan="1"> 
 						<input type="text" name="eEntryRequestReason" id="eEntryRequestReason" style="width:95%; text-align:left;" maxLength="50" value="${assetInfo.eEntryRequestReason }"/>
 					</td>

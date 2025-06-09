@@ -244,7 +244,7 @@ function samePassword(){
 					<table>
 						<tbody>
 							<tr>
-								<th scope="row">직급*</th>
+								<th scope="row"><span style="color: red">* </span>직 급</th>
 								<td><select name="kClassKey" style="width: 150px;">
 										<option value="" selected>직급선택</option>
 										<c:forEach var="item" items="${ClassNameList}">
@@ -256,7 +256,7 @@ function samePassword(){
 								</td>
 							</tr>
 							<tr>
-								<th scope="row">부서*</th>
+								<th scope="row"><span style="color: red">* </span>부 서</th>
 								<td><select name="kPositionKey" style="width: 150px;">
 										<option value="" selected>부서선택</option>
 										<c:forEach var="item" items="${positionList}">
@@ -268,16 +268,16 @@ function samePassword(){
 								</td>
 							</tr>
 							<tr>
-								<th scope="row">아이디*</th>
+								<th scope="row"><span style="color: red">* </span>아이디</th>
 								<td><input type="text" id="kStaffId" name="kStaffId" maxLength="20" style="width: 150px;" onkeydown="againCheckStaffId()" />&nbsp; 
 									<a class="form_btn bg" onclick="javascript:checkStaffId()">확인</a></td>
 							</tr>
 							<tr>
-								<th scope="row">이름*</th>
+								<th scope="row"><span style="color: red">* </span>이 름</th>
 								<td><input type="text" name="kStaffName" maxLength="50" style="width: 150px;" /></td>
 							</tr>
 							<tr>
-								<th scope="row">비밀번호*</th>
+								<th scope="row"><span style="color: red">* </span>비밀번호</th>
 								<td>
 			<!-- 						<input type="password" name="kStaffPassword" maxLength="10" style="width: 150px;" /> -->
 									<input type="password" id="kStaffPassword" name="kStaffPassword" maxlength="20" style="width: 150px; vertical-align: middle;" onblur="passwordResultCheck();" />
@@ -285,7 +285,7 @@ function samePassword(){
 								</td>
 							</tr>
 							<tr>
-								<th scope="row">비밀번호 확인*</th>
+								<th scope="row"><span style="color: red">* </span>비밀번호 확인</th>
 								<td>
 			<!-- 						<input type="password" name="kStaffPassword2" maxLength="10" style="width: 150px;" /> -->
 									<input type="password" id="kStaffPassword2" name="kStaffPassword2" maxlength="20" style="width: 150px;" onblur="samePassword();" />
@@ -308,11 +308,11 @@ function samePassword(){
 									</label>
 							</tr>
 							<tr>
-								<th scope="row">이메일</th>
+								<th scope="row">E-Mail</th>
 								<td><input type="text" name="kStaffEmail" maxLength="100" style="width: 300px;" /></td>
 							</tr>
 							<tr>
-								<th scope="row">주소</th>
+								<th scope="row">주 소</th>
 								<td><input type="text" name="kStaffPost1" id="kStaffPost1" placeholder="우편번호" maxlength="5"> <a class="form_btn bg ml5" href="#" onclick="sample6_execDaumPostcode()"> 우편번호 찾기 </a><br>
 									<input type="text" name="kStaffAddress1" id="kStaffAddress1" placeholder="주소" style="width: 300px; margin-top: 5px;" />
 									<input type="text" name="kStaffAddress2" id="kStaffAddress2" placeholder="상세주소" style="width: 250px; margin-top: 5px;" maxlength="100" />
@@ -325,7 +325,7 @@ function samePassword(){
 									<input type="text" name="kStaffTelephone3" maxLength="4" onkeypress="onlyNumber();" style="ime-mode: disabled; width: 50px;" /></td>
 							</tr>
 							<tr>
-								<th scope="row">핸 드 폰</th>
+								<th scope="row">휴대전화</th>
 								<td><input type="text" name="kStaffMobile1" maxLength="3" onkeypress="onlyNumber();" style="ime-mode: disabled; width: 50px; vertical-align: middle;" /> - 
 									<input type="text" name="kStaffMobile2" maxLength="4" onkeypress="onlyNumber();" style="ime-mode: disabled; width: 50px;" /> - 
 									<input type="text" name="kStaffMobile3" maxLength="4" onkeypress="onlyNumber();" style="ime-mode: disabled; width: 50px;" /></td>

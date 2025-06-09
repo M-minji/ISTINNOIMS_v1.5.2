@@ -562,7 +562,7 @@
 					</td>
 				</tr>
 				<tr>
-					<th>점검일자*</th>
+					<th>점검일자</th>
 					<td colspan="3">${selInfo.eInspectionDate}
 						<input type="hidden" name="eInspectionDate" id="eInspectionDate" style="width:120px; text-align:center;" class="inp_color"   value="${selInfo.eInspectionDate}"  readonly="readonly"/>
 					</td>

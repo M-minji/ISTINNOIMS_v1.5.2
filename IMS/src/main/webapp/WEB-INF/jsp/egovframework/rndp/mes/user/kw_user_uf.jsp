@@ -338,7 +338,7 @@ function autChange(obj){
 				<tr>
 					<th>I D</th>
 					<td>${mesUserInfo.mesUserId}</td>
-					<th>이름</th>
+					<th>이 름</th>
 					<td><input type="text" name="mesUserName" maxLength="20" value="${mesUserInfo.mesUserName }" /></td>
 				</tr>
 				<tr>
@@ -378,7 +378,7 @@ function autChange(obj){
 					<td><input type="text" name="mesUserEmail" maxLength="100" value="${mesUserInfo.mesUserEmail}"/></td>
 				</tr>
 				<tr>
-					<th>주소</th>
+					<th>주 소</th>
             		<td colspan="3">
 						<input type="text" style='width:30% !important;' name="mesUserPost1" id="mesUserPost1" placeholder="우편번호" maxlength="5" value="${mesUserInfo.mesUserPost1}">
 						<a class="form_btn bg" onclick="sample6_execDaumPostcode()"> 
@@ -398,7 +398,7 @@ function autChange(obj){
 							style="ime-mode: disabled;width:15% !important;"  value="${mesUserInfo.mesUserTelephone3}"/></td>
 				</tr>
 				<tr>
-					<th scope="row">핸 드 폰</th>
+					<th scope="row">휴대전화</th>
 					<td colspan="3"><input type="text" name="mesUserMobile1" maxLength="3" onkeypress="onlyNumber();"
 							style="ime-mode: disabled;width:15% !important;" value="${mesUserInfo.mesUserMobile1}"/> - 
 						<input type="text" name="mesUserMobile2" maxLength="4" onkeypress="onlyNumber();"
@@ -436,7 +436,7 @@ function autChange(obj){
 					</td>
 				</tr>	
 				<tr>
-					<th>부서</th>
+					<th>부 서</th>
 					<td>
 						<select name="kPositionKey">
 							<c:forEach var="positionList" items="${positionList}">

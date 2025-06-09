@@ -69,33 +69,36 @@ function insert_reset()
 var bbbb = true;
 function insert_go()
 {
-	with (document.writeform)
-	{
-		/* 
-		if (kStaffNum.value == "")
-		{
-			alert("사원번호를 입력하세요.");
-			kStaffNum.focus();
-			return;
-		}
-		 */
-		if (kStaffId.value == "")
-		{
-			alert("아이디를 입력하세요.");
-			kStaffId.focus();
-			return;
-		}
-		if (kStaffName.value == "")
-		{
-			alert("이름을 입력하세요.");
-			kStaffName.focus();
-			return;
-		}
-		
-		submit();		
-		
-	}
-	
+    with (document.writeform)
+    {
+        if (kStaffId.value == "") {
+            alert("아이디를 입력하세요.");
+            kStaffId.focus();
+            return;
+        }
+        if (kStaffName.value == "") {
+            alert("이름을 입력하세요.");
+            kStaffName.focus();
+            return;
+        }
+
+        // 폼을 Ajax로 처리
+        const formData = new FormData(document.writeform);
+        fetch("/mes/myPage/kw_myPage_u.do", {
+            method: "POST",
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                // 저장 성공 후 메인페이지로 이동
+                window.location.href = "/mes/main.do";  // 실제 경로로 수정
+            } else {
+                alert("저장 실패: " + response.status);
+            }
+        }).catch(error => {
+            alert("요청 중 오류 발생: " + error);
+        });
+    }
+    
 }
 
 function windowPopup1(Key) {
@@ -348,17 +351,17 @@ function databaseDelete(){
 								</td>
 							</tr>
 							<TR>
-								<TH>이 메 일</th>
+								<TH>E-Mail</th>
 								<TD><input type="text" name="kStaffEmail" value="<c:out value='${vo.kStaffEmail}'/>" maxLength="100" size="30">
 								</td>
 							</tr>
 							<TR>
-								<TH>메 신 저</th>
+								<TH>메신저</th>
 								<TD><input type="text" name="kStaffMessenger"value="<c:out value='${vo.kStaffMessenger}'/>" maxLength="100" size="30">
 								</td>
 							</tr>
 							<tr>
-			            		<th scope="row">주소</th>
+			            		<th scope="row">주 소</th>
 			            		<td>
 									<input type="text" name="kStaffPost1" id="kStaffPost1" value="<c:out value='${vo.kStaffPost1}'/>" placeholder="우편번호" maxlength="5" >
 									<a onclick="sample6_execDaumPostcode()" class="form_btn bg"> 
@@ -376,7 +379,7 @@ function databaseDelete(){
 								</td>
 							</tr>
 							<TR>
-								<TH>핸 드 폰</th>
+								<TH>휴대전화</th>
 								<TD><input type="text" name="kStaffMobile1" value="<c:out value='${vo.kStaffMobile1}'/>" maxLength="3" size="4">
 									- <input type="text" name="kStaffMobile2" value="<c:out value='${vo.kStaffMobile2}'/>" maxLength="4" size="4">
 									- <input type="text" name="kStaffMobile3" value="<c:out value='${vo.kStaffMobile3}'/>" maxLength="4" size="4">
