@@ -525,7 +525,7 @@ input[name="tab_item"] {
 		</c:if>
 		<c:if test="${swInfo.eStatus eq '승인요청'}">
 			<c:if test="${swInfo.kStaffKey eq staffVO.kStaffKey && swInfo.sSignProgress eq '0'}">
-				<button type="button" class="form_btn bg" onclick="startApproval('N');">승인취소</button>
+				<button type="button" class="form_btn bg" onclick="startApproval('N');">요청취소</button>
 			</c:if>
 		</c:if>
 	</div>

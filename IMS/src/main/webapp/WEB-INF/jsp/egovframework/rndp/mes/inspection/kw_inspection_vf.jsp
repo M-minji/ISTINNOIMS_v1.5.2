@@ -859,7 +859,7 @@
 		</c:if>
 		<c:if test="${selInfo.sSignStatus eq '승인요청'}">
 			<c:if test="${selInfo.kStaffKey eq staffVO.kStaffKey && selInfo.sSignProgress eq '0'}">
-				<button type="button" onclick="startApproval('N');" class="form_btn bg">승인취소</button>
+				<button type="button" onclick="startApproval('N');" class="form_btn bg">요청취소</button>
 			</c:if>
 		</c:if>
 	</div>

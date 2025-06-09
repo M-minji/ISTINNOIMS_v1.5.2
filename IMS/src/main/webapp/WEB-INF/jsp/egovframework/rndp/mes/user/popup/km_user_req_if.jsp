@@ -243,7 +243,7 @@ function samePassword(){
 							</select></td>
 						</tr> --%>
 						<tr>
-							<th scope="row"><span style="color: red">* </span>직급</th>
+							<th scope="row"><span style="color: red">* </span>직 급</th>
 							<td><select name="kClassKey">
 									<option value="" selected>직급선택</option>
 									<c:forEach var="item" items="${classList}">
@@ -254,7 +254,7 @@ function samePassword(){
 							</select></td>
 						</tr>
 						<tr>
-							<th scope="row"><span style="color: red">* </span>부서</th>
+							<th scope="row"><span style="color: red">* </span>부 서</th>
 							<td>
 								<select name="kPositionKey" >
 									<option value="" selected>부서선택</option>
@@ -276,7 +276,7 @@ function samePassword(){
 							</td>
 						</tr>
 						<tr>
-							<th scope="row"><span style="color: red">* </span>이름</th>
+							<th scope="row"><span style="color: red">* </span>이 름</th>
 							<td>
 								<input type="text" name="mesUserName" maxLength="50"  style="width:200px" />
 							</td>
@@ -313,11 +313,11 @@ function samePassword(){
 								</label>
 						</tr>
 						<tr>
-							<th scope="row">이 메 일</th>
+							<th scope="row">E-Mail</th>
 							<td><input type="text" name="mesUserEmail" maxLength="100" style="width:200px" /></td>
 						</tr>
 		          		<tr>
-		            		<th scope="row">주소</th>
+		            		<th scope="row">주 소</th>
 		            		<td>
 		            			<div class="tbl_group">
 		            				<ul>
@@ -345,7 +345,7 @@ function samePassword(){
 									style="ime-mode: disabled; width:10%;" /></td>
 						</tr>
 						<tr>
-							<th scope="row">핸드폰</th>
+							<th scope="row">휴대전화</th>
 							<td><input type="text" name="mesUserMobile1" maxLength="3" onkeypress="onlyNumber();"
 									style="ime-mode: disabled; width:10%; vertical-align: middle" /> <span>-</span> 
 								<input type="text" name="mesUserMobile2" maxLength="4" onkeypress="onlyNumber();"
