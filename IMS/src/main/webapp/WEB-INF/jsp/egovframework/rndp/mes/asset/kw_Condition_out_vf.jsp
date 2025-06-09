@@ -729,7 +729,7 @@
 			</c:if>
 			<c:if test="${assetInfo.eStatus eq '승인요청'}">
 				<c:if test="${assetInfo.kStaffKey eq staffVO.kStaffKey && assetInfo.sSignProgress eq '0'}">
-					<button type="button" class="form_btn bg" onclick="startApproval('N');">승인취소</button>
+					<button type="button" class="form_btn bg" onclick="startApproval('N');">요청취소</button>
 				</c:if>
 			</c:if>
 	</div>
