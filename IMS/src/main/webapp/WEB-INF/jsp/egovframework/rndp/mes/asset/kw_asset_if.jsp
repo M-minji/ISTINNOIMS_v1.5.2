@@ -21,7 +21,7 @@
 		const today = nowDate();
 		$('#eCreationDateDisplay').text(today);
 		$('#eAssetDate').val(today);
-		$('#aAssetDate').val();
+		$('#aAssetDate').val(today);
 		
 		$("#filename").change(function(){
 	         readURL(this);
@@ -960,7 +960,10 @@
 					<th>결재자</th>
 				</tr>
 			</thead>
-			<tbody id="lineRow3">			
+			<tbody id="lineRow3">
+				<tr>
+					<td colspan="3">결재정보가 없습니다.</td>
+				</tr>			
 			</tbody>
 		</table>
 	</div>
@@ -969,6 +972,6 @@
 		<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T' }">
 		<button type="button" class="form_btn active" onclick="insert_go();">등록</button>
 		</c:if>
-		<button type="button" class="form_btn" onclick="cancle();">목록</button>
+		<button type="button" class="form_btn" onclick="cancle();">취소</button>
 	</div>
 </form>

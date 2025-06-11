@@ -985,6 +985,6 @@ ${selInfo.eRemark}
 		<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T' }">
 		<button type="button" class="form_btn active" onclick="eModifunction();">저장</button>
 		</c:if>
-		<button type="button" class="form_btn" onclick="cancle();">목록</button>
+		<button type="button" class="form_btn" onclick="cancle();">취소</button>
 	</div>
 </form>

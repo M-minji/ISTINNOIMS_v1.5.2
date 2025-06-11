@@ -548,12 +548,12 @@ input[name="tab_item"] {
 		</table>
 	</div>
 	
-	<div class="bottom_btn">
-		<button type="button" onclick="sel_assetPop('C')" class="form_btn active">반/출입 조회</button>
-		<button type="button" onclick="sel_assetPop('R')" class="form_btn active">부품교체이력 조회</button>
-		<button type="button" onclick="sel_assetPop('M')" class="form_btn active">장애이력 조회</button>
-		<button type="button" onclick="eBarcodePop()" class="form_btn active">QR코드출력</button>
-	</div>
+		<div class="bottom_btn" style="margin-top:10px;">
+			<button type="button" onclick="sel_assetPop('C')" class="form_btn active">반/출입 조회</button>
+			<button type="button" onclick="sel_assetPop('R')" class="form_btn active">부품교체이력 조회</button>
+			<button type="button" onclick="sel_assetPop('M')" class="form_btn active">장애이력 조회</button>
+			<button type="button" onclick="eBarcodePop()" class="form_btn active">QR코드출력</button>
+		</div>
 
 	<c:if test="${not empty assetList}">
 		<div class="content_top nofirst">
@@ -659,6 +659,16 @@ input[name="tab_item"] {
 	</c:if>
 	
 	<div class="bottom_btn mt20">
+		<c:if test="${assetInfo.sSignStatus eq '등록'}">
+			<c:if test="${assetInfo.kStaffKey eq staffVO.kStaffKey }">
+				<button type="button" onclick="startApproval('Y');" class="form_btn active">승인요청</button>
+			</c:if>
+		</c:if>
+		<c:if test="${assetInfo.sSignStatus eq '승인요청'}">
+			<c:if test="${assetInfo.kStaffKey eq staffVO.kStaffKey && assetInfo.sSignProgress eq '0'}">
+				<button type="button" onclick="startApproval('N');" class="form_btn active">요청취소</button>
+			</c:if>
+		</c:if>
 		<c:if test="${(assetInfo.kStaffKey eq staffVO.kStaffKey && (assetInfo.sSignStatus eq '등록' || assetInfo.sSignStatus eq '반려' || assetInfo.sSignStatus eq '제외')) || (staffVO.kAdminAuth eq 'T' && (assetInfo.sSignStatus eq '등록' || assetInfo.sSignStatus eq '반려' || assetInfo.sSignStatus eq '제외')) }">
 			<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T'  || staffVO.kAdminAuth eq 'T'}">
 				<button type="button" onclick="update_go();" class="form_btn bg">수정</button>
@@ -668,16 +678,6 @@ input[name="tab_item"] {
 			</c:if>
 		</c:if>
 		<button type="button" onclick="list_go();" class="form_btn">목록</button>
-		<c:if test="${assetInfo.sSignStatus eq '등록'}">
-			<c:if test="${assetInfo.kStaffKey eq staffVO.kStaffKey }">
-				<button type="button" onclick="startApproval('Y');" class="form_btn bg">승인요청</button>
-			</c:if>
-		</c:if>
-		<c:if test="${assetInfo.sSignStatus eq '승인요청'}">
-			<c:if test="${assetInfo.kStaffKey eq staffVO.kStaffKey && assetInfo.sSignProgress eq '0'}">
-				<button type="button" onclick="startApproval('N');" class="form_btn bg">요청취소</button>
-			</c:if>
-		</c:if>
 	</div>
 	
 	<div id="setModal" class="modal" style="display:none;">

@@ -27,12 +27,13 @@ function fn_guestList(pageNo) {
 }
 
 
-//$(function(){
-//	$('table[role="grid"].gridjs-table th:nth-child(1) button').hide();
+$(function(){
+	$('table[role="grid"].gridjs-table th:nth-child(1) button').hide();
+	$('table[role="grid"].gridjs-table th:nth-child(1)').css('width', '100px'); // 모델명
 //	$('table[role="grid"].gridjs-table td:nth-child(6)').each(function() {
 	 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 //	});
-//})
+})
 
 
 
@@ -103,7 +104,7 @@ td a {
 		</div>
 	</div>
 	
-	<div class="data_table nofirst">
+	<div class="data_table">
 		<table id="myTable"  style="width:100%; height:500px; overflow:auto;">
 			<colgroup>
 				<col width="5%" />
@@ -113,7 +114,6 @@ td a {
 				<col width="10%" />
 				<col width="10%" />
 				<col width="10%" />
-				<col width="2%" />
 			</colgroup>
 			<thead>
 				<tr>
@@ -131,7 +131,7 @@ td a {
 			        <c:when test="${not empty fieldList}">
 			            <c:forEach var="fieldList" items="${fieldList}" varStatus="i">
 			                <tr>
-			          			<td><a onclick="go_upd(${fieldList.eFieldKey})">${i.index + 1}</a></td>
+			          			<td style="text-align: center;">${i.index + 1}</td>
 			              		<td><a onclick="go_upd(${fieldList.eFieldKey})">${fieldList.eFieldName}</a></td>
 			              		<td><a onclick="go_upd(${fieldList.eFieldKey})">${fieldList.eField1}</a></td>
 			              		<td><a onclick="go_upd(${fieldList.eFieldKey})">${fieldList.eField2}</a></td>
@@ -160,7 +160,7 @@ td a {
 		</div>
 		<div class="btns">
 			<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">
-			<button type="button" class="form_btn active" onclick="go_insert()">추가</button>
+			<button type="button" class="form_btn active" onclick="go_insert()">등록</button>
 			</c:if>
 		</div>
 	</div>

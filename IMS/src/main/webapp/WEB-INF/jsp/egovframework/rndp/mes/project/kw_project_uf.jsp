@@ -393,7 +393,7 @@ function deleteGyeoljaeList(){
 		<c:if test="${staffVo.kStaffAuthWriteFlag eq 'T'}">
 		<button type="button" class="form_btn active" onclick="insert_go();">저장</button>
 		</c:if>
-		<button type="button" class="form_btn" onclick="cancel();">목록</button>
+		<button type="button" class="form_btn" onclick="cancel();">취소</button>
 	</div>
 	
 </form>

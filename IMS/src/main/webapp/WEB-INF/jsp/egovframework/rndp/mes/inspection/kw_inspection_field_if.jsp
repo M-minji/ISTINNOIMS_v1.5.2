@@ -106,6 +106,6 @@ function fieldIn(){
 		
 	<div class="bottom_btn">
 		<button type="button" class="form_btn active" onclick="fieldIn();">등록</button>
-		<a href="/mes/inspection/kw_inspection_field_lf.do" class="form_btn">목록</a>
+		<a href="/mes/inspection/kw_inspection_field_lf.do" class="form_btn">취소</a>
 	</div>
 </form>

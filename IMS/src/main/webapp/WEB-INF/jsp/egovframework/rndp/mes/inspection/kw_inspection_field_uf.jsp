@@ -121,7 +121,7 @@ function fieldDel() {
 			<div class="bottom_btn">
 				<button type="button" class="form_btn active" onclick="updateField();">저장</button>
 				<button type="button" class="form_btn bg" onclick="fieldDel();">삭제</button>
-				<a class="form_btn" href="/mes/inspection/kw_inspection_field_lf.do" >목록</a>
+				<a class="form_btn" href="/mes/inspection/kw_inspection_field_lf.do" >취소</a>
 			</div>
 		
 </form>

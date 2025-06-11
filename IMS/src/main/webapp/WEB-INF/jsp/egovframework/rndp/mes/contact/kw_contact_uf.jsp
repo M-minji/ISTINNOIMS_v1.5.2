@@ -93,12 +93,12 @@ function cancel(){
    	
    	<div class="bottom_btn">
    		<c:if test="${staffVo.kStaffAuthModifyFlag eq 'T'}">
-		<button type="button" class="form_btn bg" onclick="update_go();">수정</button>
+		<button type="button" class="form_btn active" onclick="update_go();">저장</button>
 		</c:if>
 		<c:if test="${staffVo.kStaffAuthDelFlag eq 'T'}">
 		<button type="button" class="form_btn bg" onclick="delete_go();">삭제</button>
 		</c:if>
-		<button type="button" class="form_btn" onclick="cancel();">목록</button>
+		<button type="button" class="form_btn" onclick="cancel();">취소</button>
 	</div>
 
 </form>

@@ -815,11 +815,21 @@
 		</div>
 	</c:if>
 	<div class="bottom_btn">
+		<c:if test="${issueInfo.sSignStatus eq '등록'}">
+			<c:if test="${issueInfo.kStaffKey eq staffVO.kStaffKey }">
+				<button type="button" class="form_btn active" onclick="startApproval('Y');">승인요청</button>
+			</c:if>
+		</c:if>
+		<c:if test="${issueInfo.sSignStatus eq '승인요청'}">
+			<c:if test="${issueInfo.kStaffKey eq staffVO.kStaffKey && issueInfo.sSignProgress eq '0'}">
+				<button type="button" class="form_btn active" onclick="startApproval('N');">요청취소</button>
+			</c:if>
+		</c:if>
 		<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">
 			<c:if test="${issueInfo.sSignStatus eq '승인' || issueInfo.sSignStatus eq '제외' }">
 				<c:if test="${issueInfo.eIssueStatus eq '요청등록'}">
 					<c:if test="${issueInfo.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
-						<button type="button" id="process_go" onclick="process_go();" class="form_btn active">처리정보 등록하기</button>
+						<button type="button" id="process_go" onclick="process_go();" class="form_btn active">처리정보 등록</button>
 					</c:if>
 				</c:if>
 			</c:if>
@@ -834,16 +844,7 @@
 			</c:if>
 		</c:if>
 		<button type="button" class="form_btn" onclick="cancel();">목록</button>
-		<c:if test="${issueInfo.sSignStatus eq '등록'}">
-			<c:if test="${issueInfo.kStaffKey eq staffVO.kStaffKey }">
-				<button type="button" class="form_btn bg" onclick="startApproval('Y');">승인요청</button>
-			</c:if>
-		</c:if>
-		<c:if test="${issueInfo.sSignStatus eq '승인요청'}">
-			<c:if test="${issueInfo.kStaffKey eq staffVO.kStaffKey && issueInfo.sSignProgress eq '0'}">
-				<button type="button" class="form_btn bg" onclick="startApproval('N');">요청취소</button>
-			</c:if>
-		</c:if>
+		
 	</div>
 	<div id="setModal" class="modal" style="display:none;">
 		<a id="modal-close" href="#close-modal" rel="modal:close" class="close-modal " onclick="closeModal()">Close</a>

@@ -939,7 +939,7 @@
 					<c:forEach var="slist" items="${signList}" varStatus="j">
 							<tr>
 								<td>
-									<a class='del' onclick="delRowTwo(this);">X</a>
+									<span id='sn_sp_${j.index}' class='sn_sp'>${slist.sSignSequence}</span>
 			
 									<input type='hidden' id='sSignStaffKey_${j.index}' name='sSignStaffKey' value='${slist.sSignStaffKey}'/>
 									<input type='hidden' id='sSignStaffPosition_${j.index}' name='sSignStaffPosition' value='${slist.sSignStaffPosition}'/>
@@ -947,18 +947,14 @@
 									<input type='hidden' id='sSignSequence_${j.index}' name='sSignSequence' value='${slist.sSignSequence}'/>
 									<input type='hidden' id='sSignStaffGubun_${j.index}' name='sSignStaffGubun' value='${slist.sSignStaffGubun}'/>
 								</td>
-							
-								<td>
-									<span id='sn_sp_${j.index}' class='sn_sp'>${slist.sSignSequence}</span>
-								</td>
-							
+									
 								<td>
 									<span id='sn_sp_${j.index}' class='sn_sp'>${slist.sSignStaffGubun}</span>
-								</td>		
+								</td>
 							
 								<td>
 									${slist.kPositionName}&nbsp;/&nbsp;${slist.kClassName}&nbsp;/&nbsp;${slist.sSignStaffName}
-								</td>
+								</td>	
 							
 							</tr>	
 						</c:forEach>
@@ -975,6 +971,6 @@
 		<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T' }">
 		<button type="button" class="form_btn active" onclick="update_go();">저장</button>
 		</c:if>
-		<button type="button" class="form_btn" onclick="cancle();">목록</button>
+		<button type="button" class="form_btn" onclick="cancle();">취소</button>
 	</div>
 </form>

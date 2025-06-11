@@ -793,7 +793,7 @@
 						</td>
 					
 						<td>
-						<a class='mes_btn' onclick="addFile('${aDeteliList.eRowIndex}');">파일추가</a> 
+						<a class='form_btn md' onclick="addFile('${aDeteliList.eRowIndex}');">파일추가</a> 
 							<div id='fileList${aDeteliList.eRowIndex}'>
 							 <c:forEach var="aFileList" items="${aFileList}" varStatus="j">
 								 <c:if test="${aDeteliList.eRowIndex eq aFileList.eFileRowIndex}">
@@ -944,6 +944,6 @@
 	
 	<div class="bottom_btn">
 		<button type="button" class="form_btn active" onclick="update_go();">저장</button>
-		<button type="button" class="form_btn" onclick="cancel();">목록</button>
+		<button type="button" class="form_btn" onclick="cancel();">취소</button>
 	</div>
 </form>

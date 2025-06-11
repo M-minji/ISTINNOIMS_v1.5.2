@@ -103,7 +103,7 @@ function addRow() {
 			<h2>코드관리 등록</h2>
 		</div>
 		<div class="btns">
-			 <button type="button" class="form_btn md" onclick="addRow();">입력 행추가</button>
+			 <button type="button" class="form_btn md" onclick="addRow();">세부항목 추가</button>
 		</div>
 	</div>
 	<div class="normal_table">
@@ -112,7 +112,7 @@ function addRow() {
 		       <tr>
       				<th style="width:6%;">행 삭제</th>
        				<th style="width: 200px;"><span style="color: red">* </span>구분</th>
-       				<th><span style="color: red">* </span>구분명</th>
+       				<th><span style="color: red">* </span>세부항목</th>
        				<th>영문표기(약어)</th>
       			</tr>
        		</thead>
@@ -126,6 +126,6 @@ function addRow() {
 		<c:if test="${staffVo.kStaffAuthWriteFlag eq 'T'}">	
 		<button type="button" class="form_btn active" onclick="insert_go();">등록</button>
 		</c:if>		
-		<button type="button" class="form_btn" onclick="cancel();">목록</button>
+		<button type="button" class="form_btn" onclick="cancel();">취소</button>
 	</div>
 </form>

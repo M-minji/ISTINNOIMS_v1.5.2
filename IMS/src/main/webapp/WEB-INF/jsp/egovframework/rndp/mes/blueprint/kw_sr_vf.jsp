@@ -519,6 +519,16 @@
 	
 	<div class="bottom_btn">
 		<button type="button" class="topdown" onclick="eExcelDownload();">다운로드</button>
+		<c:if test="${info.sSignStatus eq '등록'}">
+			<c:if test="${info.kStaffKey eq staffVO.kStaffKey }">
+				<button type="button" class="form_btn active" onclick="startApproval('Y');">승인요청</button>
+			</c:if>
+		</c:if>
+		<c:if test="${info.sSignStatus eq '승인요청'}">
+			<c:if test="${info.kStaffKey eq staffVO.kStaffKey && info.sSignProgress eq '0'}">
+				<button type="button" class="form_btn active" onclick="startApproval('N');">요청취소</button>
+			</c:if>
+		</c:if>
 		 <c:if test="${(info.kStaffKey eq staffVO.kStaffKey && (info.sSignStatus eq '등록' || info.sSignStatus eq '반려' || info.sSignStatus eq '제외')) || (staffVO.kAdminAuth eq 'T' && (info.sSignStatus eq '등록' || info.sSignStatus eq '반려' || info.sSignStatus eq '제외')) }">
 			<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T' || staffVO.kAdminAuth eq 'T'}">
 				<button type="button" class="form_btn bg" onclick="update_go();">수정</button>
@@ -528,16 +538,6 @@
 			</c:if>
 		</c:if>
 		<button type="button" class="form_btn" onclick="cancel();">목록</button>
-		<c:if test="${info.sSignStatus eq '등록'}">
-			<c:if test="${info.kStaffKey eq staffVO.kStaffKey }">
-				<button type="button" class="form_btn bg" onclick="startApproval('Y');">승인요청</button>
-			</c:if>
-		</c:if>
-		<c:if test="${info.sSignStatus eq '승인요청'}">
-			<c:if test="${info.kStaffKey eq staffVO.kStaffKey && info.sSignProgress eq '0'}">
-				<button type="button" class="form_btn bg" onclick="startApproval('N');">요청취소</button>
-			</c:if>
-		</c:if>
 	</div>
 	
 	<div id="setModal" class="modal" style="display:none;">

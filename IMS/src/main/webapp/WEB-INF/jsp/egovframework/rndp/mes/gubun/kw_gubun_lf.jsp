@@ -69,6 +69,7 @@ td.gridjs-td{padding:.7rem;}
 			<div class="search_filter nogrid">
 				<ul> 
 					<li>
+						<span>구분</span>
 						<select id="searchGubun" name="searchGubun">
 							<option value="" selected>전체</option>
 							<c:forEach var="gubunCateList" items="${gubunCateList}">
@@ -79,6 +80,7 @@ td.gridjs-td{padding:.7rem;}
 				      	</select>
 				    </li>
 					<li>	
+						<span>세부항목</span>
 		            	<input type="text" class="input_search" id="searchWord" name="searchWord" value="${mesGubunVO.searchWord}" />
 		           	</li>
 				</ul>
@@ -95,7 +97,7 @@ td.gridjs-td{padding:.7rem;}
 				<tr>
 		           	<th style="width: 80px !important;">No.</th>
 		           	<th>구분</th>
-					<th>구분명</th>
+					<th>세부항목</th>
 					<th>영문표기(약어)</th>
 				</tr>
     	   	</thead>
@@ -134,8 +136,8 @@ td.gridjs-td{padding:.7rem;}
 			<ui:pagination paginationInfo="${paginationInfo}" type="text" jsFunction="fn_guestList" />
 		</div>
 		<div class="btns">
-			<button type="button" class="form_btn active" onclick="go_insert();">상세코드등록</button>
-			<button type="button" class="form_btn active" onclick="go_subInsert();">구분관리</button>
+			<button type="button" class="form_btn bg" onclick="go_subInsert();">구분목록</button>
+			<button type="button" class="form_btn active" onclick="go_insert();">등록</button>
 		</div>
 	</div>
 </form>

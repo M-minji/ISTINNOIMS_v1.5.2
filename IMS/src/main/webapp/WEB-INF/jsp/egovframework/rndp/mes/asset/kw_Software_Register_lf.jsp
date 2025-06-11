@@ -341,7 +341,7 @@ function startApproval(eSWRegisterKey, eStatus){
 		</div>
 		<div class="btns">
 			<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">
-			<button type="button" class="form_btn active" onclick="go_insert()">라이선스정보 등록</button>
+			<button type="button" class="form_btn active" onclick="go_insert()">등록</button>
 			</c:if>
 		</div>
 	</div>

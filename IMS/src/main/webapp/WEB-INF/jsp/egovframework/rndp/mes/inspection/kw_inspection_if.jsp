@@ -692,7 +692,10 @@
 					<th style="width: *%;">성명</th>
 				</tr>
 			</thead>
-			<tbody id="lineRow3">			
+			<tbody id="lineRow3">		
+				<tr>
+					<td colspan="3">결재정보가 없습니다.</td>
+				</tr>	
 			</tbody>
 			
 		</table>
@@ -702,6 +705,6 @@
 		<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T' }">
 		<button type="button" class="form_btn active" onclick="insert_go();">등록</button>
 		</c:if>
-		<button type="button" class="form_btn" onclick="cancle();">목록</button>
+		<button type="button" class="form_btn" onclick="cancle();">취소</button>
 	</div>
 </form>

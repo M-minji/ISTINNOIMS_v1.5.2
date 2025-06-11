@@ -202,7 +202,7 @@ td.gridjs-td:last-child{text-align:center !important;}
 								</a> --%>
 								<c:if test="${staffVo.kStaffAuthWriteFlag eq 'T'}">
 									<a class="form_btn sm" onclick="mesUserMenu(${mesUserList.mesUserKey})">
-										직원별메뉴
+										메뉴별 권한
 									</a>	
 									<c:if test="${mesUserList.count >= 5}">
 										<a class="form_btn sm" onclick="mesSetCount(${mesUserList.mesUserKey})">
@@ -210,7 +210,7 @@ td.gridjs-td:last-child{text-align:center !important;}
 										</a>	
 									</c:if>
 									<a class="form_btn sm" onclick="mesSetPass(${mesUserList.mesUserKey})">
-										비밀번호초기화
+										비밀번호 초기화
 									</a>	
 								</c:if>
 							</div>

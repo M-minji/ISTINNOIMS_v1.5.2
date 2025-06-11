@@ -322,14 +322,16 @@ function excelDwonload(){
 							
 							<c:if test="${empty list.eEntryExporterDate}">
 								<c:if test="${not empty list.eEntryImporter}">
-							     ${list.eEntryImportDate}:   ${list.eStatus}
+						<!-- 	     ${list.eEntryImportDate}:   ${list.eStatus}   -->
+									: 반입 
 							     <c:if test="${list.sSignStatus eq '승인'  || list.sSignStatus eq '제외'}">
 							    	 <a class="form_btn sm" onclick="eImport_go(${list.eEquipmentItemKey});">반출등록</a>
 							     </c:if>
 								</c:if>
 							</c:if>
 							<c:if test="${list.eItemStatus eq '반출등록완료'}">
-							    	 ${list.eEntryExporterDate}(${list.eExitExporter}):${list.eItemStatus}
+							 <!--   	 ${list.eEntryExporterDate}(${list.eExitExporter}):${list.eItemStatus}  -->
+							 	: ${list.eItemStatus}
 							</c:if>
 						</td>
 						 
@@ -352,7 +354,7 @@ function excelDwonload(){
 		</div>
 		<div class="btns">
 			<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">
-			<button type="button" class="form_btn active" onclick="go_insert()">반입 등록</button>
+			<button type="button" class="form_btn active" onclick="go_insert()">등록</button>
 			</c:if>
 		</div>
 	</div>
