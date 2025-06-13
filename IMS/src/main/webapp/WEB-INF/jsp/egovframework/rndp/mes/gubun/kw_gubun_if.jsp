@@ -76,11 +76,11 @@ function addRow() {
 	innerStr += "		</td>";
 	// 구분명
 	innerStr += "		<td>";
-	innerStr += "			<input type='text' id='sGubunName_"+itemRowIndex+"' name='sGubunName' style='width:90%;'  maxlength='20' />";
+	innerStr += "			<input type='text' id='sGubunName_"+itemRowIndex+"' name='sGubunName' style='width:100%;'  maxlength='20' />";
 	innerStr += "		</td>";
 	// 비고
 	innerStr += "		<td>";
-	innerStr += "			<input type='text' id='sGubunEtc_"+itemRowIndex+"' name='sGubunEtc' style='width:90%;' maxlength='20' />";
+	innerStr += "			<input type='text' id='sGubunEtc_"+itemRowIndex+"' name='sGubunEtc' style='width:100%;' maxlength='20' />";
 	innerStr += "		</td>";	
 	innerStr += "	</tr>"; 
 									

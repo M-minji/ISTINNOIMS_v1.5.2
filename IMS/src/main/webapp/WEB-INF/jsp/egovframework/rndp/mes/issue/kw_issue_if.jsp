@@ -771,12 +771,14 @@
 				<tr>
 					<th ><span style="color: red">* </span>요청자</th>
 					<td >
-						<input type="text" id="eRequester" name="eRequester" style="width:75%;" maxLength="50" />
-						<a class="form_btn bg" onclick="selectWorkerPop('R', 'eRequester')">담당자 선택</a>
+						<div style="display: flex; align-items: center; gap: 10px;">
+							<input type="text" id="eRequester" name="eRequester" style="flex: 1; min-width: 0;"  maxLength="50" />
+							<a class="form_btn bg" onclick="selectWorkerPop('R', 'eRequester')" style="margin-left: auto;">담당자 선택</a>
+						</div>
 					</td>
 					<th >요청자 소속</th>
 					<td >
-						<input type="text" id="eRequesterOrg" name="eRequesterOrg" style="width:95%;" maxLength="50"/>
+						<input type="text" id="eRequesterOrg" name="eRequesterOrg" style="width:100%;" maxLength="50"/>
 						<span id="eRequesterOrgTxt" style="display: none;"></span>
 					</td>
   				</tr>

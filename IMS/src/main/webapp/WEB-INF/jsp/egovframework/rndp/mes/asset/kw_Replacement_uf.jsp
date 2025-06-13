@@ -567,24 +567,26 @@
 				
 				<tr>					
 					<th><span style="color: red">* </span>교체확인자</th>
-					<td>
-						<input type="text" id="eReplacedBy" name="eReplacedBy" style="width:75%;" value="${info.eReplacedBy}" maxLength="50"/>
-						<a class="form_btn bg" onclick="selectWorkerPop('R', 'eReplacedBy')">담당자 선택</a>
+					<td >
+						<div style="display: flex; align-items: center; gap: 10px;">
+							<input type="text" id="eReplacedBy" name="eReplacedBy" style="flex: 1; min-width: 0;" value="${info.eReplacedBy}" maxLength="50"/>
+							<a class="form_btn bg" onclick="selectWorkerPop('R', 'eReplacedBy')" style="margin-left: auto;">담당자 선택</a>
+						</div>
 					</td>
 					<th>교체확인자 소속</th>
 					<td >
-						<input type="text" id="eReplacedByOrg" name="eReplacedByOrg" style="width:95%;" maxLength="50" value="${info.eReplacedByOrg}" />
+						<input type="text" id="eReplacedByOrg" name="eReplacedByOrg" style="width:100%;" maxLength="50" value="${info.eReplacedByOrg}" />
 						<span id="eReplacedByOrgTxt" style="display: none;"></span>
 					</td>
 				</tr>
 				<tr>
 					<th>교체 정보</th>
 					<td colspan="1">
-						<input type="text" name="ePartReplacementReason" id="ePartReplacementReason" style="width:95%; text-align:left;" maxLength="50" value="${info.ePartReplacementReason }"/>
+						<input type="text" name="ePartReplacementReason" id="ePartReplacementReason" style="width:100%; text-align:left;" maxLength="50" value="${info.ePartReplacementReason }"/>
 					</td>
 					<th>부품유형</th>
 					<td colspan="1">
-						<input type="text" name="ePartReplacementItem" id="ePartReplacementItem" style="width:95%; text-align:left;" maxLength="50" value="${info.ePartReplacementItem }"/>
+						<input type="text" name="ePartReplacementItem" id="ePartReplacementItem" style="width:100%; text-align:left;" maxLength="50" value="${info.ePartReplacementItem }"/>
 					</td>
 				</tr>
 				<tr>

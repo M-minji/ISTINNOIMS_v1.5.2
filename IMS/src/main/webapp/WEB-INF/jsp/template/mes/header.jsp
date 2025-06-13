@@ -464,7 +464,16 @@ function setReturnTextPop(obj){
 		 $("#"+eObjId+"Org").val(obj.ePosition);
 		 $("#"+eObjId+"OrgTxt").html(obj.ePosition);
 	 }
+	 if ($("#" + eObjId +"Mail").length > 0) {
+		 $("#"+eObjId+"Mail").val(obj.eMail);
+		 $("#"+eObjId+"MailTxt").html(obj.eMail);
+	 }
+	 if ($("#" + eObjId +"HP").length > 0) {
+		 $("#"+eObjId+"HP").val(obj.eHP);
+		 $("#"+eObjId+"HPTxt").html(obj.eHP);
+	 }
 };
+
 </script>
 
 <style>

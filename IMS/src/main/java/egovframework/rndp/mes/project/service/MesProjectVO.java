@@ -76,7 +76,22 @@ public class MesProjectVO extends DefultVO{
 	private String  kStaffKey                        = "";   
 	private String  eViewGubun                        = "";   
 	
+	private String	eManagerMail		= "";
+	private String	eManagerHP		= "";
 	
+	
+	public String geteManagerMail() {
+		return eManagerMail;
+	}
+	public void seteManagerMail(String eManagerMail) {
+		this.eManagerMail = eManagerMail;
+	}
+	public String geteManagerHP() {
+		return eManagerHP;
+	}
+	public void seteManagerHP(String eManagerHP) {
+		this.eManagerHP = eManagerHP;
+	}
 	
 	public String getkStaffKey() {
 		return kStaffKey;

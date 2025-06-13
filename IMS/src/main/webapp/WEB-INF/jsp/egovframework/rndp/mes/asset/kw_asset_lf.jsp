@@ -520,6 +520,8 @@ function readExcel(e) {
 
 $(document).ready(function() {
 	
+	$('#searchWord').blur();
+	
 	if ($("#viewDetail").val() === "Y") {
         $("#search_detail").css("display", "flex");
     }
@@ -796,7 +798,7 @@ function excelDwonload(){
 					</li>
 					<li>
 						<span>자산번호</span>
-						<input type="text" id="searchWord" name="searchWord" class="searchWord" value="${mesAssetVO.searchWord}" maxlength="30" />
+						<input type="text" id="searchWord" name="searchWord" class="searchWord" value="${mesAssetVO.searchWord}" maxlength="30"/>
 					</li>
 					<li>
 						<span>자산명</span>

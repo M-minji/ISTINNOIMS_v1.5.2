@@ -27,9 +27,7 @@ viewService.prototype.go_view = function(obj) {
 	document.frm.submit();
 }
 $(document).ready(function() {
-	setTimeout(() => {
-	    document.activeElement.blur(); // 현재 포커스된 요소 포커스 해제
-	  }, 100);
+	$('#searchWord').blur();
 	$('table[role="grid"].gridjs-table th:nth-child(1) button').hide();
 	$('table[role="grid"].gridjs-table th:nth-child(1)').css('width', '80px');
 	$('table[role="grid"].gridjs-table th:nth-child(2)').css('width', '150px');

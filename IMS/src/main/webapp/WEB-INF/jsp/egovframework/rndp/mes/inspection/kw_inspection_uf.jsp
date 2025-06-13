@@ -396,7 +396,7 @@
 	        var messageCell = document.createElement('td');
 	        
 	        messageCell.colSpan = 2;
-	        messageCell.textContent = "점검 서류를 선택하세요.";
+	        messageCell.textContent = "첨부파일을 선택하세요.";
 	        
 	        
 	        messageRow.appendChild(messageCell);
@@ -756,27 +756,30 @@
 				</tr> 
 				<tr>
 					<th><span style="color: red">* </span>점검자</th>
-					<td>
-						<input type="text" id="eInspector" name="eInspector" style="width:75%;" maxLength="50" value="${selInfo.eInspector}"   />
-						<a class="form_btn bg" onclick="selectWorkerPop('R', 'eInspector')" style="float: right; margin-right: 10px;" >담당자 선택</a>
-						<input type="hidden" name="eInspectionResult" id="eInspectionResult" style="width:95%; text-align:left;" maxLength="50" value="${selInfo.eInspectionResult}"/>
-						<input type="hidden" name="eRequester" id="eRequester" style="width:95%; text-align:left;" maxLength="50" value="${selInfo.eRequester}"/>
-						<input type="hidden" name="eOther" id="eOther" style="width:95%; text-align:left;" maxLength="50" value=""/>
-						<input type="hidden" name="eOrganization" id="eOrganization" style="width:95%; text-align:left;" maxLength="150" value="${selInfo.eOrganization}"/>
-						<input type="hidden" name="eDepartment" id="eDepartment" style="width:95%; text-align:left;" maxLength="150" value="${selInfo.eDepartment}"/>
+					
+					
+					
+					<td >
+						<div style="display: flex; align-items: center; gap: 10px;">
+							<input type="text" id="eInspector" name="eInspector" style="flex: 1; min-width: 0;" maxLength="50" value="${selInfo.eInspector}"   />
+							<a class="form_btn bg" onclick="selectWorkerPop('R', 'eInspector')" style="margin-left: auto;" >담당자 선택</a>
+							<input type="hidden" name="eInspectionResult" id="eInspectionResult" style="width:95%; text-align:left;" maxLength="50" value="${selInfo.eInspectionResult}"/>
+							<input type="hidden" name="eRequester" id="eRequester" style="width:95%; text-align:left;" maxLength="50" value="${selInfo.eRequester}"/>
+							<input type="hidden" name="eOther" id="eOther" style="width:95%; text-align:left;" maxLength="50" value=""/>
+							<input type="hidden" name="eOrganization" id="eOrganization" style="width:95%; text-align:left;" maxLength="150" value="${selInfo.eOrganization}"/>
+							<input type="hidden" name="eDepartment" id="eDepartment" style="width:95%; text-align:left;" maxLength="150" value="${selInfo.eDepartment}"/>
+						</div>
 					</td>
 					<th>점검자 소속</th>
 					<td>
-						<input type="text" id="eInspectorOrg" name="eInspectorOrg" style="width:95%;" maxLength="50" value="${selInfo.eInspectorOrg}"/>
+						<input type="text" id="eInspectorOrg" name="eInspectorOrg" style="width:100%;" maxLength="50" value="${selInfo.eInspectorOrg}"/>
 						<span id="eInspectorOrgTxt" style="display: none;"></span>
 					</td>
 				</tr> 
 				<tr>
 					<th>특이사항</th>
 					<td id="td_editor" align="center" scope="row" colspan="3">
-					<textarea id="eRemark" name="eRemark" cols="100%" rows="20" style="font-size: 20px; width: 100%; height: 300px; resize: none;">
-${selInfo.eRemark}
-						</textarea>
+					<textarea id="eRemark" name="eRemark" cols="100%" rows="20" style="font-size: 20px; width: 100%; height: 300px; resize: none;">${selInfo.eRemark}</textarea>
 					 
 					</td>
 				</tr>
@@ -791,7 +794,7 @@ ${selInfo.eRemark}
 			</colgroup>
 			<thead>
 				<tr>
-					<th colspan="2">점검 서류  <a class="form_btn md ml5" onclick="addFile()" >파일 선택</a></th>
+					<th colspan="2">첨부파일  <a class="form_btn md ml5" onclick="addFile()" >파일 선택</a></th>
 				</tr>
 				<tr>
 					<th style="width: 200px;">구분</th>

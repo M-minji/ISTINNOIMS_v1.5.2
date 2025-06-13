@@ -40,6 +40,10 @@ function go_insert(){
 	document.frm.submit();
 }
 $(document).ready(function() {
+	
+	$('#searchWord').blur();
+	
+	
 	$('#mloader').hide();
 	$('table[role="grid"].gridjs-table th:nth-child(1)').css('width', '80px');
 	$('table[role="grid"].gridjs-table th:nth-child(1) button').hide();

@@ -447,7 +447,7 @@ function eDownloadAll(fileGubun){
 					<h2>주간 보고서 </h2>
 				</div>
 				<div class="btns">
-					 <button type="button" class="form_btn md" onclick="addRow('A');">행추가</button>
+					 <button type="button" class="form_btn md" onclick="addRow('A');">보고서 추가</button>
 				</div>
 			</div>
 			<div class="normal_table">
@@ -529,7 +529,7 @@ function eDownloadAll(fileGubun){
 					<h2>월간 보고서 </h2>
 				</div>
 				<div class="btns">
-					 <button type="button" class="form_btn md" onclick="addRow('B');">행추가</button>
+					 <button type="button" class="form_btn md" onclick="addRow('B');">보고서 추가</button>
 				</div>
 			</div>
 			<div class="normal_table">
@@ -611,7 +611,7 @@ function eDownloadAll(fileGubun){
 					<h2>분기 보고서 </h2>
 				</div>
 				<div class="btns">
-					 <button type="button" class="form_btn md" onclick="addRow('C');">행추가</button>
+					 <button type="button" class="form_btn md" onclick="addRow('C');">보고서 추가</button>
 				</div>
 			</div>
 			
@@ -694,7 +694,7 @@ function eDownloadAll(fileGubun){
 					<h2>반기 보고서</h2>
 				</div>
 				<div class="btns">
-					 <button type="button" class="form_btn md" onclick="addRow('D');">행추가</button>
+					 <button type="button" class="form_btn md" onclick="addRow('D');">보고서 추가</button>
 				</div>
 			</div>
 			<div class="normal_table">
@@ -777,6 +777,6 @@ function eDownloadAll(fileGubun){
 		<button type="button" class="form_btn ico_refresh" onclick="delete_go();">산출물 초기화</button>
 		</c:if>
 		<button type="button" class="form_btn active" onclick="insert_go();">저장</button>
-		<button type="button" class="form_btn" onclick="cancel();">목록</button>
+		<button type="button" class="form_btn" onclick="cancel();">취소</button>
 	</div>
 </form>

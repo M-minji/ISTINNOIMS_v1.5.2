@@ -365,9 +365,9 @@ input[name="tab_item"] {
 	         </thead>
 	         <tbody id="lineRow">
 				<tr>
-					<td>${swInfo.eManufacturer }</td>
-					<td>${swInfo.eProductName }</td>
-					<td>${swInfo.eVersion }</td>
+					<td style="text-align: left;">${swInfo.eManufacturer }</td>
+					<td style="text-align: left;">${swInfo.eProductName }</td>
+					<td style="text-align: left;">${swInfo.eVersion }</td>
 					<td>${swInfo.ePurchaseDate }</td>
 					<td>${swInfo.eStartDate }</td>
 					<td>${swInfo.eEndDate }</td>

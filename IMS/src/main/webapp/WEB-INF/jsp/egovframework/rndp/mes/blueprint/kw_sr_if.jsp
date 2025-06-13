@@ -537,15 +537,19 @@ function approvalPop(){
   				<tr>
 					 
 	  				<th><span style="color: red">* </span>요청자</th>
-					<td>
-						<input type="text" id="eRequester" name="eRequester" style="width:70%;" maxLength="50" />
-						<a class="form_btn bg" onclick="selectWorkerPop('R', 'eRequester')" >담당자 선택</a>
-						<input type="hidden" name="eReqOrg" id="eReqOrg" style="width:95%; text-align:left;" maxLength="50" value="" />
-						<input type="hidden" name="eReqDept" id="eReqDept" style="width:95%; text-align:left;" maxLength="50" value="" />
+	  				
+	  				
+	  				<td >
+						<div style="display: flex; align-items: center; gap: 10px;">
+							<input type="text" id="eRequester" name="eRequester" style="flex: 1; min-width: 0;" maxLength="50" />
+							<a class="form_btn bg" onclick="selectWorkerPop('R', 'eRequester')" style="margin-left: auto;" >담당자 선택</a>
+							<input type="hidden" name="eReqOrg" id="eReqOrg" style="width:95%; text-align:left;" maxLength="50" value="" />
+							<input type="hidden" name="eReqDept" id="eReqDept" style="width:95%; text-align:left;" maxLength="50" value="" />
+						</div>
 					</td>
 					<th >요청자 소속</th>
 					<td >
-						<input type="text" id="eRequesterOrg" name="eRequesterOrg" style="width:95%;" maxLength="50"/>
+						<input type="text" id="eRequesterOrg" name="eRequesterOrg" style="width:100%;" maxLength="50"/>
 						<span id="eRequesterOrgTxt" style="display: none;"></span>
 					</td>
 				</tr>
@@ -562,21 +566,21 @@ function approvalPop(){
 				<tr>
 	  				<th>요청사유</th>
 					<td>
-						<input type="text" name="eIssueCause" id="eIssueCause" style="width:95%; text-align:left;" maxLength="50" value="" />
+						<input type="text" name="eIssueCause" id="eIssueCause" style="width:100%; text-align:left;" maxLength="50" value="" />
 					</td>
 					<th>해결방법</th>
 					<td>
-						<input type="text" name="eSolutionMethod" id="eSolutionMethod" style="width:95%; text-align:left;" maxLength="50" value="" />
+						<input type="text" name="eSolutionMethod" id="eSolutionMethod" style="width:100%; text-align:left;" maxLength="50" value="" />
 					</td>
 				</tr>
   				<tr>
 	  				<th>처리시작일시</th>
 					<td>
-						<input type="text" name="eWorkStart" id="eWorkStart" style="width:95%; text-align:left;" maxLength="50" value="" />
+						<input type="text" name="eWorkStart" id="eWorkStart" style="width:100%; text-align:left;" maxLength="50" value="" />
 					</td>
 					<th>처리완료일시</th>
 					<td>
-						<input type="text" name="eWorkEnd" id="eWorkEnd" style="width:95%; text-align:left;" maxLength="50" value="" />
+						<input type="text" name="eWorkEnd" id="eWorkEnd" style="width:100%; text-align:left;" maxLength="50" value="" />
 					</td>
 				</tr>
 			</tbody>
@@ -594,7 +598,9 @@ function approvalPop(){
 <%-- 			</caption> --%>
 			<thead>
 				<tr>
+					
 					<th colspan="2">첨부파일  <a class="form_btn md" onclick="addFile()" >파일 선택</a></th>
+					
 				</tr>
 				<tr>
 					<th style="width: 200px;">구분</th>

@@ -28,6 +28,7 @@ function fn_guestList(pageNo) {
 
 
 $(function(){
+	$('#searchWord').blur();  // 강제 포커스 해제
 	$('table[role="grid"].gridjs-table th:nth-child(1) button').hide();
 	$('table[role="grid"].gridjs-table th:nth-child(1)').css('width', '100px'); // 모델명
 //	$('table[role="grid"].gridjs-table td:nth-child(6)').each(function() {

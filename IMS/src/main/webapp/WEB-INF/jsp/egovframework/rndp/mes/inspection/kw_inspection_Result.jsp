@@ -413,7 +413,7 @@
 	        var messageCell = document.createElement('td');
 	        
 	        messageCell.colSpan = 2;
-	        messageCell.textContent = "점검 서류를 선택하세요.";
+	        messageCell.textContent = "첨부파일을 선택하세요.";
 	        
 	        
 	        messageRow.appendChild(messageCell);

@@ -266,7 +266,31 @@ public class MesInspectionServiceImpl implements MesInspectionService {
 	@Override
 	public void mesInspectionFieldInsert(MesInspectionVO mesInspectionVO) throws Exception {
 		// TODO Auto-generated method stub
-		mesInspectionDAO.mesInspectionFieldInsert(mesInspectionVO);
+		
+		if(mesInspectionVO.geteFieldName() != null && !mesInspectionVO.geteFieldName().equals("")){
+			
+			String[] eFieldNameList 		= EgovStringUtil.split(mesInspectionVO.geteFieldName(), ",");
+			String[] eField1List 			= EgovStringUtil.split(mesInspectionVO.geteField1(), ",");
+			String[] eField2List 			= EgovStringUtil.split(mesInspectionVO.geteField2(), ",");
+			String[] eField3List 			= EgovStringUtil.split(mesInspectionVO.geteField3(), ",");
+			String[] eField4List 			= EgovStringUtil.split(mesInspectionVO.geteField4(), ",");
+			String[] eField5List 			= EgovStringUtil.split(mesInspectionVO.geteField5(), ",");
+			System.out.println("여기보세요여기보세요여기보세요"+eFieldNameList);
+			MesInspectionVO vo = new MesInspectionVO();
+			vo.setkStaffKey(mesInspectionVO.getkStaffKey());
+			if(eFieldNameList.length > 0){
+				for(int i = 0; i < eFieldNameList.length; i++){
+					vo.seteFieldName(eFieldNameList[i]);
+					vo.seteField1(eField1List[i]);
+					vo.seteField2(eField2List[i]);
+					vo.seteField3(eField3List[i]);
+					vo.seteField4(eField4List[i]);
+					vo.seteField5(eField5List[i]);
+
+					mesInspectionDAO.mesInspectionFieldInsert(vo);
+				}
+			}
+		}
 	}
 	
 	@Override

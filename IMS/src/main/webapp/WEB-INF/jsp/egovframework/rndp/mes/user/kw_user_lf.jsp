@@ -46,6 +46,7 @@ function mesOffiMenu(key) {
 }
 
 $(function(){
+	$('#searchWord').blur();
 	tdBlock(5);
 	$('table[role="grid"].gridjs-table th:nth-child(1) button').hide();
 	$('table[role="grid"].gridjs-table td:nth-child(6)').each(function() {

@@ -451,8 +451,10 @@ public class MesProjectController {
 			model.addAttribute("staffVo", staffVo);
 			
 			MesProjectVO projectInfo = mesProjectService.selectProjectInfo(mesProjectVO);
+			projectInfo.seteManagerMail(projectInfo.geteManagerEmail());
+			projectInfo.seteManagerHP(projectInfo.geteManagerContact());
 			model.addAttribute("projectInfo", projectInfo);
-
+			request.setAttribute("projectInfo", projectInfo);  // requestScope로 강제 전달
 
 			MesGubunVO vo = new MesGubunVO();
 			vo.setsGubunCateKey("31");
@@ -468,7 +470,8 @@ public class MesProjectController {
 			List signList = mesSignService.selectSignListTwo(mesSignVO);
 			model.addAttribute("signList", signList); 
 			
-			
+			mesProjectVO.seteManagerMail(projectInfo.geteManagerEmail());
+			mesProjectVO.seteManagerHP(projectInfo.geteManagerContact());
 			redirectAttributes.addFlashAttribute("mesProjectVO", mesProjectVO);
 			
 			return "mes/project/kw_project_uf.tiles";

@@ -16,6 +16,9 @@
 <script type="text/javascript"> 
 
 $(function(){
+	
+	$('#searchWord').blur();
+	
 	datepickerIdSet("topStartDate");
 	datepickerIdSet("topEndDate");
 	 $('table[role="grid"].gridjs-table tr').css("cursor","default");

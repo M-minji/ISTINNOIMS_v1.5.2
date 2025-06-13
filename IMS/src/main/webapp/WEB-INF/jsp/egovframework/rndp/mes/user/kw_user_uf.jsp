@@ -339,7 +339,7 @@ function autChange(obj){
 					<th>I D</th>
 					<td>${mesUserInfo.mesUserId}</td>
 					<th>이 름</th>
-					<td><input type="text" name="mesUserName" maxLength="20" value="${mesUserInfo.mesUserName }" /></td>
+					<td><input type="text" name="mesUserName" maxLength="20" style="width:100%;" value="${mesUserInfo.mesUserName }" /></td>
 				</tr>
 				<tr>
 					<th>비밀번호 변경</th>
@@ -375,7 +375,7 @@ function autChange(obj){
 						</label>
 					</td>
 					<th>E-Mail</th>
-					<td><input type="text" name="mesUserEmail" maxLength="100" value="${mesUserInfo.mesUserEmail}"/></td>
+					<td><input type="text" name="mesUserEmail" maxLength="100" style="width:100%;" value="${mesUserInfo.mesUserEmail}"/></td>
 				</tr>
 				<tr>
 					<th>주 소</th>
