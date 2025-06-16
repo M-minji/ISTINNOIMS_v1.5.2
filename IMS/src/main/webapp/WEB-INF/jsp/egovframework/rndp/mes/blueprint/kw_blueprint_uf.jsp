@@ -695,19 +695,20 @@
 				</tr>
   				<tr>
 	  				<th><span style="color: red">* </span>요청자</th>
-					<td> 
-						<input type="text" id="eRequester" name="eRequester" style="width:70%;" maxLength="50" value="${info.eRequester}"   />
-						<a class="form_btn bg" onclick="selectWorkerPop('R', 'eRequester')"  >담당자 선택</a>
-						<input type="hidden" name="eReqOrg" id="eReqOrg" style="width:95%; text-align:left;" maxLength="50" value="${info.eReqOrg }" />
-						<input type="hidden" name="eReqDept" id="eReqDept" style="width:95%; text-align:left;" maxLength="50" value="${info.eReqDept }" />
+	  				<td >
+						<div style="display: flex; align-items: center; gap: 10px;">
+							<input type="text" id="eRequester" name="eRequester" style="flex: 1; min-width: 0;" maxLength="50" value="${info.eRequester}"   />
+							<a class="form_btn bg" onclick="selectWorkerPop('R', 'eRequester')"  style="margin-left: auto;">담당자 선택</a>
+							<input type="hidden" name="eReqOrg" id="eReqOrg" style="width:95%; text-align:left;" maxLength="50" value="${info.eReqOrg }" />
+							<input type="hidden" name="eReqDept" id="eReqDept" style="width:95%; text-align:left;" maxLength="50" value="${info.eReqDept }" />
+						</div>
 					</td>
 	  				<th>요청자 소속</th>
 					<td>
-						<input type="text" id="eRequesterOrg" name="eRequesterOrg" style="width:95%;" maxLength="50" value="${info.eRequesterOrg}"/>
+						<input type="text" id="eRequesterOrg" name="eRequesterOrg" style="width:100%;" maxLength="50" value="${info.eRequesterOrg}"/>
 						<span id="eRequesterOrgTxt" style="display: none;"></span>
 					</td>
 				</tr>
-  				
 				<tr>
 					<th>
 						요청내용
@@ -719,17 +720,17 @@
 				<tr>
 	  				<th>변경시작일시 </th>
 					<td> 
-						<input type="text" name="eWorkStart" id="eWorkStart" style="width:95%; text-align:left;" maxLength="50" value="${info.eWorkStart }" />
+						<input type="text" name="eWorkStart" id="eWorkStart" style="width:100%; text-align:left;" maxLength="50" value="${info.eWorkStart }" />
 					</td>
 					<th>변경완료일시</th>
 					<td> 
-						<input type="text" name="eWorkEnd" id="eWorkEnd" style="width:95%; text-align:left;" maxLength="50" value="${info.eWorkEnd }" />
+						<input type="text" name="eWorkEnd" id="eWorkEnd" style="width:100%; text-align:left;" maxLength="50" value="${info.eWorkEnd }" />
 					</td>
 				</tr>
 				<tr>
 	  				<th>요청사유</th>
 					<td> 
-						<input type="text" name="eWorkDetails" id="eWorkDetails" style="width:95%;" maxLength="50" value="${info.eWorkDetails }"  />
+						<input type="text" name="eWorkDetails" id="eWorkDetails" style="width:100%;" maxLength="50" value="${info.eWorkDetails }"  />
 					</td>
 					<th>중단여부</th>
 					<td> 
@@ -793,7 +794,7 @@
 						</td>
 					
 						<td>
-						<a class='mes_btn' onclick="addFile('${aDeteliList.eRowIndex}');">파일추가</a> 
+						<a class='form_btn md' onclick="addFile('${aDeteliList.eRowIndex}');">파일추가</a> 
 							<div id='fileList${aDeteliList.eRowIndex}'>
 							 <c:forEach var="aFileList" items="${aFileList}" varStatus="j">
 								 <c:if test="${aDeteliList.eRowIndex eq aFileList.eFileRowIndex}">
@@ -944,6 +945,6 @@
 	
 	<div class="bottom_btn">
 		<button type="button" class="form_btn active" onclick="update_go();">저장</button>
-		<button type="button" class="form_btn" onclick="cancel();">목록</button>
+		<button type="button" class="form_btn" onclick="cancel();">취소</button>
 	</div>
 </form>

@@ -66,7 +66,7 @@ function mesIMGregInsert() {
 			      			</td>
 			      			<th>반입 확인자</th>
 			      			<td>
-			      				<input type="text" name='eEntryImporter' id='eEntryImporter' value='' maxlength="30">  
+			      				<input type="text" name='eEntryImporter' id='eEntryImporter' style="width:100%;" value='' maxlength="30">  
 			      			</td>
 						</tr>
 		    		</tbody>

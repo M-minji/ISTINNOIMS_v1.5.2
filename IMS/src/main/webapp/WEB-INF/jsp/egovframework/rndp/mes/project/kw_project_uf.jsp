@@ -275,7 +275,7 @@ function deleteGyeoljaeList(){
 	 				<tr>
 	  				<th><span style="color: red">* </span>사업명</th>
 					<td>
-						<input type="text" id="eProjectName" name="eProjectName" style="width:90%; text-align: left;padding-left: 5px;"  value="${projectInfo.eProjectName}" maxlength="30"/>
+						<input type="text" id="eProjectName" name="eProjectName" style="width:100%; text-align: left;padding-left: 5px;"  value="${projectInfo.eProjectName}" maxlength="30"/>
 					</td>
 					<th>사업기간</th>
 					<td>
@@ -284,42 +284,46 @@ function deleteGyeoljaeList(){
 					</td>
 					<th>주사업자</th>
 					<td>
-						<input type="text" id="eMainContractor" name="eMainContractor" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.eMainContractor}"  />
+						<input type="text" id="eMainContractor" name="eMainContractor" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.eMainContractor}"  />
 					</td>
 				</tr>
 				<tr>
 					<th><span style="color: red">* </span>담당자명</th>
 					<td>
-						<input type="text" id="eManager" name="eManager" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.eManager}"  />
+						<div style="display: flex; align-items: center; gap: 10px;">
+							<input type="text" id="eManager" name="eManager" style="flex: 1; min-width: 0; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.eManager}"  />
+							<a class="form_btn bg" onclick="selectWorkerPop('R', 'eManager')" style="margin-left: auto;">담당자 선택</a>
+						</div>
 					</td>
 					<th>담당자연락처</th>
 					<td>
-						<input type="text" id="eManagerContact" name="eManagerContact" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.eManagerContact}"  />
+						<input type="text" id="eManagerHP" name="eManagerHP" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"   value="${projectInfo.eManagerHP}" />
+						<span id="eManagerHPTxt" style="display: none;"></span>
 					</td>
 					<th>담당자메일</th>
 					<td>
-						<input type="text" id="eManagerEmail" name="eManagerEmail" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.eManagerEmail}"  />
+						<input type="text" id="eManagerMail" name="eManagerMail" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.eManagerMail}"  />
+						<span id="eManagerMailTxt" style="display: none;"></span>
 					</td>
 				</tr>
 				<tr>
 					<th>사업 PM명</th>
 					<td>
-	 					<input type="text" id="eProjectPM" name="eProjectPM" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.eProjectPM}"  />
+	 					<input type="text" id="eProjectPM" name="eProjectPM" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.eProjectPM}"  />
 					</td>
 					<th>PM 연락처</th>
 					<td>
-						<input type="text" id="ePMContact" name="ePMContact" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.ePMContact}"  />
+						<input type="text" id="ePMContact" name="ePMContact" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.ePMContact}"  />
 					</td>
 					<th>PM 메일</th>
 					<td>
-						<input type="text" id="ePMEmail" name="ePMEmail" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.ePMEmail}"  />
+						<input type="text" id="ePMEmail" name="ePMEmail" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.ePMEmail}"  />
 					</td>
 				</tr>
 				<tr>
 					<th>비고</th>
 	          			<td id="td_editor" colspan="5" align="center" scope="row"> 
-						<textarea id="eRemarks" name="eRemarks" cols="100%" rows="20" style="font-size: 20px; width: 100%; height: 300px; resize: none;" >${projectInfo.eRemarks}
-						</textarea>
+						<textarea id="eRemarks" name="eRemarks" cols="100%" rows="20" style="font-size: 20px; width: 100%; height: 300px; resize: none;" >${projectInfo.eRemarks}</textarea>
 					</td>
 				</tr>
 			</tbody>
@@ -393,7 +397,7 @@ function deleteGyeoljaeList(){
 		<c:if test="${staffVo.kStaffAuthWriteFlag eq 'T'}">
 		<button type="button" class="form_btn active" onclick="insert_go();">저장</button>
 		</c:if>
-		<button type="button" class="form_btn" onclick="cancel();">목록</button>
+		<button type="button" class="form_btn" onclick="cancel();">취소</button>
 	</div>
 	
 </form>

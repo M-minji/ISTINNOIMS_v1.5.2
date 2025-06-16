@@ -161,6 +161,7 @@ function rowCheck(index){
     // 체크박스의 현재 상태를 반전시킵니다.
     checkbox.checked = !checkbox.checked;
 }
+window.resizeTo(1430, 800);
 </script>
 
 <form id="frm" name="frm" method="post" action="/mes/asset/kw_asset_box_lf.do" class="popup_wrap">

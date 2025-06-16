@@ -413,7 +413,7 @@
 	        var messageCell = document.createElement('td');
 	        
 	        messageCell.colSpan = 2;
-	        messageCell.textContent = "점검 서류를 선택하세요.";
+	        messageCell.textContent = "첨부파일을 선택하세요.";
 	        
 	        
 	        messageRow.appendChild(messageCell);
@@ -677,6 +677,6 @@
 		<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T' }">
 			<!--  <button type="button" class="form_btn bg" onclick="eModification();">수정</button>  -->
 		</c:if>
-		<button type="button" class="form_btn" onclick="cancle();">목록</button>
+		<button type="button" class="form_btn" onclick="cancle();">취소</button>
 	</div>
 </form>

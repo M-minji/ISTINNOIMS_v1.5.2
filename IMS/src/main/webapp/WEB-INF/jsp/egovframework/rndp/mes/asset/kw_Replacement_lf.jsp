@@ -18,7 +18,7 @@ $(function(){
 	datepickerSet("topStartDate","topEndDate");
 	  $('table[role="grid"].gridjs-table th:nth-child(1) button').hide();
 	  $('table[role="grid"].gridjs-table th:nth-child(1)').css('width', '70px'); 
-	  $('table[role="grid"].gridjs-table th:nth-child(2)').css('width', '120px'); 
+	  $('table[role="grid"].gridjs-table th:nth-child(2)').css('width', '140px'); 
 	  $('table[role="grid"].gridjs-table th:nth-child(3)').css('width', '100px'); 
 	  $('table[role="grid"].gridjs-table th:nth-child(4)').css('width', '120px'); 
 	  $('table[role="grid"].gridjs-table th:nth-child(5)').css('width', '110px'); 
@@ -49,7 +49,7 @@ $(function(){
 		        'text-overflow': 'ellipsis'  
 		    });
 		});
-	  $('table[role="grid"].gridjs-table th:nth-child(12)').css('width', '240px'); 
+	  $('table[role="grid"].gridjs-table th:nth-child(12)').css('width', '200px'); 
 	  $('table[role="grid"].gridjs-table td:nth-child(12)').each(function() {
 		    $(this).css({
 		    	  "cursor": "default"
@@ -376,7 +376,7 @@ function excelDwonload(){
 			<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">
 				<!--  <button type="button" class="form_btn ico_excel" onclick="document.getElementById('managerFile').click();">엑셀 등록</button>	 -->
 				<input id="managerFile" type="file"  style="display: none;" onchange="readExcel(event);"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
-				<button type="button" class="form_btn active" onclick="go_insert()">교체정보 등록</button>
+				<button type="button" class="form_btn active" onclick="go_insert()">등록</button>
 			</c:if>
 		</div>
 	</div>

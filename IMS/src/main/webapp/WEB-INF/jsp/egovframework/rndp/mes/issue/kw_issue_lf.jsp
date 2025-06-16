@@ -293,7 +293,7 @@ $(document).ready(function(){
 					</li>
 					<li>
 						<span onclick="clearESearchWordG()">처리일자</span>
-						<input type="text" id="eSearchWordG" name="eSearchWordG" value="${mesIssueVO.eSearchWordG}" maxlength="30"  class="inp_color" onchange="fn_guestList(1)" />
+						<input type="text" id="eSearchWordG" name="eSearchWordG" value="${mesIssueVO.eSearchWordG}" maxlength="30"  class="inp_color" onchange="fn_guestList(1)" autocomplete="off"/>
 					</li>
 				    <li class="info_txt">*처리일자 텍스트를 클릭하면 빈값 처리</li>
 				</ul>	

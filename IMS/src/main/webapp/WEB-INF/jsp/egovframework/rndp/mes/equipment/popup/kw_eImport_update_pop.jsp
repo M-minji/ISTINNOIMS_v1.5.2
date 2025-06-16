@@ -78,7 +78,7 @@ function nowDate(){
 			      			</td>
 			      			<th>반출 확인자</th>
 			      			<td>
-			      				<input type="text" name='eExitExporter' id='eExitExporter' value='' maxlength="30">  
+			      				<input type="text" name='eExitExporter' id='eExitExporter' style="width:100%;" value='' maxlength="30">  
 			      			</td>
 						</tr>
 		    		</tbody>

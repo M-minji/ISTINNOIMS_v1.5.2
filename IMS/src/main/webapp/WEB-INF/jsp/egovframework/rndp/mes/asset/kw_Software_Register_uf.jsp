@@ -459,13 +459,13 @@
 	         <tbody id="lineRow">
 				<tr>
 					<td> 
-			 			<input type='text' id='eManufacturer' name='eManufacturer' style='text-align:center;' value='${swInfo.eManufacturer}' maxLength='50'  />
+			 			<input type='text' id='eManufacturer' name='eManufacturer' style='text-align:left;' value='${swInfo.eManufacturer}' maxLength='50'  />
 					</td>
 					<td> 
-			 			<input type='text' id='eProductName' name='eProductName' style='text-align:center;' value='${swInfo.eProductName}' maxLength='50'  />
+			 			<input type='text' id='eProductName' name='eProductName' style='text-align:left;' value='${swInfo.eProductName}' maxLength='50'  />
 					</td>
 					<td> 
-			 			<input type='text' id='eVersion' name='eVersion' style='text-align:center;' value='${swInfo.eVersion}' maxLength='30'  />
+			 			<input type='text' id='eVersion' name='eVersion' style='text-align:left;' value='${swInfo.eVersion}' maxLength='30'  />
 					</td>
 					<td> 
 			 			<input type='text' id='ePurchaseDate' name='ePurchaseDate' value='${swInfo.ePurchaseDate}' class='inp_color' style='width:98%; text-align:center;'  readonly  />
@@ -479,7 +479,7 @@
 					<td><span id='rowDate'></span> 
 					</td>
 					<td> 
-			 			<input type='text' id='eLicenseQuantity' name='eLicenseQuantity' value='${swInfo.eLicenseQuantity}' style='width:98%; text-align:center;' maxLength='6' onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"  />
+			 			<input type='text' id='eLicenseQuantity' name='eLicenseQuantity' value='${swInfo.eLicenseQuantity}' style='width:98%; text-align:left;' maxLength='6' onkeyup="this.value=this.value.replace(/[^0-9]/g,'')"  />
 					</td>
 					<td>
 						<a class='form_btn md' onclick="addFile('${aDeteliList.eRowIndex}');">파일추가</a> 
@@ -564,6 +564,6 @@
 	
 	<div class="bottom_btn">
 		<button type="button" class="form_btn active" onclick="update_go();">저장</button>
-		<button type="button" class="form_btn" onclick="cancle();">목록</button>
+		<button type="button" class="form_btn" onclick="cancle();">취소</button>
 	</div>
 </form>

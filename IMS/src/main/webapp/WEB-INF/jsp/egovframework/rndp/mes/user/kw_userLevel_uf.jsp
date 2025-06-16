@@ -56,6 +56,6 @@ function memberUp(){
 		
 		<div class="bottom_btn">
 			<button type="button" class="form_btn active" onclick="memberUp();">저장</button>
-			<a href="/mes/user/kw_userLevel_lf.do" class="form_btn">목록</a>
+			<a href="/mes/user/kw_userLevel_lf.do" class="form_btn">취소</a>
 		</div>
 </form>

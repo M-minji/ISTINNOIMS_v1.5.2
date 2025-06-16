@@ -36,6 +36,15 @@ $(document).ready(function(){
 	});
 })
 
+function eDeliverable_update(){
+	document.frm.action = "/mes/output/kw_eDeliverable_insert.do";
+	document.frm.submit();
+}
+function eReport_update(){
+	document.frm.action = "/mes/output/kw_eReport_insert.do";
+	document.frm.submit();
+}
+
 // 오늘 날짜
 function nowDate(){
     var date = new Date();
@@ -392,7 +401,12 @@ function settingSign(){
 			    	<input id="design" type="radio" name="tab_item">
 			    	<span>완료 산출물</span>
 			    </label>
+			    <div style="margin-left: auto;">
+					<button type="button" class="form_btn md" onclick="eDeliverable_update();">산출물 등록</button>
+				</div>
 			</div>
+				
+	
 		    
 		    <div class="tab_content" id="all_content">
 		        <div class="content_top innertab">
@@ -628,6 +642,9 @@ function settingSign(){
 		    	<input id="yearlyTwo" type="radio" name="tab_itemTwo">
 		    	<span>반기 보고</span>
 		    </label>
+		    <div style="margin-left: auto;">
+					<button type="button" class="form_btn md" onclick="eReport_update();">보고서 등록</button>
+				</div>
 		</div>
 			    <div class="tab_content" id="allTwo_content">
 			        <div class="content_top innertab">
@@ -929,7 +946,7 @@ function settingSign(){
 						<th style="width:10%;">결재자</th>
 						<th style="width:10%;">결정</th>
 						<th style="width:10%;">결재구분</th>
-						<th style="width:60%;">반려사유 및 싸인</th>
+						<th style="width:60%;">서명 또는 반려사유</th>
 					</tr>
 	        	</thead>
 		        <tbody>

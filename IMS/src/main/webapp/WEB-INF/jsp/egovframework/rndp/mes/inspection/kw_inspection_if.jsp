@@ -389,7 +389,7 @@
 	        var messageCell = document.createElement('td');
 	        
 	        messageCell.colSpan = 2;
-	        messageCell.textContent = "점검 서류를 선택하세요.";
+	        messageCell.textContent = "첨부파일을 선택하세요.";
 	        
 	        
 	        messageRow.appendChild(messageCell);
@@ -611,17 +611,20 @@
 				</tr>
 				<tr>
 					<th><span style="color: red">* </span>점검자</th>
-					<td>
-						<input type="text" id="eInspector" name="eInspector" style="width:75%;" maxLength="50" />
-						<a class="form_btn bg" onclick="selectWorkerPop('R', 'eInspector')" >담당자 선택</a>
-						<input type="hidden" name="eInspectionResult" id="eInspectionResult" style="width:95%; text-align:left;" maxLength="50" value=""/>
-						<input type="hidden" name="eRequester" id="eRequester" style="width:95%; text-align:left;" maxLength="50" value=""/>
-						<input type="hidden" name="eOrganization" id="eOrganization" style="width:95%; text-align:left;" maxLength="150" value=""/>
-						<input type="hidden" name="eDepartment" id="eDepartment" style="width:95%; text-align:left;" maxLength="150" value=""/>
-					</td>
+					
+					<td >
+						<div style="display: flex; align-items: center; gap: 10px;">
+							<input type="text" id="eInspector" name="eInspector" style="flex: 1; min-width: 0;" maxLength="50" />
+							<a class="form_btn bg" onclick="selectWorkerPop('R', 'eInspector')" style="margin-left: auto;">담당자 선택</a>
+							<input type="hidden" name="eInspectionResult" id="eInspectionResult" style="width:95%; text-align:left;" maxLength="50" value=""/>
+							<input type="hidden" name="eRequester" id="eRequester" style="width:95%; text-align:left;" maxLength="50" value=""/>
+							<input type="hidden" name="eOrganization" id="eOrganization" style="width:95%; text-align:left;" maxLength="150" value=""/>
+							<input type="hidden" name="eDepartment" id="eDepartment" style="width:95%; text-align:left;" maxLength="150" value=""/>
+						</div>
+					</td>		
 					<th>점검자 소속</th>
 					<td>
-						<input type="text" id="eInspectorOrg" name="eInspectorOrg" style="width:95%;" maxLength="50" />
+						<input type="text" id="eInspectorOrg" name="eInspectorOrg" style="width:100%;" maxLength="50" />
 						<span id="eInspectorOrgTxt" style="display: none;"></span>
 					</td>
 				</tr>
@@ -646,7 +649,7 @@
 <%-- 			</caption> --%>
 			<thead>
 				<tr>
-					<th colspan="2">점검 서류  <a class="form_btn md ml5" onclick="addFile()" >파일 선택</a></th>
+					<th colspan="2">첨부파일  <a class="form_btn md ml5" onclick="addFile()" >파일 선택</a></th>
 				</tr>
 				<tr>
 					<th style="width: 200px;">구분</th>
@@ -692,7 +695,10 @@
 					<th style="width: *%;">성명</th>
 				</tr>
 			</thead>
-			<tbody id="lineRow3">			
+			<tbody id="lineRow3">		
+				<tr>
+					<td colspan="3">결재정보가 없습니다.</td>
+				</tr>	
 			</tbody>
 			
 		</table>
@@ -702,6 +708,6 @@
 		<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T' }">
 		<button type="button" class="form_btn active" onclick="insert_go();">등록</button>
 		</c:if>
-		<button type="button" class="form_btn" onclick="cancle();">목록</button>
+		<button type="button" class="form_btn" onclick="cancle();">취소</button>
 	</div>
 </form>

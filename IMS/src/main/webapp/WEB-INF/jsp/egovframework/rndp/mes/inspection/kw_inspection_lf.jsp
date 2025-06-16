@@ -358,7 +358,7 @@ function excelDwonload(){
 			<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">
 			<!--  <button type="button" class="form_btn bg" onclick="document.getElementById('managerFile').click();">엑셀 등록</button>
 			<input id="managerFile" type="file"  style="display: none;" onchange="readExcel(event);"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>  -->
-			<button type="button" class="form_btn active" onclick="go_insert()">점검 등록</button>
+			<button type="button" class="form_btn active" onclick="go_insert()">등록</button>
 			</c:if>
 		</div>
 	</div>

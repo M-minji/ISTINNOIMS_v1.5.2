@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -247,7 +249,8 @@ public class MesAssetController {
 		MesK_StaffVo staffVO = (MesK_StaffVo) request.getSession().getAttribute("mesStaff");
 		mesAssetVO.setkStaffName(staffVO.getkStaffName());
 		mesAssetVO.setkStaffKey(Integer.toString(staffVO.getkStaffKey()));
-	 
+
+		
 //		mesAssetService.insertMesAsset(mesAssetVO, request);
 		mesAssetService.insertInfoAsset(mesAssetVO);
 		

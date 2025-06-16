@@ -282,7 +282,7 @@ function approvalPop(){
   				<tr>
 	  				<th><span style="color: red">* </span>사업명</th>
 					<td>
-						<input type="text" id="eProjectName" name="eProjectName" style="width:90%; text-align: left;padding-left: 5px;"  value="" maxlength="30"/>
+						<input type="text" id="eProjectName" name="eProjectName" style="width:100%; text-align: left;padding-left: 5px;"  value="" maxlength="30"/>
 					</td>
 					<th>사업기간</th>
 					<td>
@@ -291,35 +291,40 @@ function approvalPop(){
 					</td>
 					<th>주사업자</th>
 					<td>
-						<input type="text" id="eMainContractor" name="eMainContractor" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
+						<input type="text" id="eMainContractor" name="eMainContractor" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
 				</tr>
 				<tr>
 					<th><span style="color: red">* </span>담당자명</th>
-					<td>
-						<input type="text" id="eManager" name="eManager" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
+					<td >
+						<div style="display: flex; align-items: center; gap: 10px;">
+							<input type="text" id="eManager" name="eManager" style="flex: 1; min-width: 0; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
+							<a class="form_btn bg" onclick="selectWorkerPop('R', 'eManager')" style="margin-left: auto;">담당자 선택</a>
+						</div>
 					</td>
 					<th>담당자연락처</th>
 					<td>
-						<input type="text" id="eManagerContact" name="eManagerContact" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
+						<input type="text" id="eManagerHP" name="eManagerHP" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
+						<span id="eManagerHPTxt" style="display: none;"></span>
 					</td>
 					<th>담당자메일</th>
 					<td>
-						<input type="text" id="eManagerEmail" name="eManagerEmail" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
+						<input type="text" id="eManagerMail" name="eManagerMail" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
+						<span id="eManagerMailTxt" style="display: none;"></span>
 					</td>
 				</tr>
 				<tr>
 					<th>사업 PM명</th>
 					<td>
-	 					<input type="text" id="eProjectPM" name="eProjectPM" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
+	 					<input type="text" id="eProjectPM" name="eProjectPM" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
 					<th>PM 연락처</th>
 					<td>
-						<input type="text" id="ePMContact" name="ePMContact" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
+						<input type="text" id="ePMContact" name="ePMContact" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
 					<th>PM 메일</th>
 					<td>
-						<input type="text" id="ePMEmail" name="ePMEmail" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
+						<input type="text" id="ePMEmail" name="ePMEmail" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
 				</tr>
 				<tr>
@@ -362,7 +367,10 @@ function approvalPop(){
 					<th>성명</th>
 				</tr>
 			</thead>
-			<tbody id="lineRow3">			
+			<tbody id="lineRow3">		
+				<tr>
+					<td colspan="3">결재정보가 없습니다.</td>
+				</tr>	
 			</tbody>
 		</table>
 	</div>
@@ -371,6 +379,6 @@ function approvalPop(){
 		<c:if test="${staffVo.kStaffAuthWriteFlag eq 'T'}">
 		<button type="button" class="form_btn active" onclick="insert_go();">등록</button>
 		</c:if>
-		<button type="button" class="form_btn" onclick="cancel();">목록</button>
+		<button type="button" class="form_btn" onclick="cancel();">취소</button>
 	</div>
 </form>

@@ -419,7 +419,7 @@
 		<div class="list_btm right">
 			<div class="btns">
 				<c:if test="${staffVo.kStaffAuthWriteFlag eq 'T'}">
-				<button type="button" class="form_btn active" onClick="addRow(-1, 0)">최상위 부서추가</button>
+				<button type="button" class="form_btn active" onClick="addRow(-1, 0)">부서 추가</button>
 				</c:if>
 			</div>
 		</div>

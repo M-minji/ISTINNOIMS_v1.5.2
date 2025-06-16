@@ -11,13 +11,16 @@ $(function(){
 function selectAdd(num){  
 	var obj = {
 			ePosition :	$("#eDepartmentName_"+num).val(),
-			eName :	$("#eContactName_"+num).val()
+			eName :	$("#eContactName_"+num).val(),
+			eMail :	$("#eEMail_"+num).val(),
+			eHP :	$("#ePhoneNumber_"+num).val()
 	}
 	 
 	if(typeof(opener.setReturnTextPop) != "undefined"){
 	window.opener.setReturnTextPop(obj);
 	window.close();
 	}
+	
 }
 	 
 // 검색
@@ -81,6 +84,7 @@ function fn_guestList(pageNo) {
 		           					<input type="hidden" id="eDepartmentName_${i.index}" value="${list.eDepartmentName}" />
 		           					<input type="hidden" id="eContactName_${i.index}" value="${list.eContactName}" />
 		           					<input type="hidden" id="ePhoneNumber_${i.index}" value="${list.ePhoneNumber}" />
+		           					<input type="hidden" id="eEMail_${i.index}" value="${list.eEmail}" />
 		           				</td>
 		           				<td>
 		           					<c:out value="${list.eDepartmentName}" />	

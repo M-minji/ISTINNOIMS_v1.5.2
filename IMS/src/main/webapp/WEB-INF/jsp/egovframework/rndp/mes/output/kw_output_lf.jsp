@@ -46,7 +46,7 @@ $(document).ready(function(){
 			    });
 			});
 	  $('table[role="grid"].gridjs-table th:nth-child(3)').css('width', '155px'); //     <th >사업기간</th>   
-	  $('table[role="grid"].gridjs-table th:nth-child(4)').css("width", "135px"); //    <th >담당자</th>    산출물
+	  $('table[role="grid"].gridjs-table th:nth-child(4)').css("width", "100px"); //    <th >담당자</th>    산출물
 	  $('table[role="grid"].gridjs-table td:nth-child(4)').each(function() {
 			 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 			    $(this).css({
@@ -66,7 +66,7 @@ $(document).ready(function(){
 			        'text-overflow': 'ellipsis'  // 텍스트가 넘칠 경우 '...'로 표시
 			    });
 			});
-	  $('table[role="grid"].gridjs-table th:nth-child(6)').css('width', '80px'); //       <th >담당자메일</th>  담당자
+	  $('table[role="grid"].gridjs-table th:nth-child(6)').css('width', '100px'); //       <th >담당자메일</th>  담당자
 	  $('table[role="grid"].gridjs-table td:nth-child(6)').each(function() {
 			 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 			    $(this).css({
@@ -78,7 +78,7 @@ $(document).ready(function(){
 	  $('table[role="grid"].gridjs-table th:nth-child(7)').css('width', '100px'); //       <th >주사업자</th>   담연
 	  $('table[role="grid"].gridjs-table th:nth-child(8)').css('width', '100px'); //       <th >사업PM</th>   담메
 	  $('table[role="grid"].gridjs-table th:nth-child(9)').css('width', '100px'); //       <th >PM연락처</th>  주사
-	  $('table[role="grid"].gridjs-table th:nth-child(10)').css('width', '80px'); //     <th >PM이메일</th>  사p
+	  $('table[role="grid"].gridjs-table th:nth-child(10)').css('width', '100px'); //     <th >PM이메일</th>  사p
 	  $('table[role="grid"].gridjs-table th:nth-child(11)').css('width', '100px'); //      <th >진행상태</th>   p연
 	  $('table[role="grid"].gridjs-table th:nth-child(12)').css('width', '100px'); //      <th >산출물</th>     pm이메일?
 	  $('table[role="grid"].gridjs-table th:nth-child(13)').css('width', '80px'); //       <th >보고서</th>    진행상태
@@ -296,14 +296,16 @@ function eReport_update(eProjectNum){
  							${outputList.eStartDate} - ${outputList.eEndDate}
  						</td> 
 						<td onclick="event.cancelBubble = true;"> 
-							<c:if test="${outputList.sSignStatus eq '제외' || outputList.sSignStatus eq '승인' || outputList.sSignStatus eq '반려'}">결재 ${outputList.sSignStatus}:</c:if>
+							<c:if test="${outputList.sSignStatus eq '제외' || outputList.sSignStatus eq '승인' || outputList.sSignStatus eq '반려'}">
+							<!-- 	결재 ${outputList.sSignStatus}:   -->
+							</c:if>
 							<c:if test="${outputList.sSignStatus eq '등록'}">
-								 결재 준비 
+							<!-- 	 결재 준비  -->
 							</c:if>	
 							<c:if test="${outputList.sSignStatus eq '승인' || outputList.sSignStatus eq '제외'}">
 								<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">			
 									<c:if test="${outputList.kStaffKey eq staffVO.kStaffKey}">
-			 							<a class="form_btn sm" onclick="eDeliverable_update(${outputList.eProjectNum});">산출물등록</a> 
+			 							<a class="form_btn sm" onclick="eDeliverable_update(${outputList.eProjectNum});">산출물 등록</a> 
 		 							</c:if>
 	 							</c:if> 
 							</c:if>

@@ -808,13 +808,16 @@
 				</tr>
 				<tr>				
 					<th ><span style="color: red">* </span>요청자</th>
+					
 					<td >
-						<input type="text" id="eRequester" name="eRequester" style="width:75%;" value="${issueInfo.eRequester}" maxLength="50"/>
-						<a class="form_btn bg" onclick="selectWorkerPop('R', 'eRequester')">담당자 선택</a>
+						<div style="display: flex; align-items: center; gap: 10px;">
+							<input type="text" id="eRequester" name="eRequester" style="flex: 1; min-width: 0;" value="${issueInfo.eRequester}" maxLength="50"/>
+						<a class="form_btn bg" onclick="selectWorkerPop('R', 'eRequester')" style="margin-left: auto;">담당자 선택</a>
+						</div>
 					</td>
 					<th >요청자 소속</th>
 					<td >
-						<input type="text" id="eRequesterOrg" name="eRequesterOrg" style="width:95%;" maxLength="50" value="${issueInfo.eRequesterOrg}" />
+						<input type="text" id="eRequesterOrg" name="eRequesterOrg" style="width:100%;" maxLength="50" value="${issueInfo.eRequesterOrg}" />
 						<span id="eRequesterOrgTxt" style="display: none;"></span>
 					</td>
   				</tr>
@@ -848,7 +851,7 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th colspan="2">
+					<th colspan="2">첨부파일
 					 <a class="form_btn md" onclick="addFile()" >파일 선택</a>
 					</th>
 				</tr>
@@ -994,15 +997,19 @@
 				<h2>처리 정보</h2>
 			</div>
 		</div>
-		<div class="normal_table row">
+		<div class="normal_table">
 			<table>
-				 <tbody>	
+				<thead>
 					<tr>
-						<th>처리내용
+						<th colspan="4">처리내용
 							 <input type="hidden" id="eActualWorkDate" name="eActualWorkDate" style="width:120px;text-align: center;" value="${issueInfo.eActualWorkDate}" class="inp_color"  readonly="readonly"/>
 							 <input type="hidden" id="eActualWorker" name="eActualWorker" style="width:120px;text-align: center;" value="${issueInfo.eActualWorker}" maxlength="14"/>
 						</th>
-						<td id="td_editor" colspan="3" align="center" scope="row"> 
+					</tr>
+				</thead>
+				 <tbody>	
+					<tr>
+						<td id="td_editor" colspan="4" align="center" scope="row"> 
 							<textarea id="eActualDetails" name="eActualDetails" cols="100%" rows="20" style="font-size: 20px; width: 100%;" maxLength="1000">${issueInfo.eActualDetails}</textarea>
 						</td>
 					</tr>
@@ -1010,7 +1017,6 @@
 			</table>
 		</div>
 	</div>
-	
 	<div class="content_top nofirst with_btn">
 		<div class="content_tit flex">
 			<h2>승인권자</h2>
@@ -1076,6 +1082,6 @@
 	
 	<div class="bottom_btn">
 		<button type="button" class="form_btn active" onclick="insert_go();">저장</button>
-		<button type="button" class="form_btn" onclick="cancel();">목록</button>
+		<button type="button" class="form_btn" onclick="cancel();">취소</button>
 	</div>
 </form>

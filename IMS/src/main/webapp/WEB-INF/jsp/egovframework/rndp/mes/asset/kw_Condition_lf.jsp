@@ -24,12 +24,12 @@ $(function(){
 	  $('table[role="grid"].gridjs-table th:nth-child(5)').css('width', '120px'); 
 	  $('table[role="grid"].gridjs-table th:nth-child(6)').css('width', '100px'); 
 	  $('table[role="grid"].gridjs-table th:nth-child(7)').css('width', '120px'); 
-	  $('table[role="grid"].gridjs-table th:nth-child(8)').css('width', '100px'); 
+	  $('table[role="grid"].gridjs-table th:nth-child(8)').css('width', '120px'); 
 	  $('table[role="grid"].gridjs-table th:nth-child(9)').css('width', '90px'); 
 	  $('table[role="grid"].gridjs-table th:nth-child(10)').css('width', '100px'); 
 	  $('table[role="grid"].gridjs-table th:nth-child(11)').css('width', '120px'); 
 	  $('table[role="grid"].gridjs-table th:nth-child(12)').css('width', '120px'); 
-	  $('table[role="grid"].gridjs-table th:nth-child(13)').css('width', '300px'); 
+	  $('table[role="grid"].gridjs-table th:nth-child(13)').css('width', '250px'); 
 	  $('table[role="grid"].gridjs-table td:nth-child(13)').each(function() {
 		    $(this).css({
 		    	  "cursor": "default"
@@ -328,13 +328,15 @@ function excelDwonload(){
 							</c:if>
 							
 							<c:if test="${empty list.eEntryImporter}"> 
-								-${list.eEntryExitDate}:반출 &nbsp;&nbsp; 
+						<!-- 		-${list.eEntryExitDate}:반출 &nbsp;&nbsp;   -->	 
+									: 반출 &nbsp;&nbsp;
 								<c:if test="${list.eStatus eq '승인'  || list.eStatus eq '제외'}">
 									<a class="form_btn sm" onclick="eImport_go(${list.eEntryExitItemKey});">반입등록</a>
 								</c:if>
 							</c:if>	
 							<c:if test="${not empty list.eEntryImporter}">
-						     	-${list.eEntryImportDate}: 반입완료
+					<!--    	-${list.eEntryImportDate}: 반입완료   -->	  
+								: 반입완료
 							</c:if>
 						
 							
@@ -362,7 +364,7 @@ function excelDwonload(){
 			<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">
 				<!--  <button type="button" class="form_btn ico_excel" onclick="document.getElementById('managerFile').click();">엑셀 등록</button>  -->
 				<input id="managerFile" type="file"  style="display: none;" onchange="readExcel(event);"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
-				<button type="button" class="form_btn active" onclick="go_insert()">반출 등록</button>
+				<button type="button" class="form_btn active" onclick="go_insert()">등록</button>
 			</c:if>
 		</div>
 	</div>

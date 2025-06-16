@@ -602,24 +602,26 @@
 				</tr>
 				<tr>
 					<th><span style="color: red">* </span>반출자</th>
-					<td>
-						<input type="text" id="eEntryStaff" name="eEntryStaff" style="width:75%;" value="${assetInfo.eEntryStaff}" maxLength="50"/>
-						<a class="form_btn bg" onclick="selectWorkerPop('R', 'eEntryStaff')">담당자 선택</a>
+					<td >
+						<div style="display: flex; align-items: center; gap: 10px;">
+							<input type="text" id="eEntryStaff" name="eEntryStaff" style="flex: 1; min-width: 0;" value="${assetInfo.eEntryStaff}" maxLength="50"/>
+							<a class="form_btn bg" onclick="selectWorkerPop('R', 'eEntryStaff')" style="margin-left: auto;">담당자 선택</a>
+						</div>
 					</td>
 					<th>반출자 소속</th>
 						<td >
-							<input type="text" id="eEntryStaffOrg" name="eEntryStaffOrg" style="width:95%;" maxLength="50" value="${assetInfo.eEntryStaffOrg}" />
+							<input type="text" id="eEntryStaffOrg" name="eEntryStaffOrg" style="width:100%;" maxLength="50" value="${assetInfo.eEntryStaffOrg}" />
 							<span id="eEntryStaffOrgTxt" style="display: none;"></span>
 						</td>
 				</tr>
 				<tr>
 					<th>반출사유</th>
 					<td colspan="1"> 
-						<input type="text" name="eEntryRequestReason" id="eEntryRequestReason" style="width:95%; text-align:left;" maxLength="50" value="${assetInfo.eEntryRequestReason }"/>
+						<input type="text" name="eEntryRequestReason" id="eEntryRequestReason" style="width:100%; text-align:left;" maxLength="50" value="${assetInfo.eEntryRequestReason }"/>
 					</td>
 					<th>반출처</th>
 					<td colspan="1"> 
-						<input type="text" name="eExportLocation" id="eExportLocation" style="width:95%; text-align:left;" maxLength="50" value="${assetInfo.eExportLocation }"/>
+						<input type="text" name="eExportLocation" id="eExportLocation" style="width:100%; text-align:left;" maxLength="50" value="${assetInfo.eExportLocation }"/>
 					</td>
 				</tr>
 			</tbody>
@@ -755,6 +757,6 @@
 		<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T' }">
 		<button type="button" class="form_btn active" onclick="update_go();">저장</button>
 		</c:if>
-		<button type="button" class="form_btn" onclick="cancle();">목록</button>
+		<button type="button" class="form_btn" onclick="cancle();">취소</button>
 	</div>
 </form>

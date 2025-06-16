@@ -690,13 +690,13 @@
 					</td>
 					<th><span style="color: red">* </span>자산번호</th>
 					<td>
-						<input type="text" name="eAssetNumber" id="eAssetNumber" style="width:95%; text-align:left;" maxLength="100" value="${assetInfo.eAssetNumber}" onchange="eAssetNumberCheck(this)"/>
+						<input type="text" name="eAssetNumber" id="eAssetNumber" style="width:100%; text-align:left;" maxLength="100" value="${assetInfo.eAssetNumber}" onchange="eAssetNumberCheck(this)"/>
 					</td>
 				</tr>
 				<tr>
 					<th><span style="color: red">* </span>자산명</th>
 					<td>
-						<input type="text" name="eAssetName" id="eAssetName" style="width:95%; text-align:left;" maxLength="100" value="${assetInfo.eAssetName}"/>
+						<input type="text" name="eAssetName" id="eAssetName" style="width:100%; text-align:left;" maxLength="100" value="${assetInfo.eAssetName}"/>
 					</td>
 					<th>설치위치</th>
             		<td> 
@@ -737,17 +737,17 @@
 				<tr>
 					<th><span style="color: red">* </span>제조사</th>
 					<td>
-						<input type="text" name="eAssetMaker" id="eAssetMaker" style="width:95%; text-align:left;" maxLength="50" value="${assetInfo.eAssetMaker}"/>
+						<input type="text" name="eAssetMaker" id="eAssetMaker" style="width:100%; text-align:left;" maxLength="50" value="${assetInfo.eAssetMaker}"/>
 					</td>
 					<th><span style="color: red">* </span>모델명</th>
 					<td>
-						<input type="text" name="eAssetModel" id="eAssetModel" style="width:95%; text-align:left;" maxLength="50" value="${assetInfo.eAssetModel}"/>
+						<input type="text" name="eAssetModel" id="eAssetModel" style="width:100%; text-align:left;" maxLength="50" value="${assetInfo.eAssetModel}"/>
 					</td>
 				</tr>
 				<tr>
 					<th><span style="color: red">* </span>제조번호(S/N)</th>
 					<td>
-						<input type="text" name=eAssetSNumber id="eAssetSNumber" style="width:95%; text-align:left;" maxLength="50" value="${assetInfo.eAssetSNumber}" onchange="eAssetSNumberCheck(this)" />
+						<input type="text" name=eAssetSNumber id="eAssetSNumber" style="width:100%; text-align:left;" maxLength="50" value="${assetInfo.eAssetSNumber}" onchange="eAssetSNumberCheck(this)" />
 					</td>
 					<th>자산상태</th>
 					<td>
@@ -762,7 +762,7 @@
           	 	<tr>
           			<th>도입원가(원)</th>
             		<td>
-						<input type="text" name="eAssetCost" id="eAssetCost" style="width:95%; text-align:left; padding-right: 5px;" maxLength="10" onblur="setComma(this.id)" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" value="${assetInfo.eAssetCost}"/>
+						<input type="text" name="eAssetCost" id="eAssetCost" style="width:100%; text-align:left; padding-right: 5px;" maxLength="10" onblur="setComma(this.id)" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" value="${assetInfo.eAssetCost}"/>
             		</td>
             			<th>도입일</th>
             		<td>
@@ -772,17 +772,17 @@
         		<tr>
             		<th>장비구분</th>
             		<td>
-						<input type="text" id="eDeviceType" name="eDeviceType" style="width:95%;" maxlength="50" oninput="convertToUppercase(this)" value="${assetInfo.eDeviceType}"  />
+						<input type="text" id="eDeviceType" name="eDeviceType" style="width:100%;" maxlength="50" oninput="convertToUppercase(this)" value="${assetInfo.eDeviceType}"  />
             		</td>
             		<th>사업명</th>
             		<td>
-						<input type="text" name="eAssetPurpose" id="eAssetPurpose" style="width:95%; text-align:left;" maxLength="100" value="${assetInfo.eAssetPurpose}"/>
+						<input type="text" name="eAssetPurpose" id="eAssetPurpose" style="width:100%; text-align:left;" maxLength="100" value="${assetInfo.eAssetPurpose}"/>
             		</td>
           		</tr>		
         		<tr>
         			<th>내구연수</th>
 					<td colspan="1">
-            			<input type="text" name="eLifespan" id="eLifespan" style="width:150px; text-align:left;" maxLength="100" value="${assetInfo.eLifespan}"/>
+            			<input type="text" name="eLifespan" id="eLifespan" style="width:150px; text-align:left;" maxLength="100" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')" value="${assetInfo.eLifespan}"/>
            			 	: <select id="eLifeType" name="eLifeType">
 				            <option value="일반장비"   <c:if test="${assetInfo.eLifeType  eq '일반장비'}">selected="selected" </c:if> >일반장비</option>
 				            <option value="노후장비"  <c:if test="${assetInfo.eLifeType  eq '노후장비'}">selected="selected" </c:if> >노후장비</option>
@@ -790,7 +790,7 @@
 					</td>
             		<th>망구분</th>
             		<td>
-						<input type="text" name="eNetworkType" id="eNetworkType" style="width:95%; text-align:left;" maxLength="100" value="${assetInfo.eNetworkType}" />
+						<input type="text" name="eNetworkType" id="eNetworkType" style="width:100%; text-align:left;" maxLength="100" value="${assetInfo.eNetworkType}" />
             		</td>
           		</tr>		
           		<tr>          		
@@ -809,7 +809,7 @@
           		<tr> 
         			<th>HOST NAME</th>
             		<td>
-            			<input type="text" name="eHostName" id="eHostName" style="width:95%; text-align:left;" maxLength="100" value="${assetInfo.eHostName}" />
+            			<input type="text" name="eHostName" id="eHostName" style="width:100%; text-align:left;" maxLength="100" value="${assetInfo.eHostName}" />
             		</td>
             		<th rowspan="4">장비사진
             			<a class="form_btn md" onclick="addFile();" id="addBtn"> 
@@ -833,19 +833,19 @@
         		<tr>
             		<th>IP</th>
             		<td>
-            			<input type="text" name="eIp" id="eIp" style="width:95%; text-align:left;" maxLength="100" value="${assetInfo.eIp}"  />
+            			<input type="text" name="eIp" id="eIp" style="width:100%; text-align:left;" maxLength="100" value="${assetInfo.eIp}"  />
             		</td>
           		</tr>	
           		<tr>
           			<th>OS</th>
             		<td>
-            			<input type="text" name="eOs" id="eOs" style="width:95%; text-align:left;" maxLength="100" value="${assetInfo.eOs}" />
+            			<input type="text" name="eOs" id="eOs" style="width:100%; text-align:left;" maxLength="100" value="${assetInfo.eOs}" />
             		</td>
           		</tr>		
 				<tr>          		
 					<th>비고</th>
 					<td colspan="1">
-						<input id="eAssetEtc" name="eAssetEtc" style="resize: none; width:95%;" maxLength="100" value="${assetInfo.eAssetEtc}" />
+						<input id="eAssetEtc" name="eAssetEtc" style="resize: none; width:100%;" maxLength="100" value="${assetInfo.eAssetEtc}" />
 					</td>
           		</tr>		          		 
 			</tbody>
@@ -939,7 +939,7 @@
 					<c:forEach var="slist" items="${signList}" varStatus="j">
 							<tr>
 								<td>
-									<a class='del' onclick="delRowTwo(this);">X</a>
+									<span id='sn_sp_${j.index}' class='sn_sp'>${slist.sSignSequence}</span>
 			
 									<input type='hidden' id='sSignStaffKey_${j.index}' name='sSignStaffKey' value='${slist.sSignStaffKey}'/>
 									<input type='hidden' id='sSignStaffPosition_${j.index}' name='sSignStaffPosition' value='${slist.sSignStaffPosition}'/>
@@ -947,18 +947,14 @@
 									<input type='hidden' id='sSignSequence_${j.index}' name='sSignSequence' value='${slist.sSignSequence}'/>
 									<input type='hidden' id='sSignStaffGubun_${j.index}' name='sSignStaffGubun' value='${slist.sSignStaffGubun}'/>
 								</td>
-							
-								<td>
-									<span id='sn_sp_${j.index}' class='sn_sp'>${slist.sSignSequence}</span>
-								</td>
-							
+									
 								<td>
 									<span id='sn_sp_${j.index}' class='sn_sp'>${slist.sSignStaffGubun}</span>
-								</td>		
+								</td>
 							
 								<td>
 									${slist.kPositionName}&nbsp;/&nbsp;${slist.kClassName}&nbsp;/&nbsp;${slist.sSignStaffName}
-								</td>
+								</td>	
 							
 							</tr>	
 						</c:forEach>
@@ -975,6 +971,6 @@
 		<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T' }">
 		<button type="button" class="form_btn active" onclick="update_go();">저장</button>
 		</c:if>
-		<button type="button" class="form_btn" onclick="cancle();">목록</button>
+		<button type="button" class="form_btn" onclick="cancle();">취소</button>
 	</div>
 </form>

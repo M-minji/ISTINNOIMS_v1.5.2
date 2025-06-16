@@ -106,7 +106,7 @@ $(document).ready(function(){
 			<div class="search_filter">
 				<ul> 
 					<li>
-						<span>메뉴구분</span>
+						<span>메뉴명</span>
 						<select id='eSearchTypeSet1' name='eSearchTypeSet1'  onchange="fn_guestList(1)" >
 							<option value=''>전체메뉴</option>
 							<c:forEach var='list' items='${nameList}'>

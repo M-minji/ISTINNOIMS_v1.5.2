@@ -520,6 +520,8 @@ function readExcel(e) {
 
 $(document).ready(function() {
 	
+	$('#searchWord').blur();
+	
 	if ($("#viewDetail").val() === "Y") {
         $("#search_detail").css("display", "flex");
     }
@@ -744,7 +746,9 @@ function excelDwonload(){
     document.listForm.action = "/mes/asset/kw_asset_lf.do";
 }
 
-
+document.ondragstart = function() {
+	  return false;
+	};
 </script>
   
 <style>
@@ -796,7 +800,7 @@ function excelDwonload(){
 					</li>
 					<li>
 						<span>자산번호</span>
-						<input type="text" id="searchWord" name="searchWord" class="searchWord" value="${mesAssetVO.searchWord}" maxlength="30" />
+						<input type="text" id="searchWord" name="searchWord" class="searchWord" value="${mesAssetVO.searchWord}" maxlength="30"/>
 					</li>
 					<li>
 						<span>자산명</span>
@@ -944,7 +948,7 @@ function excelDwonload(){
     		</select> 
     		<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">
 	    		<button type="button" class="form_btn ico_excel" onclick="formDownload()">양식 다운로드</button>
-	    		<button type="button" class="form_btn ico_excel" onclick="document.getElementById('managerFile').click();">엑셀 등록</button>
+	    		<button type="button" class="form_btn ico_excel" onclick="document.getElementById('managerFile').click();">자산 등록</button>
 	    		<input id="managerFile" type="file"  style="display: none;" onchange="readExcel(event);"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
 			</c:if>
 		</div>
@@ -954,7 +958,7 @@ function excelDwonload(){
 		<div class="btns">
 			<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">
 				<button type="button" class="form_btn ico_refresh" onclick="updateAssetStatus()">노후화 정보 갱신</button>
-				<button type="button" class="form_btn active" onclick="go_insert()">자산 등록</button>
+				<button type="button" class="form_btn active" onclick="go_insert()">등록</button>
 			</c:if>
 		</div>
 	</div>

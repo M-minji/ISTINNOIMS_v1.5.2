@@ -665,24 +665,26 @@
 				</tr>
 				<tr>
 					<th><span style="color: red">* </span>반입확인자</th>
-					<td>
-						<input type="text" id="eEntryImporter" name="eEntryImporter" style="width:75%;" value="${info.eEntryImporter}" maxLength="50"/>
-						<a class="form_btn bg" onclick="selectWorkerPop('R', 'eEntryImporter')">담당자 선택</a>
+					<td >
+						<div style="display: flex; align-items: center; gap: 10px;">
+							<input type="text" id="eEntryImporter" name="eEntryImporter" style="flex: 1; min-width: 0;" value="${info.eEntryImporter}" maxLength="50"/>
+							<a class="form_btn bg" onclick="selectWorkerPop('R', 'eEntryImporter')" style="margin-left: auto;">담당자 선택</a>
+						</div>
 					</td>
 					<th>반입확인자 소속</th>
 						<td >
-							<input type="text" id="eEntryImporterOrg" name="eEntryImporterOrg" style="width:95%;" maxLength="50" value="${info.eEntryImporterOrg}" />
+							<input type="text" id="eEntryImporterOrg" name="eEntryImporterOrg" style="width:100%;" maxLength="50" value="${info.eEntryImporterOrg}" />
 							<span id="eEntryImporterOrgTxt" style="display: none;"></span>
 						</td>
 				</tr>
 				<tr>
 					<th>반입사유</th>
 					<td colspan="1">
-						<input type="text" name="eEntryNote" id="eEntryNote" style="width:95%; text-align:left;" maxLength="100" value="${info.eEntryNote}" />
+						<input type="text" name="eEntryNote" id="eEntryNote" style="width:100%; text-align:left;" maxLength="100" value="${info.eEntryNote}" />
 					</td>
 					<th>반입처</th>
 					<td colspan="1">
-						<input type="text" name="eEntryLocation" id="eEntryLocation" style="width:95%; text-align:left;" maxLength="100" value="${info.eEntryLocation}" />
+						<input type="text" name="eEntryLocation" id="eEntryLocation" style="width:100%; text-align:left;" maxLength="100" value="${info.eEntryLocation}" />
 					</td>
 				</tr>
 			</tbody>
@@ -823,6 +825,6 @@
 	
 	<div class="bottom_btn">
 		<button type="button" class="form_btn active" onclick="update_go();">저장</button>
-		<button type="button" class="form_btn" onclick="cancle();">목록</button>
+		<button type="button" class="form_btn" onclick="cancle();">취소</button>
 	</div>
 </form>

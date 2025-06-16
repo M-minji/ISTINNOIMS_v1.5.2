@@ -66,11 +66,11 @@ function cancel(){
 		       		<tr>
 	        	 		<th>구분</th>
 	        	 		<td>
-							<input type="text" id="sGubunCateName" name="sGubunCateName" value="${cateInfo.sGubunCateName}"  maxlength="20"/>
+							<input type="text" id="sGubunCateName" name="sGubunCateName" style="width:100%;" value="${cateInfo.sGubunCateName}"  maxlength="20"/>
 						</td>
 						<th>비고</th>
 		           		<td>
-		           			<input type="text" id="sGubunCateEtc" name="sGubunCateEtc" value="${cateInfo.sGubunCateEtc}"  maxlength="20" />
+		           			<input type="text" id="sGubunCateEtc" name="sGubunCateEtc" style="width:100%;" value="${cateInfo.sGubunCateEtc}"  maxlength="20" />
 		           		</td>
 		       		</tr>
 		       	</tbody>
@@ -80,6 +80,6 @@ function cancel(){
 	   	<div class="bottom_btn">
 			<button type="button" class="form_btn active" onclick="update_go();">저장</button>
 			<button type="button" class="form_btn bg" onclick="delete_go();">삭제</button>
-			<button type="button" class="form_btn" onclick="cancel();">목록</button>
+			<button type="button" class="form_btn" onclick="cancel();">취소</button>
 		</div>
 </form>

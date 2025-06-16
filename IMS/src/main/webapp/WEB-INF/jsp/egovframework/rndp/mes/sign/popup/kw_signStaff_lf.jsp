@@ -459,7 +459,7 @@ function fn_checkChange(){
 	}
 }
 
-
+window.resizeTo(980, 900);
 </script>
 
 <form id="frm" name="frm" method="post" action="/intra/sign/popup/kw_reCir_pop.do" onsubmit="return false;" class="popup_wrap">  
