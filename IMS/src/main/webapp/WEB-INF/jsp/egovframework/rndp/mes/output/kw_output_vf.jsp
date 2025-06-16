@@ -366,7 +366,7 @@ function process_go(key){
 						<th style="width:10%;">결재자</th>
 						<th style="width:10%;">결정</th>
 						<th style="width:10%;">결정여부</th>
-						<th style="width:60%;">반려사유 및 싸인</th>
+						<th style="width:60%;">서명 또는 반려사유</th>
 					</tr>
 	        	</thead>
 		        <tbody>

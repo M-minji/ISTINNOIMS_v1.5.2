@@ -518,8 +518,8 @@
 				innerStr += "<a class='form_btn bg' onclick='setSign(this, event);'>사인</a>";
 				innerStr += "<textarea style='display:none' rows='5' cols='5' id='sSignContent' name='sSignContent'></textarea>";
 			} else if(value == "반려"){
-				innerStr += "<input type='text' id='sSignContent' name='sSignContent' value='' placeholder='반려 사유' style='width:95%' maxLength='50'/>";
-				innerStr += "<a class='form_btn bg' onclick='sSignContentAdd();'>반려 사유 저장</a>";
+				innerStr += "<input type='text' id='sSignContent' name='sSignContent' value='' placeholder='반려 사유' style='width:500px' maxLength='50'/>";
+				innerStr += "<a class='form_btn bg ml5' onclick='sSignContentAdd();'>반려 사유 저장</a>";
 			}
 			document.getElementById("sSignContentSet").innerHTML = innerStr;
 		}
@@ -785,7 +785,7 @@
 	<c:if test="${not empty signList}">
 		<div class="content_top nofirst">
 			<div class="content_tit">
-				<h2>결재현황</h2>
+				<h2>결재정보</h2>
 			</div>
 		</div>
 		
@@ -794,10 +794,10 @@
 	        	<thead>
 		          	<tr>
 						<th style="width:5%; border-left: 1px solid #bfdaf7;">결재순서</th>
-						<th style="width:10%;">결재자</th>
-						<th style="width:10%;">결정</th>
-						<th style="width:10%;">결재구분</th>
-						<th style="width:60%;">반려사유 및 싸인</th>
+						<th style="width:8%;">결재자</th>
+						<th style="width:8%;">결정</th>
+						<th style="width:15%;">결재구분</th>
+						<th style="width:60%;">서명 또는 반려사유</th>
 					</tr>
 	        	</thead>
 		        <tbody>
@@ -810,9 +810,11 @@
 								${signList.sSignStaffName}
 							</td>
 							<td style="text-align:center; width:10%;">
+
 								${signList.sSignDecison} 
 							</td>
-							<td>${signList.sSignStaffGubun}:
+							<td>
+					<!-- 		${signList.sSignStaffGubun}:   -->
 								<c:if test="${selInfo.sSignStatus eq '승인요청' && signList.sSignStaffKey eq staffVO.kStaffKey }">
 									<c:if test="${signList.sSignDecison eq '결재대기' }">
 										<select id="sSignDecison" name="sSignDecison" onChange="changeContent(this.value)">
@@ -821,7 +823,7 @@
 										</select>
 									</c:if>
 								</c:if>
-								<c:if test="${signList.sSignDecison ne '결재대기' }">${signList.sSignDecison}</c:if>
+								<c:if test="${signList.sSignStaffKey ne staffVO.kStaffKey || selInfo.sSignStatus eq '승인'  || selInfo.sSignStatus eq '반려'}">${signList.sSignDecison}</c:if>
 							</td>
 							<td <c:if test="${selInfo.sSignStatus eq '승인요청' && signList.sSignStaffKey eq staffVO.kStaffKey}">id="sSignContentSet"</c:if> style="text-align:left; padding-left:5px; width:60%;">
 								<c:if test="${selInfo.sSignStatus eq '승인요청' && signList.sSignStaffKey eq staffVO.kStaffKey && signList.sSignDecison eq '결재대기'}">

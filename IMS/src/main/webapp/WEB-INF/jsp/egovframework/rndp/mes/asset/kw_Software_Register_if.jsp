@@ -527,7 +527,7 @@
 			<h2></h2>
 		</div>
 		<div class="btns">
-			 <button type="button" class="form_btn md" onclick="addRow();">행추가</button>
+			 <button type="button" class="form_btn md" onclick="addRow();">라이선스 추가</button>
 		</div>
 	</div>
 	

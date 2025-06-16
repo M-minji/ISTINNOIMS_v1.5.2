@@ -6,7 +6,8 @@
 <script>
 	$(document).ready(function() {
 		 $('table[role="grid"].gridjs-table tr').css("cursor","default");
-		 $('table[role="grid"].gridjs-table th:nth-child(1) button').hide();
+		 $('table[role="grid"].gridjs-table th:nth-child(1) button').hide();		  
+		 $('table[role="grid"].gridjs-table th:nth-child(1)').css('width', '180px'); 
 	});
 	function go_insert(){
 		document.listForm.action="/mes/user/kw_userLevel_if.do";

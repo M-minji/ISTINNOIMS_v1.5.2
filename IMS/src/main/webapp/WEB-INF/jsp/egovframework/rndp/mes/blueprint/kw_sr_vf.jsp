@@ -174,11 +174,11 @@
 		var innerStr = "";
 		
 		if(value == "승인"){
-			innerStr += "<a class='mes_btn' onclick='setSign(this, event);'>사인</a>";
+			innerStr += "<a class='form_btn bg' onclick='setSign(this, event);'>사인</a>";
 			innerStr += "<textarea style='display:none' rows='5' cols='5' id='sSignContent' name='sSignContent'></textarea>";
 		} else if(value == "반려"){
-			innerStr += "<input type='text' id='sSignContent' name='sSignContent' value='' placeholder='반려 사유' style='width:95%' maxLength='50'/>";
-			innerStr += "<a class='mes_btn' onclick='sSignContentAdd();'>반려 사유 저장</a>";
+			innerStr += "<input type='text' id='sSignContent' name='sSignContent' value='' placeholder='반려 사유' style='width:500px' maxLength='50'/>";
+			innerStr += "<a class='form_btn bg ml5' onclick='sSignContentAdd();'>반려 사유 저장</a>";
 		}
 		document.getElementById("sSignContentSet").innerHTML = innerStr;
 	}
@@ -441,33 +441,20 @@
 	
 <!-- 	결재정보 요청등록시. -->
 	<c:if test="${not empty signList}">
-		<div class="content_top nofirst with_btn">
-			<div class="content_tit flex">
-				<h2>승인권자</h2>
-				<label for="oPass" class="inp_chkbox">
-					<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();"/>
-					<i></i>
-					결재 제외
-				</label>
-			</div>
-			<div class="btns">
-				 <button type="button" onclick="approvalPop()" class="form_btn md">승인권자 선택</button>
+		<div class="content_top nofirst" style="padding-top:20px;">
+			<div class="content_tit">
+				<h2>결재정보</h2>
 			</div>
 		</div>
 		<div class="normal_table">
 			<table>
-				<colgroup>
-					<col style="width: 200px;"/>
-					<col style="width: 200px;"/>
-					<col />
-				</colgroup>
 				<thead>
 		          	<tr>
-						<th>결재순서</th>
-						<th>결재자</th>
-						<th>결정</th>
-						<th>결재구분</th>
-						<th>반려사유 및 싸인</th>
+						<th style="width:5%;">결재순서</th>
+						<th style="width:8%;">결재자</th>
+						<th style="width:8%;">결정</th>
+						<th style="width:15%;">결재구분</th>
+						<th style="width:60%;">서명 또는 반려사유</th>
 					</tr>
 	        	</thead>
 		        <tbody>
@@ -482,7 +469,8 @@
 							<td style="text-align:center; width:10%;">
 								${signList.sSignDecison} 
 							</td>
-							<td>${signList.sSignStaffGubun}:
+							<td>
+							<!--  ${signList.sSignStaffGubun}:   -->
 								<c:if test="${info.sSignStatus eq '승인요청' && signList.sSignStaffKey eq staffVO.kStaffKey }">
 									<c:if test="${signList.sSignDecison eq '결재대기' }">
 										<select id="sSignDecison" name="sSignDecison" onChange="changeContent(this.value)">
@@ -491,11 +479,11 @@
 										</select>
 									</c:if>
 								</c:if>
-								<c:if test="${signList.sSignDecison ne '결재대기' }">${signList.sSignDecison}</c:if>
+								<c:if test="${signList.sSignStaffKey ne staffVO.kStaffKey || info.sSignStatus eq '승인'  || info.sSignStatus eq '반려'}">${signList.sSignDecison}</c:if>
 							</td>
 							<td <c:if test="${info.sSignStatus eq '승인요청' && signList.sSignStaffKey eq staffVO.kStaffKey}">id="sSignContentSet"</c:if> style="text-align:left; padding-left:5px; width:60%;">
 								<c:if test="${info.sSignStatus eq '승인요청' && signList.sSignStaffKey eq staffVO.kStaffKey && signList.sSignDecison eq '결재대기'}">
-				        		<a class="mes_btn" onclick="setSign(this, event);">사인</a>
+				        		<a class="form_btn bg" onclick="setSign(this, event);">사인</a>
 								</c:if>
 								<c:if test="${signList.sSignDecison eq '승인'}">
 									<img src="${signList.sSignContent}"/>

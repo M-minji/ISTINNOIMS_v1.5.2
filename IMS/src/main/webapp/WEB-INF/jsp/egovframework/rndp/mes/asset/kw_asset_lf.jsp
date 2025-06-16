@@ -746,7 +746,9 @@ function excelDwonload(){
     document.listForm.action = "/mes/asset/kw_asset_lf.do";
 }
 
-
+document.ondragstart = function() {
+	  return false;
+	};
 </script>
   
 <style>
