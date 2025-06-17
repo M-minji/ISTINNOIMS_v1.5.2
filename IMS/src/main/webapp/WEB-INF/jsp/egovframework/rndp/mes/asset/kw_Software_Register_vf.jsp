@@ -495,7 +495,6 @@ input[name="tab_item"] {
 									${signList.sSignContent}
 								</c:if>
 							</td>
-							
 						</tr>
 					</c:forEach>
 					<c:if test="${empty signList}">
@@ -509,6 +508,16 @@ input[name="tab_item"] {
 	</c:if>
 	
 	<div class="bottom_btn">
+	<c:if test="${swInfo.eStatus eq '등록'}">
+			<c:if test="${swInfo.kStaffKey eq staffVO.kStaffKey }">
+				<button type="button" class="form_btn active" onclick="startApproval('Y');">승인요청</button>
+			</c:if>
+		</c:if>
+		<c:if test="${swInfo.eStatus eq '승인요청'}">
+			<c:if test="${swInfo.kStaffKey eq staffVO.kStaffKey && swInfo.sSignProgress eq '0'}">
+				<button type="button" class="form_btn active" onclick="startApproval('N');">요청취소</button>
+			</c:if>
+		</c:if>
 		<c:if test="${(swInfo.kStaffKey eq staffVO.kStaffKey && (swInfo.eStatus eq '등록' || swInfo.eStatus eq '반려' || swInfo.eStatus eq '제외')) || (staffVO.kAdminAuth eq 'T' && (swInfo.eStatus eq '등록' || swInfo.eStatus eq '반려' || swInfo.eStatus eq '제외')) }">
 			<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T' ||  staffVO.kAdminAuth eq 'T'}">
 				<button type="button" class="form_btn bg" onclick="update_go();">수정</button>
@@ -518,16 +527,7 @@ input[name="tab_item"] {
 			</c:if>
 		</c:if>
 		<button type="button" class="form_btn" onclick="list_go();">목록</button>
-		<c:if test="${swInfo.eStatus eq '등록'}">
-			<c:if test="${swInfo.kStaffKey eq staffVO.kStaffKey }">
-				<button type="button" class="form_btn bg" onclick="startApproval('Y');">승인요청</button>
-			</c:if>
-		</c:if>
-		<c:if test="${swInfo.eStatus eq '승인요청'}">
-			<c:if test="${swInfo.kStaffKey eq staffVO.kStaffKey && swInfo.sSignProgress eq '0'}">
-				<button type="button" class="form_btn bg" onclick="startApproval('N');">요청취소</button>
-			</c:if>
-		</c:if>
+		
 	</div>
 		
 	<div id="setModal" class="modal" style="display:none;">

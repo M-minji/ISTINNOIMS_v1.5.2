@@ -63,7 +63,7 @@
 	
 	function cancle(){
 		$('#mloader').show();
-		document.writeForm.action = "/mes/equipment/kw_equipment_out_lf.do";
+		document.writeForm.action = "/mes/equipment/kw_equipment_out_vf.do";
 		document.writeForm.submit(); 
 	}
 	
@@ -545,7 +545,7 @@
 				<a onclick="update_go();">저장</a>
 			</li>
 			<li>
-				<a onclick="cancle();">목록</a>
+				<a onclick="cancle();">취소</a>
 			</li>
 		</ul>
 	</div>

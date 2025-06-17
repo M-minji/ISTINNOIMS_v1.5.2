@@ -43,7 +43,7 @@
 	
 	function cancle(){
 		$('#mloader').show();
-		document.writeForm.action = "/mes/inspection/kw_inspection_lf.do";
+		document.writeForm.action = "/mes/inspection/kw_inspection_vf.do";
 		document.writeForm.submit(); 
 	}
 	

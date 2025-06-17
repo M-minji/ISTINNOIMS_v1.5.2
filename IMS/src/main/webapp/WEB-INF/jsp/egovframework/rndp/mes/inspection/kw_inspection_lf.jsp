@@ -314,27 +314,40 @@ function excelDwonload(){
 						<td>${list.eInspector}</td>
 						<td>${list.eRemark}	</td>
 						<td> 
-							<c:if test="${list.sSignStatus eq '제외' || list.sSignStatus eq '승인' || list.sSignStatus eq '반려'}">결재 ${list.sSignStatus}:</c:if>
-							<c:if test="${list.sSignStatus eq '등록'}">
-								<c:if test="${list.kStaffKey eq staffVO.kStaffKey}"><a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eInspectionKey}','Y');">승인요청</a></c:if>
-								<c:if test="${list.kStaffKey ne staffVO.kStaffKey}">결재 준비</c:if>
-							</c:if>							
-							<c:if test="${list.sSignStatus eq '승인요청'}">
-								<c:if test="${list.kStaffKey eq staffVO.kStaffKey && list.sSignProgress eq '0'}">
-									<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eInspectionKey}','N');">요청취소</a>
-								</c:if>
-								<c:if test="${list.kStaffKey ne staffVO.kStaffKey || list.sSignProgress ne '0'}">결재 진행 중</c:if>
-							</c:if>
-							<c:if test="${list.sSignStatus eq '승인' || list.sSignStatus eq '제외'}">
-								<c:if test="${list.eStatus eq '등록'}"> 
-									<c:if test="${list.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
+							<c:choose>
+							<c:when test="${list.sSignStatus eq '반려'}">
+								반려
+							</c:when>
+							<c:when test="${list.eStatus eq '점검결과등록'}">
+								점검결과등록
+							</c:when>
+							<c:when test="${list.sSignStatus eq '제외' || list.sSignStatus eq '승인'}">
+								<c:choose>
+									<c:when test="${list.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
 										<a style="cursor: pointer;" class="form_btn sm"  onclick="eInspectionResult('${list.eInspectionKey}');">점검결과 등록</a>
-									</c:if>
-								</c:if> 
-								<c:if test="${list.eStatus eq '점검결과등록'}">
-									${list.eStatus}완료
-								</c:if>
-							</c:if>
+									</c:when>
+									<c:otherwise>
+										등록
+									</c:otherwise>
+								</c:choose>
+							</c:when>
+							<c:when test="${list.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
+								<c:choose>
+									<c:when test="${list.sSignStatus eq '등록'}">
+										<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eInspectionKey}','Y');">승인요청</a>
+									</c:when>
+									<c:when test="${list.sSignStatus eq '승인요청'}">
+										<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eInspectionKey}','N');">요청취소</a>
+									</c:when>
+								</c:choose>
+							</c:when>
+							<c:when test="${list.sSignStatus eq '등록'}">
+								결재 대기
+							</c:when>
+							<c:otherwise>
+								결재 진행 중
+							</c:otherwise>
+						</c:choose>
 						</td>
 					</tr>
 				</c:forEach>

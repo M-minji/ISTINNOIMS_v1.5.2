@@ -407,7 +407,7 @@ public class MesEquipmentController {
 		
 		redirectAttributes.addFlashAttribute("mesEquipmentVO", mesEquipmentVO);		
 		
-		return "redirect:/mes/equipment/kw_equipment_in_lf.do";
+		return "redirect:/mes/equipment/kw_equipment_in_vf.do";
 	}
 	
 

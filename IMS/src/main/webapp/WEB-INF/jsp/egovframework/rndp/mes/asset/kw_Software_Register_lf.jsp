@@ -308,19 +308,30 @@ function startApproval(eSWRegisterKey, eStatus){
 							${list.eRemarks}
 						</td> -->
 						<td>  
-							<c:if test="${list.eStatus eq '제외'}">결재 제외</c:if>
-							<c:if test="${list.eStatus eq '승인' || list.eStatus eq '반려'}">${list.eStatus}</c:if>
-							<c:if test="${list.eStatus eq '등록'}">
-								<c:if test="${list.kStaffKey eq staffVO.kStaffKey}"><a style="cursor: pointer;" class="form_btn sm" onclick="event.stopPropagation(); startApproval('${list.eSWRegisterKey}','Y');">승인요청</a></c:if>
-								<c:if test="${list.kStaffKey ne staffVO.kStaffKey}">결재 준비</c:if>
-							</c:if>
-							
-							<c:if test="${list.eStatus eq '승인요청'}">
-								<c:if test="${list.kStaffKey eq staffVO.kStaffKey && list.sSignProgress eq '0'}">
-									<a style="cursor: pointer;" class="form_btn sm" onclick="event.stopPropagation(); startApproval('${list.eSWRegisterKey}','N');">요청취소</a>
-								</c:if>
-								<c:if test="${list.kStaffKey ne staffVO.kStaffKey || list.sSignProgress ne '0'}">결재 진행 중</c:if>
-							</c:if>
+							<c:choose>
+								<c:when test="${list.eStatus eq '반려'}">
+									반려
+								</c:when>
+								<c:when test="${list.eStatus eq '제외' || list.eStatus eq '승인'}">
+									등록
+								</c:when>
+								<c:when test="${list.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
+									<c:choose>
+										<c:when test="${list.eStatus eq '등록'}">
+											<a style="cursor: pointer;" class="form_btn sm" onclick="event.stopPropagation(); startApproval('${list.eSWRegisterKey}','Y');">승인요청</a>
+										</c:when>
+										<c:when test="${list.eStatus eq '승인요청'}">
+											<a style="cursor: pointer;" class="form_btn sm" onclick="event.stopPropagation(); startApproval('${list.eSWRegisterKey}','N');">요청취소</a>
+										</c:when>
+									</c:choose>
+								</c:when>
+								<c:when test="${list.eStatus eq '등록'}">
+									결재 대기
+								</c:when>
+								<c:otherwise>
+									결재 진행 중
+								</c:otherwise>
+							</c:choose>
 						</td>
 					</tr>
 				</c:forEach>

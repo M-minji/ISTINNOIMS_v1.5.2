@@ -527,7 +527,7 @@ public class MesBlueprintController {
 		
 		redirectAttributes.addFlashAttribute("mesBlueprintVO", mesBlueprintVO);
 		
-		return "redirect:/mes/blueprint/kw_blueprint_lf.do";
+		return "redirect:/mes/blueprint/kw_blueprint_vf.do";
 	}
 	
 	
@@ -972,7 +972,7 @@ public class MesBlueprintController {
 			
 			redirectAttributes.addFlashAttribute("mesBlueprintVO", mesBlueprintVO);
 			
-			return "redirect:/mes/blueprint/kw_issue_lf.do";
+			return "redirect:/mes/blueprint/kw_issue_vf.do";
 		}
 		
 		
@@ -1288,7 +1288,7 @@ public class MesBlueprintController {
 			
 			redirectAttributes.addFlashAttribute("mesBlueprintVO", mesBlueprintVO);
 			
-			return "redirect:/mes/blueprint/kw_sr_lf.do";
+			return "redirect:/mes/blueprint/kw_sr_vf.do";
 		}
 		
 

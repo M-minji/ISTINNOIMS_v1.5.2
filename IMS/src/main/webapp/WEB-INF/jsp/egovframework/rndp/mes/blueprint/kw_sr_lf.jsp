@@ -189,22 +189,30 @@ function excelDwonload(){
 						<td>${list.eWorkStart}</td>
 						<td>${list.eWorkEnd}</td>
 						<td>
-							<c:if test="${list.sSignStatus eq '제외' || list.sSignStatus eq '승인' || list.sSignStatus eq '반려'}">결재 ${list.sSignStatus}:</c:if>
-							<c:if test="${list.sSignStatus eq '등록'}">
-								<c:if test="${list.kStaffKey eq staffVO.kStaffKey}">
-									<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eIssueKey}','Y');">승인요청</a>
-								</c:if>
-								<c:if test="${list.kStaffKey ne staffVO.kStaffKey}">결재 준비</c:if>
-							</c:if>							
-							<c:if test="${list.sSignStatus eq '승인요청'}">
-								<c:if test="${list.kStaffKey eq staffVO.kStaffKey && list.sSignProgress eq '0'}">
-									<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eIssueKey}','N');">요청취소</a>
-								</c:if>
-								<c:if test="${list.kStaffKey ne staffVO.kStaffKey || list.sSignProgress ne '0'}">결재 진행 중</c:if>
-							</c:if>
-							<c:if test="${list.sSignStatus eq '승인' || list.sSignStatus eq '제외'}">
-									${list.eStatus}완료
-							</c:if>
+							<c:choose>
+								<c:when test="${list.sSignStatus eq '반려'}">
+									반려
+								</c:when>
+								<c:when test="${list.sSignStatus eq '제외' || list.sSignStatus eq '승인'}">
+									등록
+								</c:when>
+								<c:when test="${list.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
+									<c:choose>
+										<c:when test="${list.sSignStatus eq '등록'}">
+											<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eIssueKey}','Y');">승인요청</a>
+										</c:when>
+										<c:when test="${list.sSignStatus eq '승인요청'}">
+											<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eIssueKey}','N');">요청취소</a>
+										</c:when>
+									</c:choose>
+								</c:when>
+								<c:when test="${list.sSignStatus eq '등록'}">
+									결재 대기
+								</c:when>
+								<c:otherwise>
+									결재 진행 중
+								</c:otherwise>
+							</c:choose>
 						 </td>
 					</tr>
 				</c:forEach>

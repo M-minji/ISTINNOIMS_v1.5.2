@@ -172,7 +172,7 @@ $(document).ready(function(){
 	// 목록
 	function cancel(){
 		$("#mloader").show();
-		document.frm.action = "/mes/blueprint/kw_sr_lf.do";
+		document.frm.action = "/mes/blueprint/kw_sr_vf.do";
 		document.frm.submit();
 	}
 
