@@ -137,7 +137,7 @@
 	
 	function cancle(){
 		$('#mloader').show();
-		document.writeForm.action = "/mes/asset/kw_asset_lf.do";
+		document.writeForm.action = "/mes/asset/kw_asset_vf.do";
 		document.writeForm.submit(); 
 	}
 	

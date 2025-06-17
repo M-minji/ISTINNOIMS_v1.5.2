@@ -176,7 +176,7 @@
 	
 	function cancle(){
 		$('#mloader').show();
-		document.writeForm.action = "/mes/asset/kw_Software_Register_lf.do";
+		document.writeForm.action = "/mes/asset/kw_Software_Register_vf.do";
 		document.writeForm.submit(); 
 	}
 	

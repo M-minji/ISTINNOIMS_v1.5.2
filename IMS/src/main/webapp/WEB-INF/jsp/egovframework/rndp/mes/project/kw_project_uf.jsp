@@ -37,7 +37,7 @@ function nowDate(){
 // 목록
 function cancel(){
 	/* $("#mloader").show(); */
-	document.frm.action = "/mes/project/kw_project_lf.do";
+	document.frm.action = "/mes/project/kw_project_vf.do";
 	document.frm.submit(); 
 }
 

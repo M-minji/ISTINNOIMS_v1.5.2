@@ -458,7 +458,7 @@ public class MesIssueController {
 		
 		redirectAttributes.addFlashAttribute("mesIssueVO", mesIssueVO);
 		
-		return "redirect:/mes/issue/kw_issue_lf.do";
+		return "redirect:/mes/issue/kw_issue_vf.do";
 	}
 	@RequestMapping(value = "/mes/issue/kw_issue_d.do")
 	public String mesIssueDelete(HttpServletRequest request

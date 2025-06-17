@@ -276,7 +276,7 @@
 	
 	function cancel(){
 		$("#mloader").show();
-		document.frm.action = "/mes/issue/kw_issue_lf.do";
+		document.frm.action = "/mes/issue/kw_issue_vf.do";
 		document.frm.submit();
 	}
 	

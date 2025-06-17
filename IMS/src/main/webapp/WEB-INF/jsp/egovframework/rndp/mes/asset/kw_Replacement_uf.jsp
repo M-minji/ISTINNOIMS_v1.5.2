@@ -68,7 +68,7 @@
 	
 	function cancle(){
 		$('#mloader').show();
-		document.writeForm.action = "/mes/asset/kw_eReplacement_lf.do";
+		document.writeForm.action = "/mes/asset/kw_eReplacement_vf.do";
 		document.writeForm.submit(); 
 	}
 	

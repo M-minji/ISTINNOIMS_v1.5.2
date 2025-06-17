@@ -348,7 +348,7 @@ public class MesAssetController {
 		
 		redirectAttributes.addFlashAttribute("mesAssetVO", mesAssetVO);
 		
-		return "redirect:/mes/asset/kw_asset_lf.do";
+		return "redirect:/mes/asset/kw_asset_vf.do";
 	}
 	
 	//삭제
@@ -975,10 +975,13 @@ public class MesAssetController {
 			, @ModelAttribute("mesAssetVO") MesAssetVO mesAssetVO
 			, ModelMap model) throws Exception{
 		
+		
 		MesK_StaffVo staffVO = (MesK_StaffVo) request.getSession().getAttribute("mesStaff");
 		model.addAttribute("staffVO", staffVO);
 		mesAssetService.mesSoftwareAssetUdate(mesAssetVO);
-		return "redirect:/mes/asset/kw_Software_Register_lf.do";
+		redirectAttributes.addFlashAttribute("mesAssetVO", mesAssetVO);
+
+		return "redirect:/mes/asset/kw_Software_Register_vf.do";
 	}
 	
 	@RequestMapping(value = "/mes/asset/kw_Software_Log_uf.do")
@@ -1739,9 +1742,9 @@ public class MesAssetController {
 		
 		mesAssetService.eUpdateInfoCondition(mesAssetVO);
 		
-		redirectAttributes.addFlashAttribute("mesassetVO", mesAssetVO);		
+		redirectAttributes.addFlashAttribute("mesAssetVO", mesAssetVO);		
 		
-		return "redirect:/mes/asset/kw_eCondition_lf.do";
+		return "redirect:/mes/asset/kw_eCondition_out_vf.do";
 	}
 	
 	@RequestMapping(value = "/mes/asset/kw_eImport_update_pop.do")
@@ -2086,9 +2089,9 @@ public class MesAssetController {
 //		mesAssetService.insertInfoReplacement(mesAssetVO);
 		mesAssetService.updateInfoReplacement(mesAssetVO);
 		
-		redirectAttributes.addFlashAttribute("mesassetVO", mesAssetVO);		
+		redirectAttributes.addFlashAttribute("mesAssetVO", mesAssetVO);		
 		
-		return "redirect:/mes/asset/kw_eReplacement_lf.do";
+		return "redirect:/mes/asset/kw_eReplacement_vf.do";
 	}
 	//상세페이지
 	@RequestMapping(value = "/asset/qr_asset_info.do")

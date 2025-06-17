@@ -167,7 +167,7 @@ $(document).ready(function(){
 	// 목록
 	function cancel(){
 		$("#mloader").show();
-		document.frm.action = "/mes/blueprint/kw_issue_lf.do";
+		document.frm.action = "/mes/blueprint/kw_issue_vf.do";
 		document.frm.submit();
 	}
 

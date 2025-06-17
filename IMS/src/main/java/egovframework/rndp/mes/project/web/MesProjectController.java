@@ -491,7 +491,7 @@ public class MesProjectController {
 			
 			redirectAttributes.addFlashAttribute("mesProjectVO", mesProjectVO);
 			
-			return "redirect:/mes/project/kw_project_lf.do";
+			return "redirect:/mes/project/kw_project_vf.do";
 		}
 
 		@RequestMapping(value = "/mes/project/kw_project_process_if.do")

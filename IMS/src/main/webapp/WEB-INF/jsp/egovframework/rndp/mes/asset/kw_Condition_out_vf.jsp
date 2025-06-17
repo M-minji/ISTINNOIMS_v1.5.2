@@ -371,11 +371,11 @@
 		var innerStr = "";
 		
 		if(value == "승인"){
-			innerStr += "<a class='mes_btn' onclick='setSign(this, event);'>사인</a>";
+			innerStr += "<a class='form_btn bg' onclick='setSign(this, event);'>사인</a>";
 			innerStr += "<textarea style='display:none' rows='5' cols='5' id='sSignContent' name='sSignContent'></textarea>";
 		} else if(value == "반려"){
-			innerStr += "<input type='text' id='sSignContent' name='sSignContent' value='' placeholder='반려 사유' style='width:95%' maxLength='50'/>";
-			innerStr += "<a class='mes_btn' onclick='sSignContentAdd();'>반려 사유 저장</a>";
+			innerStr += "<input type='text' id='sSignContent' name='sSignContent' value='' placeholder='반려 사유' style='width:500px' maxLength='50'/>";
+			innerStr += "<a class='form_btn bg ml5' onclick='sSignContentAdd();'>반려 사유 저장</a>";
 		}
 		document.getElementById("sSignContentSet").innerHTML = innerStr;
 	}
@@ -649,22 +649,22 @@
 	
 	
 	<c:if test="${not empty signList}">
-	<div class="content_top">	
-		<div class="content_tit">
-			<h2>결재현황</h2> 
+		<div class="content_top nofirst" style="padding-top:20px;">
+			<div class="content_tit">
+				<h2>결재정보</h2>
+			</div>
 		</div>
-	</div>
-	<div class="normal_table">
-        <table>
-        	<thead>
-	          	<tr>
-					<th style="width:5%; border-left: 1px solid #bfdaf7;">결재순서</th>
-					<th style="width:10%;">결재자</th>
-					<th style="width:10%;">결정</th>
-					<th style="width:10%;">결재구분</th>
-					<th style="width:60%;">서명 또는 반려사유</th>
-				</tr>
-        	</thead>
+		<div class="normal_table">
+	        <table>
+	        	<thead>
+		          	<tr>
+						<th style="width:5%;">결재순서</th>
+						<th style="width:8%;">결재자</th>
+						<th style="width:8%;">결정</th>
+						<th style="width:15%;">결재구분</th>
+						<th style="width:60%;">서명 또는 반려사유</th>
+					</tr>
+	        	</thead>
 	        <tbody>
 				<c:forEach var="signList" items="${signList}" varStatus="i">
 		          	<tr <c:if test="${signList.sSignStaffKey eq staffVO.kStaffKey && signList.sSignDecison eq '결재대기'}">style="background-color:yellow;"</c:if>>
@@ -677,7 +677,8 @@
 						<td style="text-align:center; width:10%;">
 							${signList.sSignDecison} 
 						</td>
-						<td>${signList.sSignStaffGubun}
+						<td>
+						<!--  ${signList.sSignStaffGubun}  -->
 							<c:if test="${assetInfo.eStatus eq '승인요청' && signList.sSignStaffKey eq staffVO.kStaffKey }">
 								<c:if test="${signList.sSignDecison eq '결재대기' }">
 									<select id="sSignDecison" name="sSignDecison" onChange="changeContent(this.value)">
@@ -686,7 +687,7 @@
 									</select>
 								</c:if>
 							</c:if>
-							<c:if test="${signList.sSignDecison ne '결재대기' }">${signList.sSignDecison}</c:if>
+							<c:if test="${signList.sSignStaffKey ne staffVO.kStaffKey || (assetInfo.eStatus eq '승인요청' && signList.sSignDecison eq '승인') || assetInfo.eStatus eq '반려'}">${signList.sSignDecison}</c:if>
 						</td>
 						<td <c:if test="${assetInfo.eStatus eq '승인요청' && signList.sSignStaffKey eq staffVO.kStaffKey}">id="sSignContentSet"</c:if> style="text-align:left; padding-left:5px; width:60%;">
 							<c:if test="${assetInfo.eStatus eq '승인요청' && signList.sSignStaffKey eq staffVO.kStaffKey && signList.sSignDecison eq '결재대기'}">
@@ -713,6 +714,16 @@
 	</c:if>
 	
 	<div class="bottom_btn">
+		<c:if test="${assetInfo.eStatus eq '등록'}">
+				<c:if test="${assetInfo.kStaffKey eq staffVO.kStaffKey }">
+					<button type="button" class="form_btn active" onclick="startApproval('Y');">승인요청</button>
+				</c:if>
+			</c:if>
+			<c:if test="${assetInfo.eStatus eq '승인요청'}">
+				<c:if test="${assetInfo.kStaffKey eq staffVO.kStaffKey && assetInfo.sSignProgress eq '0'}">
+					<button type="button" class="form_btn active" onclick="startApproval('N');">요청취소</button>
+				</c:if>
+			</c:if>
 		<c:if test="${(assetInfo.kStaffKey eq staffVO.kStaffKey && (assetInfo.eStatus eq '등록' || assetInfo.eStatus eq '반려' || assetInfo.eStatus eq '제외')) || (staffVO.kAdminAuth eq 'T' && (assetInfo.eStatus eq '등록' || assetInfo.eStatus eq '반려' || assetInfo.eStatus eq '제외')) }">
 			<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'  ||  staffVO.kAdminAuth eq 'T'}">
 				<button type="button" class="form_btn bg" onclick="update_go();">수정</button>
@@ -722,16 +733,7 @@
 			</c:if>
 		</c:if>
 		<button type="button" class="form_btn" onclick="cancle();">목록</button>
-		<c:if test="${assetInfo.eStatus eq '등록'}">
-				<c:if test="${assetInfo.kStaffKey eq staffVO.kStaffKey }">
-					<button type="button" class="form_btn bg" onclick="startApproval('Y');">승인요청</button>
-				</c:if>
-			</c:if>
-			<c:if test="${assetInfo.eStatus eq '승인요청'}">
-				<c:if test="${assetInfo.kStaffKey eq staffVO.kStaffKey && assetInfo.sSignProgress eq '0'}">
-					<button type="button" class="form_btn bg" onclick="startApproval('N');">요청취소</button>
-				</c:if>
-			</c:if>
+		
 	</div>
 	
 	<div id="setModal" class="modal" style="display:none;">

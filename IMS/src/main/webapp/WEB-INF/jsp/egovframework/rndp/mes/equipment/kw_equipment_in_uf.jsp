@@ -108,7 +108,7 @@
 	
 	function cancle(){
 		$('#mloader').show();
-		document.writeForm.action = "/mes/equipment/kw_equipment_in_lf.do";
+		document.writeForm.action = "/mes/equipment/kw_equipment_in_vf.do";
 		document.writeForm.submit(); 
 	}
 	

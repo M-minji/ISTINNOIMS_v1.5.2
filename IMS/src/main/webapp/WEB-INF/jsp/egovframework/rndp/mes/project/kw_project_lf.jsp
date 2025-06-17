@@ -358,26 +358,30 @@ function excelDwonload(){
 							 ${projectList.eRemarks} 
 						</td>
 						<td onclick="event.cancelBubble = true;">
-							<c:if test="${projectList.sSignStatus eq '제외' || projectList.sSignStatus eq '승인' || projectList.sSignStatus eq '반려'}">결재 ${projectList.sSignStatus}:</c:if>
-							<c:if test="${projectList.sSignStatus eq '등록'}">
-								<c:if test="${projectList.kStaffKey eq staffVO.kStaffKey}">
-									<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${projectList.eProjectNum}','Y');">승인요청</a>
-								</c:if>
-								<c:if test="${projectList.kStaffKey ne staffVO.kStaffKey}">결재 준비</c:if>
-							</c:if>							
-							<c:if test="${projectList.sSignStatus eq '승인요청'}">
-								<c:if test="${projectList.kStaffKey eq staffVO.kStaffKey && projectList.sSignProgress eq '0'}">
-									<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${projectList.eProjectNum}','N');">요청취소</a>
-								</c:if>
-								<c:if test="${projectList.kStaffKey ne staffVO.kStaffKey || list.sSignProgress ne '0'}">결재 진행 중</c:if>
-							</c:if>
-							<c:if test="${projectList.sSignStatus eq '승인' || projectList.sSignStatus eq '제외'}">
-								<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">	
-									<c:if test="${projectList.kStaffKey eq staffVO.kStaffKey}">
-										<a class="form_btn sm" onclick="movePage(${projectList.eProjectNum});">산출물 등록</a>
-									</c:if>
-								</c:if> 
-							</c:if>
+							<c:choose>
+								<c:when test="${projectList.sSignStatus eq '반려'}">
+									반려
+								</c:when>
+								<c:when test="${projectList.sSignStatus eq '제외' || projectList.sSignStatus eq '승인'}">
+									등록
+								</c:when>
+								<c:when test="${projectList.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
+									<c:choose>
+										<c:when test="${projectList.sSignStatus eq '등록'}">
+											<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${projectList.eProjectNum}','Y');">승인요청</a>
+										</c:when>
+										<c:when test="${projectList.sSignStatus eq '승인요청'}">
+											<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${projectList.eProjectNum}','N');">요청취소</a>
+										</c:when>
+									</c:choose>
+								</c:when>
+								<c:when test="${projectList.sSignStatus eq '등록'}">
+									결재 대기
+								</c:when>
+								<c:otherwise>
+									결재 진행 중
+								</c:otherwise>
+							</c:choose>
 						</td>
 					</tr>   
 				</c:forEach> 	

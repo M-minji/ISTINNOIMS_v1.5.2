@@ -41,7 +41,7 @@
 	// 목록
 	function cancel(){
 		$("#mloader").show();
-		document.frm.action = "/mes/blueprint/kw_blueprint_lf.do";
+		document.frm.action = "/mes/blueprint/kw_blueprint_vf.do";
 		document.frm.submit();
 	}
 	// 행삭제

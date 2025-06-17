@@ -124,7 +124,7 @@
 	
 	function cancle(){
 		$('#mloader').show();
-		document.writeForm.action = "/mes/asset/kw_eCondition_lf.do";
+		document.writeForm.action = "/mes/asset/kw_eCondition_out_vf.do";
 		document.writeForm.submit(); 
 	}
 	
