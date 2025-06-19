@@ -50,7 +50,7 @@
 		,	k_mail_use          									AS kMailUse                        
 		,	k_sector_key        									AS kSectorKey            
 		,	k_staff_auth_c											AS kStaffAuthConfirmFlag 
-		,	k_staff_auth_w											AS kStaffAuthWriteFlag 	
+		,	k_staff_auth_w											AS kStaffAuthWriteFlag 
 		,	k_staff_auth_m											AS kStaffAuthModifyFlag 	
 		,	k_staff_auth_d											AS kStaffAuthDelFlag 	
 		,	k_staff_auth_close																	AS kStaffAuthCloseFlag 

@@ -795,6 +795,7 @@
 									</c:if>
 								</c:if>
 								<c:if test="${signList.sSignStaffKey ne staffVO.kStaffKey || issueInfo.sSignStatus eq '승인'  || issueInfo.sSignStatus eq '반려'}">${signList.sSignDecison}</c:if>
+								<c:if test="${signList.sSignDecison ne '결재대기' && signList.sSignStaffKey eq staffVO.kStaffKey }">${signList.sSignDecison}</c:if>
 							</td>
 							<td <c:if test="${issueInfo.sSignStatus eq '승인요청' && signList.sSignStaffKey eq staffVO.kStaffKey}">id="sSignContentSet"</c:if> style="text-align:left; padding-left:5px; width:60%;">
 								<c:if test="${issueInfo.sSignStatus eq '승인요청' && signList.sSignStaffKey eq staffVO.kStaffKey && signList.sSignDecison eq '결재대기'}">
@@ -820,36 +821,33 @@
 		</div>
 	</c:if>
 	<div class="bottom_btn">
-		<c:if test="${issueInfo.sSignStatus eq '등록'}">
-			<c:if test="${issueInfo.kStaffKey eq staffVO.kStaffKey }">
-				<button type="button" class="form_btn active" onclick="startApproval('Y');">승인요청</button>
-			</c:if>
-		</c:if>
-		<c:if test="${issueInfo.sSignStatus eq '승인요청'}">
-			<c:if test="${issueInfo.kStaffKey eq staffVO.kStaffKey && issueInfo.sSignProgress eq '0'}">
-				<button type="button" class="form_btn active" onclick="startApproval('N');">요청취소</button>
-			</c:if>
-		</c:if>
-		<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">
-			<c:if test="${issueInfo.sSignStatus eq '승인' || issueInfo.sSignStatus eq '제외' }">
-				<c:if test="${issueInfo.eIssueStatus eq '요청등록'}">
-					<c:if test="${issueInfo.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
-						<button type="button" id="process_go" onclick="process_go();" class="form_btn active">처리정보 등록</button>
-					</c:if>
+		<button type="button" class="topdown" onclick="eExcelDownload();">다운로드</button>
+		<c:if test="${issueInfo.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
+			<c:choose>
+				<c:when test="${issueInfo.sSignStatus ne '승인' && issueInfo.sSignStatus ne '제외'}"> 
+					<c:choose>
+						<c:when test="${issueInfo.sSignStatus eq '등록'}"> 
+							<button type="button" class="form_btn active" onclick="startApproval('Y');">승인요청</button>
+						</c:when>
+						<c:when test="${issueInfo.sSignProgress eq '0'}"> 
+							<button type="button" class="form_btn active" onclick="startApproval('N');">요청취소</button>
+						</c:when>
+					</c:choose>
+				</c:when>
+				<c:when test="${issueInfo.eIssueStatus eq '요청등록'}">
+					<button type="button" id="process_go" onclick="process_go();" class="form_btn active">처리정보 등록</button>
+				</c:when>
+			</c:choose>
+			<c:if test="${issueInfo.sSignStatus eq '등록' || issueInfo.sSignStatus eq '반려' || issueInfo.sSignStatus eq '제외'}">
+				<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T' || staffVO.kAdminAuth eq 'T'}">
+					<button type="button" class="form_btn bg" onclick="update_go();">수정</button>
+				</c:if>
+				<c:if test="${staffVO.kStaffAuthDelFlag eq 'T' || staffVO.kAdminAuth eq 'T'}">
+					<button type="button" class="form_btn bg" onclick="delete_go();">삭제</button>
 				</c:if>
 			</c:if>
 		</c:if>
-		<button type="button" class="topdown" onclick="eExcelDownload();">다운로드</button>
-		<c:if test="${(issueInfo.kStaffKey eq staffVO.kStaffKey && (issueInfo.sSignStatus eq '등록' || issueInfo.sSignStatus eq '반려' || issueInfo.sSignStatus eq '제외')) || (staffVO.kAdminAuth eq 'T' && (issueInfo.sSignStatus eq '등록' || issueInfo.sSignStatus eq '반려' || issueInfo.sSignStatus eq '제외')) }">
-			<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T'  || staffVO.kAdminAuth eq 'T'}">
-				<button type="button" class="form_btn bg" onclick="update_go();">수정</button>
-			</c:if>
-			<c:if test="${staffVO.kStaffAuthDelFlag eq 'T'  || staffVO.kAdminAuth eq 'T'}">
-				<button type="button" class="form_btn bg" onclick="delete_go();">삭제</button>
-			</c:if>
-		</c:if>
-		<button type="button" class="form_btn" onclick="cancel();">목록</button>
-		
+		<button type="button" class="form_btn" onclick="cancel();">목록</button>		
 	</div>
 	<div id="setModal" class="modal" style="display:none;">
 		<a id="modal-close" href="#close-modal" rel="modal:close" class="close-modal " onclick="closeModal()">Close</a>

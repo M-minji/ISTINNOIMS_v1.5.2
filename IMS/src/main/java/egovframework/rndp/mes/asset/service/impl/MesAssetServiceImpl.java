@@ -53,6 +53,16 @@ public class MesAssetServiceImpl implements MesAssetService {
 	public int selectMesAssetListCnt(MesAssetVO mesAssetVO) throws Exception {
 		return mesAssetDAO.selectMesAssetListCnt(mesAssetVO);
 	}
+	
+	@Override
+	public List selectMesAssetListHW(MesAssetVO mesAssetVO) throws Exception {
+		return mesAssetDAO.selectMesAssetListHW(mesAssetVO);
+	}
+
+	@Override
+	public int selectMesAssetListCntHW(MesAssetVO mesAssetVO) throws Exception {
+		return mesAssetDAO.selectMesAssetListCntHW(mesAssetVO);
+	}
 
 	@Override
 	public MesAssetVO selectMesAssetInfo(MesAssetVO mesAssetVO) throws Exception {

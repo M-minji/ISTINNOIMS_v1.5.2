@@ -824,6 +824,7 @@
 									</c:if>
 								</c:if>
 								<c:if test="${signList.sSignStaffKey ne staffVO.kStaffKey || selInfo.sSignStatus eq '승인'  || selInfo.sSignStatus eq '반려'}">${signList.sSignDecison}</c:if>
+								<c:if test="${signList.sSignDecison ne '결재대기' && signList.sSignStaffKey eq staffVO.kStaffKey }">${signList.sSignDecison}</c:if>
 							</td>
 							<td <c:if test="${selInfo.sSignStatus eq '승인요청' && signList.sSignStaffKey eq staffVO.kStaffKey}">id="sSignContentSet"</c:if> style="text-align:left; padding-left:5px; width:60%;">
 								<c:if test="${selInfo.sSignStatus eq '승인요청' && signList.sSignStaffKey eq staffVO.kStaffKey && signList.sSignDecison eq '결재대기'}">
@@ -851,33 +852,33 @@
 	
 	
 	<div class="bottom_btn">
-		<c:if test="${selInfo.sSignStatus eq '등록'}">
-			<c:if test="${selInfo.kStaffKey eq staffVO.kStaffKey }">
-				<button type="button" onclick="startApproval('Y');" class="form_btn active">승인요청</button>
-			</c:if>
-		</c:if>
-		<c:if test="${selInfo.sSignStatus eq '승인요청'}">
-			<c:if test="${selInfo.kStaffKey eq staffVO.kStaffKey && selInfo.sSignProgress eq '0'}">
-				<button type="button" onclick="startApproval('N');" class="form_btn active">요청취소</button>
-			</c:if>
-		</c:if>
 		<button type="button" onclick="eExcelDownload();" class="topdown">다운로드</button>
-		<c:if test="${selInfo.sSignStatus eq '승인' || selInfo.sSignStatus eq '제외'}">
-			<c:if test="${selInfo.eStatus eq '등록'}"> 
-				<c:if test="${selInfo.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
+		<c:if test="${selInfo.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
+			<c:choose>
+				<c:when test="${selInfo.sSignStatus ne '승인' && selInfo.sSignStatus ne '제외'}"> 
+					<c:choose>
+						<c:when test="${selInfo.sSignStatus eq '등록'}"> 
+							<button type="button" onclick="startApproval('Y');" class="form_btn active">승인요청</button>
+						</c:when>
+						<c:when test="${selInfo.sSignProgress eq '0'}"> 
+							<button type="button" onclick="startApproval('N');" class="form_btn active">요청취소</button>
+						</c:when>
+					</c:choose>
+				</c:when>
+				<c:when test="${selInfo.eStatus eq '등록'}">
 					<button type="button" onclick="eInspectionResult_go();" class="form_btn active">점검결과 등록</button>
+				</c:when>
+			</c:choose>
+			<c:if test="${selInfo.sSignStatus eq '등록' || selInfo.sSignStatus eq '반려' || selInfo.sSignStatus eq '제외'}">
+				<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T' || staffVO.kAdminAuth eq 'T'}">
+					<button type="button" onclick="eModifunction();" class="form_btn bg">수정</button>
 				</c:if>
-			</c:if> 
-		</c:if>
-		<c:if test="${(selInfo.kStaffKey eq staffVO.kStaffKey && (selInfo.sSignStatus eq '등록' || selInfo.sSignStatus eq '반려' || selInfo.sSignStatus eq '제외')) || (staffVO.kAdminAuth eq 'T' && (selInfo.sSignStatus eq '등록' || selInfo.sSignStatus eq '반려' || selInfo.sSignStatus eq '제외'))}">
-			<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T' || staffVO.kAdminAuth eq 'T'}">
-				<button type="button" onclick="eModifunction();" class="form_btn bg">수정</button>
-			</c:if>
-			<c:if test="${staffVO.kStaffAuthDelFlag eq 'T' || staffVO.kAdminAuth eq 'T'}">
-				<button type="button" onclick="eDelete();" class="form_btn bg">삭제</button>
+				<c:if test="${staffVO.kStaffAuthDelFlag eq 'T' || staffVO.kAdminAuth eq 'T'}">
+					<button type="button" onclick="eDelete();" class="form_btn bg">삭제</button>
+				</c:if>
 			</c:if>
 		</c:if>
-		<button type="button" onclick="cancle();" class="form_btn">목록</button>
+		<button type="button" onclick="cancle();" class="form_btn">목록</button>		
 	</div>
 	<div id="setModal" class="modal" style="display:none;">
 		<a id="modal-close" href="#close-modal" rel="modal:close" class="close-modal " onclick="closeModal()">Close</a>

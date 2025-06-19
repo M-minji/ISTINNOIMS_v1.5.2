@@ -167,7 +167,7 @@ public class MesWebMenuController {
 		
 		// 메뉴별 권한을 staffVo 추가
 		staffVo.setkStaffAuthModifyFlag(menuBeanVO.getkMenuAuthM());
-		staffVo.setkStaffAuthConfirmFlag(menuBeanVO.getkMenuAuthC());
+		staffVo.setkStaffAuthConfirmFlag(menuBeanVO.getkMenuAuthFlag());
 		staffVo.setkStaffAuthDelFlag(menuBeanVO.getkMenuAuthD());
 		staffVo.setkStaffAuthWriteFlag(menuBeanVO.getkMenuAuthW());
  

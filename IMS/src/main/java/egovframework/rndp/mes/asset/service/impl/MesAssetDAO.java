@@ -1,5 +1,6 @@
 package egovframework.rndp.mes.asset.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,26 @@ public class MesAssetDAO extends EgovAbstractDAO{
 	
 	public int selectMesAssetListCnt(MesAssetVO mesAssetVO) throws Exception{
 		return (int) select("mesAssetDAO.selectMesAssetListCnt", mesAssetVO);
+	}
+	
+	public List selectMesAssetListHW(MesAssetVO mesAssetVO) throws Exception{
+		List assetList = list("mesAssetDAO.selectMesAssetList", mesAssetVO);
+		ArrayList<MesAssetVO> listCopy = new ArrayList<>(assetList);
+		for(int i=listCopy.size()-1; i>=0; i--) {
+			MesAssetVO asset = listCopy.get(i);
+			String status = asset.getsSignStatus();
+			if(!status.equals("제외")  && !status.equals("승인")) {
+				assetList.remove(i);
+			}
+		}
+		return assetList;
+		
+	}
+	
+	public int selectMesAssetListCntHW(MesAssetVO mesAssetVO) throws Exception{
+		List assetList = selectMesAssetListHW(mesAssetVO);
+		int cnt = assetList.size();
+		return cnt;
 	}
 	
 	public MesAssetVO selectMesAssetInfo(MesAssetVO mesAssetVO) throws Exception{

@@ -64,7 +64,7 @@ public class MesStaffVO extends DefultVO{
 	private String kStaffAuthWriteFlag 			="";		
 	private String kStaffAuthModifyFlag 			="";		
 	private String kStaffAuthDelFlag 				="";		
-	private String kStaffAuthCloseFlag 				="";	
+	private String kStaffAuthCloseFlag 				="";		
 
 	//2020 07 27 intra staff 용 mes 이전 
 	private String iclass = "";

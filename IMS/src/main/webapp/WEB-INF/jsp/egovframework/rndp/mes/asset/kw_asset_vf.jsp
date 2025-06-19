@@ -633,6 +633,7 @@ input[name="tab_item"] {
 									</c:if>
 								</c:if>
 								<c:if test="${signList.sSignStaffKey ne staffVO.kStaffKey || (signList.sSignDecison ne '결재대기' && assetInfo.sSignStatus eq '승인요청')  || assetInfo.sSignStatus eq '반려'}">${signList.sSignDecison}</c:if>
+								<c:if test="${signList.sSignDecison ne '결재대기' && signList.sSignStaffKey eq staffVO.kStaffKey }">${signList.sSignDecison}</c:if>
 							</td>
 							<td <c:if test="${assetInfo.sSignStatus eq '승인요청' && signList.sSignStaffKey eq staffVO.kStaffKey}">id="sSignContentSet"</c:if> style="text-align:left; padding-left:5px; width:60%;">
 								<c:if test="${assetInfo.sSignStatus eq '승인요청' && signList.sSignStaffKey eq staffVO.kStaffKey && signList.sSignDecison eq '결재대기'}">

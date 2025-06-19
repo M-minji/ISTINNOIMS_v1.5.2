@@ -51,7 +51,7 @@ public class MesK_Staff  implements Serializable
 	private String kStaffAuthDelFlag 			="";		//삭제권한
 	private String kStaffAuthCloseFlag 			="";		//마감권한
 	private String kAdminAuth 			="";		//관리자 권한
-	
+
 	
 	public String getkAdminAuth() {
 		return kAdminAuth;

@@ -16,6 +16,10 @@ public interface MesAssetService {
 	public List selectMesAssetList(MesAssetVO mesAssetVO) throws Exception;
 	
 	public int selectMesAssetListCnt(MesAssetVO mesAssetVO) throws Exception;
+
+	public List selectMesAssetListHW(MesAssetVO mesAssetVO) throws Exception;
+	
+	public int selectMesAssetListCntHW(MesAssetVO mesAssetVO) throws Exception;
 	
 	public MesAssetVO selectMesAssetInfo(MesAssetVO mesAssetVO) throws Exception;
 	
