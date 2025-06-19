@@ -790,7 +790,7 @@ document.ondragstart = function() {
 			<div class="search_filter">
 				<ul> 
 					<li>
-						<span>자산유형</span>
+						<span>자산유형</li></span>
 						<select id='searchTypeSet1' name='searchTypeSet1'  >
 							<option value=''>전체조회</option>
 							<c:forEach var='list' items='${gubun36List}'>
@@ -932,9 +932,12 @@ document.ondragstart = function() {
 										<c:when test="${list.sSignStatus eq '등록'}">
 											<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eAssetKey}','Y');">승인요청</a>
 										</c:when>
-										<c:when test="${list.sSignStatus eq '승인요청'}">
+										<c:when test="${list.sSignProgress eq '0'}">
 											<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eAssetKey}','N');">요청취소</a>
 										</c:when>
+										<c:otherwise>
+											결재 진행 중
+										</c:otherwise>
 									</c:choose>
 								</c:when>
 								<c:when test="${list.sSignStatus eq '등록'}">
@@ -959,7 +962,7 @@ document.ondragstart = function() {
            		<option value="50" <c:if test="${mesAssetVO.recordCountPerPage eq 50}">selected="selected"</c:if>>50개씩 보기</option>
            		<option value="100" <c:if test="${mesAssetVO.recordCountPerPage eq 100}">selected="selected"</c:if>>100개씩 보기</option>
     		</select> 
-    		<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">
+    		<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T' || staffVO.kAdminAuth eq 'T'}">
 	    		<button type="button" class="form_btn ico_excel" onclick="formDownload()">양식 다운로드</button>
 	    		<button type="button" class="form_btn ico_excel" onclick="document.getElementById('managerFile').click();">자산 등록</button>
 	    		<input id="managerFile" type="file"  style="display: none;" onchange="readExcel(event);"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
@@ -969,8 +972,10 @@ document.ondragstart = function() {
 			<ui:pagination paginationInfo="${paginationInfo}" type="text" jsFunction="fn_guestList" />
 		</div>
 		<div class="btns">
-			<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">
+			<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T' || staffVO.kAdminAuth eq 'T'}">
 				<button type="button" class="form_btn ico_refresh" onclick="updateAssetStatus()">노후화 정보 갱신</button>
+			</c:if>
+			<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T' || staffVO.kAdminAuth eq 'T'}">
 				<button type="button" class="form_btn active" onclick="go_insert()">등록</button>
 			</c:if>
 		</div>

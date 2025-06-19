@@ -1346,8 +1346,8 @@ public class MesAssetController {
 		model.addAttribute("gubun37List", mesGubunService.selectMesGubunCodeList(vo));
 		
 		
-		List assetList = mesAssetService.selectMesAssetList(mesAssetVO);
-		int totCnt = mesAssetService.selectMesAssetListCnt(mesAssetVO);
+		List assetList = mesAssetService.selectMesAssetListHW(mesAssetVO);
+		int totCnt = mesAssetService.selectMesAssetListCntHW(mesAssetVO);
 		paginationInfo.setTotalRecordCount(totCnt);
 		
 		model.addAttribute("assetList", assetList);

@@ -384,9 +384,12 @@ $(document).ready(function(){
 									<c:when test="${list.sSignStatus eq '등록'}">
 										<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eIssueKey}','Y');">승인요청</a>
 									</c:when>
-									<c:when test="${list.sSignStatus eq '승인요청'}">
+									<c:when test="${list.sSignProgress eq '0'}">
 										<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eIssueKey}','N');">요청취소</a>
 									</c:when>
+									<c:otherwise>
+										결재 진행 중
+									</c:otherwise>
 								</c:choose>
 							</c:when>
 							<c:when test="${list.sSignStatus eq '등록'}">
@@ -417,7 +420,7 @@ $(document).ready(function(){
 <!-- 			<li> -->
 <!-- 	    		<a onclick="excelDownload();">액셀 다운로드</a> -->
 <!-- 	    	</li> -->
-			<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">		
+			<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T' || staffVO.kAdminAuth eq 'T'}">		
 				<button type="button" class="form_btn active" onclick="go_insert();">등록</button>
     		</c:if>
 	    </div>

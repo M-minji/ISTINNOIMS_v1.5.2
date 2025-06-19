@@ -322,7 +322,7 @@
 		   	 	IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
 			FROM P_PROJECT
 			LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = P_PROJECT_NUM  AND s.SIGN_TABLE_NAME = 'P_PROJECT')
-			WHERE 1=1 AND eProjectStatus != '삭제'
+			WHERE 1=1 AND SIGN_STATUS != '삭제'
 				 <isNotEmpty property="eStartDate">
 			         AND (DATE_FORMAT(eStartDate, '%Y') = #eStartDate# OR DATE_FORMAT(eEndDate, '%Y') = DATE_FORMAT(#eStartDate#, '%Y') )  
 		         </isNotEmpty>
@@ -349,7 +349,7 @@
 			    COUNT(P_PROJECT_NUM)  
 			FROM P_PROJECT
 			
-			WHERE 1=1 AND eProjectStatus != '삭제'
+			WHERE 1=1 AND SIGN_STATUS != '삭제'
 				 <isNotEmpty property="eStartDate">
 			         AND (DATE_FORMAT(eStartDate, '%Y') = #eStartDate# OR DATE_FORMAT(eEndDate, '%Y') = DATE_FORMAT(#eStartDate#, '%Y') )  
 		         </isNotEmpty>

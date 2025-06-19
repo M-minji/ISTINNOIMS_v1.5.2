@@ -336,9 +336,12 @@ function excelDwonload(){
 										<c:when test="${list.eStatus eq '등록'}">
 											<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eEntryExitKey}','Y');">승인요청</a>
 										</c:when>
-										<c:when test="${list.eStatus eq '승인요청'}">
+										<c:when test="${list.sSignProgress eq '0'}">
 											<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eEntryExitKey}','N');">요청취소</a>
 										</c:when>
+										<c:otherwise>
+											결재 진행 중
+										</c:otherwise>
 									</c:choose>
 								</c:when>
 								<c:when test="${list.eStatus eq '등록'}">
@@ -368,9 +371,9 @@ function excelDwonload(){
 		</div>
 		<div class="btns">
 			<!--  <button type="button" class="form_btn ico_excel" onclick="formDownload()">양식 다운로드</button>  -->
-			<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">
+			<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T' || staffVO.kAdminAuth eq 'T'}">
 				<!--  <button type="button" class="form_btn ico_excel" onclick="document.getElementById('managerFile').click();">엑셀 등록</button>  -->
-				<input id="managerFile" type="file"  style="display: none;" onchange="readExcel(event);"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
+	<!-- 		<input id="managerFile" type="file"  style="display: none;" onchange="readExcel(event);"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>  -->	
 				<button type="button" class="form_btn active" onclick="go_insert()">등록</button>
 			</c:if>
 		</div>

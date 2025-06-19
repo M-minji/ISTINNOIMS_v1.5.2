@@ -1,5 +1,6 @@
 package egovframework.rndp.mes.output.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -67,12 +68,24 @@ public class MesOutputDAO extends EgovAbstractDAO {
 
 	public List mesProjectInfoList(MesOutputVO mesOutputVO) throws Exception {
 		// TODO Auto-generated method stub
-		return list("mesOutputDAO.mesProjectInfoList", mesOutputVO);
+		List outputList = list("mesOutputDAO.mesProjectInfoList", mesOutputVO);
+		ArrayList<MesOutputVO> listCopy = new ArrayList<>(outputList);
+		for(int i=listCopy.size()-1; i>=0; i--) {
+			MesOutputVO output = listCopy.get(i);
+			String status = output.getsSignStatus();
+			if(!status.equals("제외")  && !status.equals("승인")) {
+				outputList.remove(i);
+			}
+		}
+		return outputList;
 	}
 
 	public int mesProjectInfoListCnt(MesOutputVO mesOutputVO) throws Exception {
 		// TODO Auto-generated method stub
-		return  (int) select("mesOutputDAO.mesProjectInfoListCnt",mesOutputVO);
+		List outputList = mesProjectInfoList(mesOutputVO);
+		int cnt = outputList.size();
+//		return  (int) select("mesOutputDAO.mesProjectInfoListCnt",mesOutputVO);
+		return cnt;
 	}
 
 	public void mesProjectStatusUpdate(MesOutputVO mesOutputVO) throws Exception {

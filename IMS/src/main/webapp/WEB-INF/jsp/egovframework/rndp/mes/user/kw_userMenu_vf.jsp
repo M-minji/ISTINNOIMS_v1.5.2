@@ -300,7 +300,7 @@ function chkAll(flag, flagTag,flag2){
 						<tr>
 							<th rowspan="2">No.</th>
 							<th rowspan="2">메뉴명</th>
-							<th colspan="5">권한</th>
+							<th colspan="4">권한</th>
 						</tr>
 						<tr>
 							<th class="bl">
@@ -310,13 +310,13 @@ function chkAll(flag, flagTag,flag2){
 									<span>읽기</span>
 								</label>
 							</th>
-							<th>
+	<!-- 						<th>
 								<label class="inp_radio end">
 									<input type="checkbox" name="cCheakAll" id="cCheakAll" onclick="chkAll('cCheakAll', 'cCheak','c')">					
 									<i></i>
 									<span>확정</span>				
 								</label> 
-							</th>
+							</th>  -->
 							<th>
 								<label class="inp_radio end">
 									<input type="checkbox" name="wCheakAll"  id="wCheakAll" onclick="chkAll('wCheakAll', 'wCheak','w')">	
@@ -347,10 +347,10 @@ function chkAll(flag, flagTag,flag2){
 									${i.index + 1}
 									<input type="hidden" name="kMenuKey"  id="kMenuKey" value="${menuList.mesMenuKey}">
 								</td>
-								<td style="text-align: left;">
+						<td style="text-align: left;">
 									<c:if test="${menuList.mesMenuRef ne '0'}">&nbsp;&nbsp;&nbsp;&nbsp;└${menuList.mesMenuName}	</c:if>
 									<c:if test="${menuList.mesMenuRef eq '0'}">&nbsp;<b>${menuList.mesMenuName}</b></c:if>							
-								</td>
+								</td>  
 								<td>
 									<label for="flagCheak${menuList.mesMenuKey}" class="inp_radio">
 										<input type="checkbox" name="flagCheak${menuList.mesMenuKey}"  id="flagCheak${menuList.mesMenuKey}" onclick="flagCheak(${menuList.mesMenuKey},${menuList.mesMenuRef},${menuList.mesMenuRoot})" <c:if test="${menuList.mesMenuAuthFlag eq 'T'}">checked="checked"</c:if>>
@@ -361,7 +361,7 @@ function chkAll(flag, flagTag,flag2){
 										<input type="hidden" id="flagkey${menuList.mesMenuKey}" name="flagkey${menuList.mesMenuRoot}" value="${menuList.mesMenuKey}">
 									  </label> 
 								</td>
-								<td>
+					<!-- 	확정				<td>
 									<label for="cCheak${menuList.mesMenuKey}" class="inp_radio">
 										<input type="checkbox" name="cCheak${menuList.mesMenuKey}" id="cCheak${menuList.mesMenuKey}" onclick="cCheak(${menuList.mesMenuKey},${menuList.mesMenuRef},${menuList.mesMenuRoot})" <c:if test="${menuList.mesMenuAuthC eq 'T'}">checked="checked"</c:if>>
 										<i></i>	
@@ -370,7 +370,7 @@ function chkAll(flag, flagTag,flag2){
 										<input type="hidden" id="croot${menuList.mesMenuKey}" name="croot${menuList.mesMenuRoot}" value="${menuList.mesMenuRoot}">
 										<input type="hidden" id="ckey${menuList.mesMenuKey}" name="ckey${menuList.mesMenuRoot}" value="${menuList.mesMenuKey}">
 									</label>
-								</td>
+								</td>  -->
 								<td>
 									<label for="wCheak${menuList.mesMenuKey}" class="inp_radio">
 										<input type="checkbox" name="wCheak${menuList.mesMenuKey}"  id="wCheak${menuList.mesMenuKey}" onclick="wCheak(${menuList.mesMenuKey},${menuList.mesMenuRef},${menuList.mesMenuRoot})" <c:if test="${menuList.mesMenuAuthW eq 'T'}">checked="checked"</c:if>>
@@ -413,9 +413,9 @@ function chkAll(flag, flagTag,flag2){
 			</div>
 			
 			<div class="bottom_btn">
-				<span class="mr20">* 권한 부여 후 재 로그인하셔야 반영됩니다. </span>
-				<button type="button" class="form_btn active" onclick="mesUserMenuUp();">등록</button>
-				<button type="button" class="form_btn" onclick="cancle();">목록</button>
+				<span class="mr20">※ 권한 부여 후 재 로그인하셔야 반영됩니다. </span>
+				<button type="button" class="form_btn active" onclick="mesUserMenuUp();">저장</button>
+				<button type="button" class="form_btn" onclick="cancle();">취소</button>
 			</div>
 		
 </form>

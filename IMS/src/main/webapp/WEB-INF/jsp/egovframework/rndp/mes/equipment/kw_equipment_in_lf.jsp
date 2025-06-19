@@ -329,9 +329,12 @@ function excelDwonload(){
 										<c:when test="${list.sSignStatus eq '등록'}">
 											<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eEquipmentInKey}','Y');">승인요청</a>
 										</c:when>
-										<c:when test="${list.sSignStatus eq '승인요청'}">
+										<c:when test="${list.sSignProgress eq '0'}">
 											<a style="cursor: pointer;" class="form_btn sm" onclick="startApproval('${list.eEquipmentInKey}','N');">요청취소</a>
 										</c:when>
+										<c:otherwise>
+											결재 진행 중
+										</c:otherwise>
 									</c:choose>
 								</c:when>
 								<c:when test="${list.sSignStatus eq '등록'}">
