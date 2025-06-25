@@ -326,12 +326,16 @@
 			  eei.kStaffName,
 			  eei.kStaffKey,
 			  eei.eStatus,
-			  eei.sSignStatus,
+		/*	  eei.sSignStatus,  */
 			  eei.eEntryLocation,
 			  eei.eEntryImporterOrg,
 			  DATE_FORMAT(eei.wDate, '%Y-%m-%d') AS  eEntryWdate,
 			  IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress,
-		      DATE_FORMAT(eei.wDate, '%Y-%m-%d')  AS eSearchWord9
+		      DATE_FORMAT(eei.wDate, '%Y-%m-%d')  AS eSearchWord9,
+		      CASE 
+			        WHEN SIGN_PROGRESS = SIGN_PROGRESS_CNT THEN '승인'
+			        ELSE sSignStatus
+			   		END AS sSignStatus 
 			FROM
 			   E_EQUIPMENT_IN AS eei   
 			  LEFT JOIN S_SIGN AS s ON(s.SIGN_TABLE_NUM = eei.eEquipmentInKey  and s.SIGN_TABLE_NAME = 'E_EQUIPMENT_IN')
@@ -353,7 +357,7 @@
 				  eEntryLocation = #eEntryLocation#,
 				  eEntryImporterOrg = #eEntryImporterOrg#,
 				  wDate = #eEntryWdate#,
-				  eSignStatus =#eSignStatus# ,
+				  sSignStatus =#sSignStatus# ,
 				  eStatus = #eStatus#
 		WHERE eEquipmentInKey  = #eEquipmentInKey#
 	</update>

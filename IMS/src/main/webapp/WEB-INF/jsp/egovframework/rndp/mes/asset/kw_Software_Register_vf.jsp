@@ -432,16 +432,7 @@ input[name="tab_item"] {
 					</c:if>
 			</tbody>
 		</table>
-	</div>	
-	
-	<div class="bottom_btn">
-		<c:if test="${swInfo.eUsedLicenseQuantity  ne '0'}">
-			<span>총 사용 수량 : ${swInfo.eUsedLicenseQuantity}</span>
-		</c:if>
-		<button type="button" class="form_btn active ml20" onclick="eAssetPop()" >라이선스 사용자산 조회</button>
-	</div>
-
-	
+	</div>		
 	<c:if test="${not empty signList}">
 		<div class="content_top nofirst" style="padding-top:20px;">
 			<div class="content_tit">
@@ -508,27 +499,49 @@ input[name="tab_item"] {
 		</div>
 	</c:if>
 	
+	<c:if test="${swInfo.eUsedLicenseQuantity ne '0' && not empty swInfo.eUsedLicenseQuantity}">
+		<div class="bottom_btn">
+				<span>총 사용 수량 : ${swInfo.eUsedLicenseQuantity}</span>
+				<button type="button" class="form_btn active ml20" onclick="eAssetPop()" >라이선스 사용자산 조회</button>
+		</div>
+	</c:if>
+	
 	<div class="bottom_btn">
-	<c:if test="${swInfo.eStatus eq '등록'}">
-			<c:if test="${swInfo.kStaffKey eq staffVO.kStaffKey }">
+		<c:if test="${swInfo.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
+			<c:if test="${swInfo.eStatus ne '승인' && swInfo.eStatus ne '제외'}"> 
+				<c:choose>
+					<c:when test="${swInfo.eStatus eq '등록'}"> 
 				<button type="button" class="form_btn active" onclick="startApproval('Y');">승인요청</button>
-			</c:if>
-		</c:if>
-		<c:if test="${swInfo.eStatus eq '승인요청'}">
-			<c:if test="${swInfo.kStaffKey eq staffVO.kStaffKey && swInfo.sSignProgress eq '0'}">
+					</c:when>
+					<c:when test="${swInfo.sSignProgress eq '0'}"> 
 				<button type="button" class="form_btn active" onclick="startApproval('N');">요청취소</button>
+					</c:when>
+				</c:choose>
 			</c:if>
-		</c:if>
-		<c:if test="${(swInfo.kStaffKey eq staffVO.kStaffKey && (swInfo.eStatus eq '등록' || swInfo.eStatus eq '반려' || swInfo.eStatus eq '제외')) || (staffVO.kAdminAuth eq 'T' && (swInfo.eStatus eq '등록' || swInfo.eStatus eq '반려' || swInfo.eStatus eq '제외')) }">
-			<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T' ||  staffVO.kAdminAuth eq 'T'}">
-				<button type="button" class="form_btn bg" onclick="update_go();">수정</button>
-			</c:if>
-			<c:if test="${staffVO.kStaffAuthDelFlag eq 'T' || staffVO.kAdminAuth eq 'T'}">
-				<button type="button" class="form_btn bg" onclick="delete_go();">삭제</button>
-			</c:if>
+			<c:choose>
+				<c:when test="${swInfo.eStatus eq '등록' || swInfo.eStatus eq '반려' || swInfo.eStatus eq '제외'}"> 
+					<c:choose>
+						<c:when test="${staffVO.kAdminAuth eq 'T'}"> 
+							<button type="button" class="form_btn bg" onclick="update_go();">수정</button>
+							<button type="button" class="form_btn bg" onclick="delete_go();">삭제</button>
+						</c:when>
+						<c:otherwise>
+							<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T'}">
+								<button type="button" class="form_btn bg" onclick="update_go();">수정</button>
+							</c:if>
+							<c:if test="${staffVO.kStaffAuthDelFlag eq 'T'}">
+								<button type="button" class="form_btn bg" onclick="delete_go();">삭제</button>
+							</c:if>
+						</c:otherwise>
+					</c:choose>
+				</c:when>
+				<c:when test="${swInfo.eStatus eq '승인' && staffVO.kAdminAuth eq 'T'}">
+					<button type="button" class="form_btn bg" onclick="update_go();">수정</button>
+					<button type="button" class="form_btn bg" onclick="delete_go();">삭제</button>
+				</c:when>
+			</c:choose>
 		</c:if>
 		<button type="button" class="form_btn" onclick="list_go();">목록</button>
-		
 	</div>
 		
 	<div id="setModal" class="modal" style="display:none;">

@@ -547,14 +547,6 @@ input[name="tab_item"] {
 			</tbody>
 		</table>
 	</div>
-	
-		<div class="bottom_btn" style="margin-top:10px;">
-			<button type="button" onclick="sel_assetPop('C')" class="form_btn active">반/출입 조회</button>
-			<button type="button" onclick="sel_assetPop('R')" class="form_btn active">부품교체이력 조회</button>
-			<button type="button" onclick="sel_assetPop('M')" class="form_btn active">장애이력 조회</button>
-			<button type="button" onclick="eBarcodePop()" class="form_btn active">QR코드출력</button>
-		</div>
-
 	<c:if test="${not empty assetList}">
 		<div class="content_top nofirst">
 			<div class="content_tit">
@@ -596,7 +588,7 @@ input[name="tab_item"] {
 	<c:if test="${not empty signList}">
 		<div class="content_top nofirst">
 			<div class="content_tit">
-				<h2>결재현황</h2>
+				<h2>결재정보</h2>
 			</div>
 		</div>
 		
@@ -659,24 +651,50 @@ input[name="tab_item"] {
 		</div>
 	</c:if>
 	
-	<div class="bottom_btn mt20">
-		<c:if test="${assetInfo.sSignStatus eq '등록'}">
-			<c:if test="${assetInfo.kStaffKey eq staffVO.kStaffKey }">
-				<button type="button" onclick="startApproval('Y');" class="form_btn active">승인요청</button>
+	<c:if test="${assetInfo.sSignStatus eq '승인' || assetInfo.sSignStatus eq '제외'}">
+		<div class="bottom_btn" style="margin-top:20px;">
+			<button type="button" onclick="sel_assetPop('C')" class="form_btn active">반/출입 조회</button>
+			<button type="button" onclick="sel_assetPop('R')" class="form_btn active">부품교체이력 조회</button>
+			<button type="button" onclick="sel_assetPop('M')" class="form_btn active">장애이력 조회</button>
+			<button type="button" onclick="eBarcodePop()" class="form_btn active">QR코드출력</button>
+		</div>
+	</c:if>
+	
+	
+	<div class="bottom_btn mt20">		
+		<c:if test="${assetInfo.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
+			<c:if test="${assetInfo.sSignStatus ne '승인' && assetInfo.sSignStatus ne '제외'}"> 
+				<c:choose>
+					<c:when test="${assetInfo.sSignStatus eq '등록'}"> 
+						<button type="button" onclick="startApproval('Y');" class="form_btn active">승인요청</button>
+					</c:when>
+					<c:when test="${assetInfo.sSignProgress eq '0'}"> 
+						<button type="button" onclick="startApproval('N');" class="form_btn active">요청취소</button>
+					</c:when>
+				</c:choose>
 			</c:if>
-		</c:if>
-		<c:if test="${assetInfo.sSignStatus eq '승인요청'}">
-			<c:if test="${assetInfo.kStaffKey eq staffVO.kStaffKey && assetInfo.sSignProgress eq '0'}">
-				<button type="button" onclick="startApproval('N');" class="form_btn active">요청취소</button>
-			</c:if>
-		</c:if>
-		<c:if test="${(assetInfo.kStaffKey eq staffVO.kStaffKey && (assetInfo.sSignStatus eq '등록' || assetInfo.sSignStatus eq '반려' || assetInfo.sSignStatus eq '제외')) || (staffVO.kAdminAuth eq 'T' && (assetInfo.sSignStatus eq '등록' || assetInfo.sSignStatus eq '반려' || assetInfo.sSignStatus eq '제외')) }">
-			<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T'  || staffVO.kAdminAuth eq 'T'}">
-				<button type="button" onclick="update_go();" class="form_btn bg">수정</button>
-			</c:if>
-			<c:if test="${staffVO.kStaffAuthDelFlag eq 'T'  || staffVO.kAdminAuth eq 'T'}">
-				<button type="button" onclick="delete_go();" class="form_btn bg">삭제</button>
-			</c:if>
+			<c:choose>
+				<c:when test="${assetInfo.sSignStatus eq '등록' || assetInfo.sSignStatus eq '반려' || assetInfo.sSignStatus eq '제외'}"> 
+					<c:choose>
+						<c:when test="${staffVO.kAdminAuth eq 'T'}"> 
+					<button type="button" onclick="update_go();" class="form_btn bg">수정</button>
+					<button type="button" onclick="delete_go();" class="form_btn bg">삭제</button>
+						</c:when>
+						<c:otherwise>
+							<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T'}">
+					<button type="button" onclick="update_go();" class="form_btn bg">수정</button>
+							</c:if>
+							<c:if test="${staffVO.kStaffAuthDelFlag eq 'T'}">
+					<button type="button" onclick="delete_go();" class="form_btn bg">삭제</button>
+							</c:if>
+						</c:otherwise>
+					</c:choose>
+				</c:when>
+				<c:when test="${assetInfo.sSignStatus eq '승인' && staffVO.kAdminAuth eq 'T'}">
+					<button type="button" onclick="update_go();" class="form_btn bg">수정</button>
+					<button type="button" onclick="delete_go();" class="form_btn bg">삭제</button>
+				</c:when>
+			</c:choose>
 		</c:if>
 		<button type="button" onclick="list_go();" class="form_btn">목록</button>
 	</div>

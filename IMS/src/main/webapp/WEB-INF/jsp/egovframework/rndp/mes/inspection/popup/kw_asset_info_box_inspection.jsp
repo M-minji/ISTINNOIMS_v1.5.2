@@ -3,7 +3,7 @@
 <%@ taglib uri="http://egovframework.gov/ctl/ui" prefix="ui" %>
 
 <script type="text/javascript">
-
+window.resizeTo(1430, 800);
 $(function(){
 // 	datepickerIdSet("searchTypeSet5");
 })
@@ -221,6 +221,7 @@ function toggleSelectAll(selectAllCheckbox) {
 		<!-- 		    			상세검색 -->
 		<!-- 		     		</a> -->
 		<!-- 				</li> -->
+							<li><button type="button" class="form_btn bg" onclick="fn_guestList(1)">검색</button></li>
 					</ul>
 		<!-- 			<ul id="search_detail" style="display: none;"> -->
 		<!-- 				<li> -->
@@ -234,7 +235,8 @@ function toggleSelectAll(selectAllCheckbox) {
 		<!-- 			</ul> -->
 				</div>
 				<div class="button_wrap">
-					<button type="button" class="form_btn bg" onclick="fn_guestList(1)">검색</button>
+		<!-- 			<button type="button" class="form_btn bg" onclick="fn_guestList(1)">검색</button>  -->
+					<button type="button" class="form_btn active" onclick="selectItem()">선택</button>
 				</div>	
 			</div>
 		</div>
@@ -353,7 +355,7 @@ function toggleSelectAll(selectAllCheckbox) {
 					<ui:pagination paginationInfo="${paginationInfo}" type="text" jsFunction="fn_guestList" />
 				</div>
 				<div class="btns">
-					<button type="button" class="form_btn active" onclick="selectItem()">선택</button>
+		<!-- 			<button type="button" class="form_btn active" onclick="selectItem()">선택</button>   -->
 				</div>
 			</div>		
 		</div>

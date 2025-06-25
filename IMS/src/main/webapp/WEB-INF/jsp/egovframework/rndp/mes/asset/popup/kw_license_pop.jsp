@@ -222,7 +222,7 @@ function selectRow(key) {
 	<div class="pop_head">
 		<div id="pop_head">
 			<div class="tit">
-				<h3>라이선스 등록 현황</h3>
+				<h3>라이선스 조회</h3>
 			</div>
 			<a href="javascript:self.close();"></a>
 		</div>
@@ -246,10 +246,12 @@ function selectRow(key) {
 							<span>유효기간</span>
 							<input type="text" id="searchTypeSet3" name="searchTypeSet3" class="searchWord" value="${mesAssetVO.searchTypeSet3}" />
 						</li>
+						<li><button type="button" class="form_btn bg" onclick="fn_guestList(1);">검색</button></li>
 					</ul>
 				</div>
 				<div class="button_wrap">
-					<button type="button" class="form_btn bg" onclick="fn_guestList(1);">검색</button>
+			<!-- 		<button type="button" class="form_btn bg" onclick="fn_guestList(1);">검색</button>  -->
+					<button type="button" class="form_btn active" onclick='selectItem()'>선택</button>
 				</div>	
 			</div>
 		</div>
@@ -334,7 +336,7 @@ function selectRow(key) {
 				</div>
 				<div class="paging"><ui:pagination paginationInfo="${paginationInfo}" type="text" jsFunction="fn_guestList" /></div>
 				<div class="btns">
-					<button type="button" class="form_btn active" onclick='selectItem()'>선택</button>
+			<!-- 		<button type="button" class="form_btn active" onclick='selectItem()'>선택</button>  -->
 				</div>
 			</div>
 		</div>

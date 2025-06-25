@@ -295,6 +295,21 @@
 		AND O_OUTPUT_NUM = #outputKey#
 	</update>
 	
+	<select id="mesOutputDAO.mesOutputCount" parameterClass="mesOutputVO" resultClass="int">
+			/*mesOutputDAO.mesOutputCount*/
+		SELECT COUNT(eDeliverableNUM) AS outputCnt
+		FROM P_Deliverable
+		WHERE eProjectNum = #eProjectNum#
+	</select>
+	
+	<select id="mesOutputDAO.mesReportCount" parameterClass="mesOutputVO" resultClass="int">
+			/*mesOutputDAO.mesReportCount*/
+		SELECT COUNT(eReportNUM) AS reportCnt
+		FROM P_Report
+		WHERE eProjectNum = #eProjectNum#
+	</select>
+	
+	
 	
 	<select id="mesOutputDAO.mesProjectInfoList" parameterClass="mesOutputVO" resultClass="mesOutputVO">
 		/*mesOutputDAO.mesProjectInfoList*/

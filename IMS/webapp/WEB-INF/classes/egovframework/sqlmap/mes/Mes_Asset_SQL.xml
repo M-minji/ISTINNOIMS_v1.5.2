@@ -603,8 +603,12 @@
 			ASSET_LIFE_TYPE AS eLifeType,
 			ASSET_EOS AS eEosDate,
 			ASSET_EOL AS eEolDate,
-			A.sSignStatus,
-			IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
+		/*	A.sSignStatus,  */
+			IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress,
+			CASE 
+		        WHEN SIGN_PROGRESS = SIGN_PROGRESS_CNT THEN '승인'
+		        ELSE sSignStatus
+		   		END AS sSignStatus 
 		FROM A_ASSET AS A 
 		LEFT JOIN S_SIGN AS s 
 		ON (s.SIGN_TABLE_NUM = A.ASSET_NUM and	s.SIGN_TABLE_NAME = 'A_ASSET')
@@ -1091,7 +1095,7 @@
 		    new_special(aas.asset_manufacturer) AS eManufacturer,
 		    new_special(aas.asset_author) AS eAuthor,
 		    aas.asset_reg_date AS aAssetDate,
-		    eStatus,
+	/*	    eStatus,  */
 			kStaffKey,
 			kStaffName,
 			IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress,
@@ -1103,7 +1107,11 @@
 		    ]]>
 		     ,
 		     (SELECT SUM(aal.eLicenseQuantity) 
-		      FROM A_ASSET_LICENSE AS aal WHERE aal.eSWRegisterKey = aas.asset_sw_key) AS eUsedLicenseQuantity
+		      FROM A_ASSET_LICENSE AS aal WHERE aal.eSWRegisterKey = aas.asset_sw_key) AS eUsedLicenseQuantity,
+		      CASE 
+			        WHEN SIGN_PROGRESS = SIGN_PROGRESS_CNT THEN '승인'
+			        ELSE eStatus
+			   		END AS eStatus
 		FROM A_ASSET_SW AS aas
 		LEFT JOIN S_SIGN AS s 
 		ON (s.SIGN_TABLE_NUM = aas.asset_sw_key and	s.SIGN_TABLE_NAME = 'A_ASSET_SW')
@@ -3001,11 +3009,15 @@
 		, eE.eEntryStaff   
 		, eE.eEntryRequestReason 
  
-		, eE.sSignStatus  AS eStatus
+	/*	, eE.sSignStatus  AS eStatus  */
 		, IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
 		,  eE.w_staff_key AS kStaffKey
 		,  eE.w_staff_name AS kStaffName
 		,  DATE_FORMAT(eE.w_date, '%Y-%m-%d') as eAssetWdate
+		, CASE 
+	        WHEN SIGN_PROGRESS = SIGN_PROGRESS_CNT THEN '승인'
+	        ELSE sSignStatus
+	   		END AS eStatus 
 		FROM E_ENTRY AS eE  
 		LEFT JOIN S_SIGN AS s ON(s.SIGN_TABLE_NUM = eE.ENTRY_NUM  and s.SIGN_TABLE_NAME = 'E_ENTRY')
 		WHERE 1=1  AND eE.ENTRY_NUM =#eEntryExitKey# 

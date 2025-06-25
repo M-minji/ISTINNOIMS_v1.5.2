@@ -5,6 +5,7 @@
 <script type="text/javascript">
 
 $(function(){
+	$('#searchWord').blur();
 })
 
 
@@ -30,7 +31,7 @@ function fn_guestList(pageNo) {
 	document.frm.submit();
 }
 
- 
+
 </script>
 
 <form id="frm" name="frm" method="post" action="/mes/contact/kw_info_list.do" class="popup_wrap">

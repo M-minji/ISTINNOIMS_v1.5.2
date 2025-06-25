@@ -401,9 +401,11 @@ function settingSign(){
 			    	<input id="design" type="radio" name="tab_item">
 			    	<span>완료 산출물</span>
 			    </label>
+			    <c:if test="${projectInfo.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
 			    <div style="margin-left: auto;">
 					<button type="button" class="form_btn md" onclick="eDeliverable_update();">산출물 등록</button>
 				</div>
+				</c:if>
 			</div>
 				
 	
@@ -642,9 +644,11 @@ function settingSign(){
 		    	<input id="yearlyTwo" type="radio" name="tab_itemTwo">
 		    	<span>반기 보고</span>
 		    </label>
+		    <c:if test="${projectInfo.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
 		    <div style="margin-left: auto;">
 					<button type="button" class="form_btn md" onclick="eReport_update();">보고서 등록</button>
 				</div>
+			</c:if>
 		</div>
 			    <div class="tab_content" id="allTwo_content">
 			        <div class="content_top innertab">
@@ -998,25 +1002,41 @@ function settingSign(){
 	</c:if>
 	
 	<div class="bottom_btn">
-		<c:if test="${projectInfo.sSignStatus eq '등록'}">
-			<c:if test="${projectInfo.kStaffKey eq staffVO.kStaffKey }"> 
+		<c:if test="${projectInfo.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
+			<c:if test="${info.sSignStatus ne '승인' && info.sSignStatus ne '제외'}"> 
+				<c:choose>
+					<c:when test="${projectInfo.sSignStatus eq '등록'}"> 
 				<button type="button" class="form_btn active" onclick="startApproval('Y');">승인요청</button>
-			</c:if>
-		</c:if>
-		<c:if test="${projectInfo.sSignStatus eq '승인요청'}">
-			<c:if test="${projectInfo.kStaffKey eq staffVO.kStaffKey && projectInfo.sSignProgress eq '0'}">
+					</c:when>
+					<c:when test="${projectInfo.sSignProgress eq '0'}"> 
 				<button type="button" class="form_btn active" onclick="startApproval('N');">요청취소</button>
+					</c:when>
+				</c:choose>
 			</c:if>
-		</c:if>
-		<c:if test="${(projectInfo.kStaffKey eq staffVO.kStaffKey && (projectInfo.sSignStatus eq '등록' || projectInfo.sSignStatus eq '반려' || projectInfo.sSignStatus eq '제외')) || (staffVO.kAdminAuth eq 'T' && (projectInfo.sSignStatus eq '등록' || projectInfo.sSignStatus eq '반려' || projectInfo.sSignStatus eq '제외')) }">
-			<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T'  || staffVO.kAdminAuth eq 'T'}">
-		<!-- 		<span class="info_txt">프로젝트 기본정보만 수정 가능합니다. </span>  
-				<button type="button" class="form_btn bg ml20" onclick="update_go();">수정</button> -->
-				<button type="button" class="form_btn bg" onclick="update_go();">수정</button>
-			</c:if>
-			<c:if test="${staffVO.kStaffAuthDelFlag eq 'T'  || staffVO.kAdminAuth eq 'T'}">
-				<button type="button" class="form_btn bg" onclick="delete_go();">삭제</button>
-			</c:if>
+			<c:choose>
+				<c:when test="${projectInfo.sSignStatus eq '등록' || projectInfo.sSignStatus eq '반려' || projectInfo.sSignStatus eq '제외'}"> 
+					<c:choose>
+						<c:when test="${staffVO.kAdminAuth eq 'T'}"> 		
+			<!-- 		<span class="info_txt">프로젝트 기본정보만 수정 가능합니다. </span>  
+							<button type="button" class="form_btn bg ml20" onclick="update_go();">수정</button> -->
+							<button type="button" class="form_btn bg" onclick="update_go();">수정</button>
+							<button type="button" class="form_btn bg" onclick="delete_go();">삭제</button>
+						</c:when>
+						<c:otherwise>
+							<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T'}">
+								<button type="button" class="form_btn bg" onclick="update_go();">수정</button>
+							</c:if>
+							<c:if test="${staffVO.kStaffAuthDelFlag eq 'T'}">
+								<button type="button" class="form_btn bg" onclick="delete_go();">삭제</button>
+							</c:if>
+						</c:otherwise>
+					</c:choose>
+				</c:when>
+				<c:when test="${projectInfo.sSignStatus eq '승인' && staffVO.kAdminAuth eq 'T'}">
+					<button type="button" class="form_btn bg" onclick="update_go();">수정</button>
+					<button type="button" class="form_btn bg" onclick="delete_go();">삭제</button>
+				</c:when>
+			</c:choose>
 		</c:if>
 		<button type="button" class="form_btn" onclick="cancel();">목록</button>
 	</div>

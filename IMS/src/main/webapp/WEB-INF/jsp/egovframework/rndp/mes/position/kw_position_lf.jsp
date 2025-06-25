@@ -264,13 +264,13 @@
 									${list.kPositionStaffName}
 								</td>
 								<td >
-									<c:if test="${staffVo.kStaffAuthWriteFlag eq 'T'}">
+									<c:if test="${staffVo.kStaffAuthWriteFlag eq 'T' || staffVo.kAdminAuth eq 'T'}">
 										<a class="form_btn sm" onclick="addRow(${i.index}, 1)">하위 부서 추가</a>
 									</c:if>
-									<c:if test="${staffVo.kStaffAuthModifyFlag eq 'T'}">
+									<c:if test="${staffVo.kStaffAuthModifyFlag eq 'T' || staffVo.kAdminAuth eq 'T'}">
 										<a class="form_btn sm" onclick="setUpdatePosition(${i.index}, 'Y', this)">수정</a>
 									</c:if>
-									<c:if test="${staffVo.kStaffAuthDelFlag eq 'T'}">
+									<c:if test="${staffVo.kStaffAuthDelFlag eq 'T' || staffVo.kAdminAuth eq 'T'}">
 										<a class="form_btn sm" onclick="deletePosition(${i.index}, ${list.kPositionStaffCount})">삭제</a>
 									</c:if>
 									<input type="hidden" id="kPositionNameBackup_${i.index}" name="kPositionNameBackup" value="${list.kPositionName}"/>
@@ -418,7 +418,7 @@
 		
 		<div class="list_btm right">
 			<div class="btns">
-				<c:if test="${staffVo.kStaffAuthWriteFlag eq 'T'}">
+				<c:if test="${staffVo.kStaffAuthWriteFlag eq 'T' || staffVo.kAdminAuth eq 'T'}">
 				<button type="button" class="form_btn active" onClick="addRow(-1, 0)">부서 추가</button>
 				</c:if>
 			</div>

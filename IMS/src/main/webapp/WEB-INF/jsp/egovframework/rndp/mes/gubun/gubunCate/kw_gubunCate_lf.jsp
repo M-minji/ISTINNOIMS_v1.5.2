@@ -4,6 +4,12 @@
 
 <script type="text/javascript">
 
+$(document).ready(function() {
+	
+	$('#searchWord').blur();
+	
+});
+
 function go_update(key){
 	$("#mloader").show();
 	$("#sGubunCateKey").val(key);
@@ -35,7 +41,15 @@ function cancel(){
 }
 
 </script>
+<style>
 
+/* 현재는 구분을 변경해서 할 수 있는 기능이 없기때문에 그냥 수정과 등록을 막아버림 (등록은 퍼블리싱도 안돼있음) */
+tr:hover td {
+  background-color: transparent !important;
+  cursor: default !important;
+}
+
+</style>
 
 
 <form id="frm" name="frm" method="post" action="/mes/gubun/gubunCate/kw_gubunCate_lf.do">
@@ -72,7 +86,8 @@ function cancel(){
     	   	</thead>
     	   	<tbody>
     	     	<c:forEach var="gubunCateList" items="${gubunCateList}" varStatus="i" >
-    	     		<tr style="cursor: pointer;" onclick="go_update('${gubunCateList.sGubunCateKey}');">
+    	 <!--     		<tr style="cursor: pointer;" onclick="go_update('${gubunCateList.sGubunCateKey}');">   -->
+    	     		<tr style="cursor: default !important;" >
  						<td>
  							${paginationInfo.totalRecordCount - (mesGubunCateVO.pageIndex-1) * paginationInfo.recordCountPerPage  - i.index}
  						</td>

@@ -153,7 +153,7 @@ public class MesEquipmentServiceImpl implements MesEquipmentService {
 	public void updateEquipmentInfo(MesEquipmentVO mesEquipmentVO) throws Exception {
 		// TODO Auto-generated method stub
 		String sSignPass = "";
-		if(!mesEquipmentVO.getoSignPass().equals("Y") ){
+		if(!"Y".equals(mesEquipmentVO.getoSignPass())){
 			sSignPass="등록";
 		}else {
 			sSignPass="제외";

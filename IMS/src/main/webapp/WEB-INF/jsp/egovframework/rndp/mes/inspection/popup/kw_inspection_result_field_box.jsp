@@ -153,10 +153,12 @@ function rowCheck(index){
 							<span>필드</span>
 							<input type="text" id="eSearchTypeSet2" name="eSearchTypeSet2"  class="searchWord" value="${mesInspectionVO.eSearchTypeSet2}" />
 						</li>
+						<li><button type="button" class="form_btn bg" onclick="fn_guestList(1);">검색</button></li>
 					</ul>
 				</div>
 				<div class="button_wrap">
-					<button type="button" class="form_btn bg" onclick="fn_guestList(1);">검색</button>
+			<!-- 	<button type="button" class="form_btn bg" onclick="fn_guestList(1);">검색</button>   -->	
+					<button type="button" class="form_btn active" onclick='selectItem()'>선택</button>
 				</div>	
 			</div>
 		</div>
@@ -231,10 +233,11 @@ function rowCheck(index){
 				</div>
 				<div class="paging"><ui:pagination paginationInfo="${paginationInfo}" type="text" jsFunction="fn_guestList" /></div>
 				<div class="btns">
-					<button type="button" class="form_btn active" onclick='selectItem()'>선택</button>
+			<!-- 		<button type="button" class="form_btn active" onclick='selectItem()'>선택</button>  -->
 				</div>
 			</div>
 		</div>
 	</div>
 </form>
+
 

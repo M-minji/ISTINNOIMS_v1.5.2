@@ -49,7 +49,7 @@ function nowDate(){
 	<div class="pop_head">
 		<div id="pop_head">
 			<div class="tit">
-				<h3>라이선스 갱신 등록 POP</h3>
+				<h3>라이선스 만료일 갱신</h3>
 			</div>
 			<a href="javascript:self.close();">
 				<img src="/images/btn/close.gif" width="22" height="21">

@@ -17,6 +17,7 @@ $(document).ready(function(){
 		datepickerSet("eTopStartDate","eTopEndDate");
 		  $('table[role="grid"].gridjs-table th:nth-child(1) button').hide();
 		  $('table[role="grid"].gridjs-table th:nth-child(1)').css('width', '70px'); 
+		  console.clear();
 	}); 
 	
 	 

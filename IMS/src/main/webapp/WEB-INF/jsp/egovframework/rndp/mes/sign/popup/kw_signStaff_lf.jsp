@@ -9,6 +9,7 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
+	$('#searchWord').blur();
 	fn_position('0');
 	var objkey = "${mesSignVO.kStaffKey1}".split(",");
 	for(var k = 0; k < objkey.length; k++){
@@ -471,7 +472,7 @@ window.resizeTo(980, 900);
 	<div class="pop_head">
 		<div id="pop_head">
 			<div class="tit">
-				<h3 style="cursor:default;">받는사람 선택 </h3>
+				<h3 style="cursor:default;">받는사람 선택</h3>
 			</div>
 			<a href="javascript:self.close();"></a>
 		</div>
@@ -508,7 +509,7 @@ window.resizeTo(980, 900);
 					</div>
 					<div class="select">
 						<input type="text" id="searchWord" name="searchWord" class="searchWord" value="${mesSignVO.searchWord}" onKeydown="if(event.keyCode == 13){fn_positionSub();}" style="cursor:text;"/>
-						<button type="button" class="form_btn bg" onclick="fn_positionSub();">이름 찾기</button>
+						<button type="button" class="form_btn bg" onclick="fn_positionSub();">이름 검색</button>
 					</div>
 					<div class="normal_table pop">
 						<table>
@@ -546,8 +547,8 @@ window.resizeTo(980, 900);
 				</div>			
 				<div class="result">
 					<div class="title">
-						<h4>제목 설정</h4>
-						<input type="text" id="kSignSubName" name="kSignSubName" placeholder="제목을 입력해주세요.">
+						<h4>결재선 저장</h4>
+						<input type="text" id="kSignSubName" name="kSignSubName" placeholder="저장할 결재선의 이름을 입력해주세요.">
 					</div>
 					<div class="select_people">
 						<h4>받는 사람 선택</h4>

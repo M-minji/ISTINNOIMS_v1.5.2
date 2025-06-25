@@ -14,7 +14,7 @@
 $(document).ready(function(){	
 	datepickerSet('eStartDate', 'eEndDate');
 	var sSignStatus  = $("#sSignStatus").val();
-	if(sSignStatus == "등록"  || sSignStatus == "반려"){
+	if(sSignStatus == "등록" || sSignStatus == "반려" || sSignStatus == "승인"){
 		$("#oSignPass").val("N");
 		 $('#oPass').prop('checked', false);
 	}else{
@@ -394,9 +394,7 @@ function deleteGyeoljaeList(){
 	</div>
 	 
 	<div class="bottom_btn">
-		<c:if test="${staffVo.kStaffAuthWriteFlag eq 'T'}">
 		<button type="button" class="form_btn active" onclick="insert_go();">저장</button>
-		</c:if>
 		<button type="button" class="form_btn" onclick="cancel();">취소</button>
 	</div>
 	

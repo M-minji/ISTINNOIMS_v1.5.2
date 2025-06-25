@@ -219,7 +219,7 @@ function decodeHtmlEntities(str) {
 		
 		<div class="list_btm right">
 			<div class="btns">
-				<c:if test="${staffVo.kStaffAuthWriteFlag eq 'T'}">
+				<c:if test="${staffVo.kStaffAuthWriteFlag eq 'T' || staffVo.kAdminAuth eq 'T' || staffVo.kStaffAuthModifyFlag eq 'T'}">
 				<button type="button" class="form_btn active" onclick="javascript:meEnvUp();">저장</button>
 				</c:if>
 			</div>

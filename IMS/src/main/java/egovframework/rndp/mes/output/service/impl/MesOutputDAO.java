@@ -70,6 +70,13 @@ public class MesOutputDAO extends EgovAbstractDAO {
 		// TODO Auto-generated method stub
 		List outputList = list("mesOutputDAO.mesProjectInfoList", mesOutputVO);
 		ArrayList<MesOutputVO> listCopy = new ArrayList<>(outputList);
+		for(MesOutputVO vo : listCopy) {
+			int outputCnt = (int) select("mesOutputDAO.mesOutputCount",vo);
+			int reportCnt = (int) select("mesOutputDAO.mesReportCount",vo);
+			vo.setoutputCnt(outputCnt+"건");
+			vo.setreportCnt(reportCnt+"건");
+		}
+		
 		for(int i=listCopy.size()-1; i>=0; i--) {
 			MesOutputVO output = listCopy.get(i);
 			String status = output.getsSignStatus();
