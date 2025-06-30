@@ -3039,7 +3039,7 @@
 			IFNULL(k_menu_auth_flag, 'F') AS searchTypeSet2
 		FROM k_menu_auth kma 
 			WHERE kma.k_staff_key  = #kStaffKey# AND 
-			k_menu_key IN (766, 763, 758, 746, 764, 742, 755, 754, 756, 767)
+			k_menu_key IN (766, 763, 758, 762, 764, 742, 755, 754, 756, 767)
 	</select>
 	
 	<insert id="mesAssetDAO.eInsertFileInfo" parameterClass="mesAssetVO">
