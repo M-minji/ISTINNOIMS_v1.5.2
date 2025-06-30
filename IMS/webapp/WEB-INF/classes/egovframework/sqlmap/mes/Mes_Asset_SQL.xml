@@ -3082,4 +3082,188 @@
 	</select>
 	
 	
+	<select id="mesAssetDAO.selectMesAssetListHW" parameterClass="mesAssetVO" resultClass="mesAssetVO">
+		/* mesAssetDAO.selectMesAssetListHW */
+		SELECT 
+			ASSET_NUM AS eAssetKey,
+			ASSET_NUMBER  AS eAssetNumber,
+			ASSET_STATUS_NAME AS eAssetStatusName,
+			ASSET_STATUS AS eAssetStatus,
+			ASSET_TYPE_NAME AS eAssetTypeName,
+			ASSET_TYPE AS eAssetType,
+			ASSET_NAME AS eAssetName,
+			getNameTxt(ASSET_NUM) AS ePositionName1,
+			ASSET_SELECT1 AS eMaintanceSelect1,
+			ASSET_SELECT2 AS eMaintanceSelect2,
+			ASSET_SELECT3 AS eMaintanceSelect3,
+			ASSET_SELECT4 AS eMaintanceSelect4,
+			CASE 
+		        WHEN LENGTH(CONCAT(getContentLfNew(ASSET_SELECT1, 7),'>',getContentLfNew(ASSET_SELECT2, 7),'>',getContentLfNew(ASSET_SELECT3, 7),'>',ASSET_SELECT4)) > 25 THEN CONCAT('...', LEFT(CONCAT(getContentLfNew(ASSET_SELECT1, 7),'>',getContentLfNew(ASSET_SELECT2, 7),'>',getContentLfNew(ASSET_SELECT3, 7),'>',ASSET_SELECT4), 25))
+		        ELSE ASSET_SELECT4
+		    END  	  AS ePositionName1,
+			ASSET_MAKER AS eAssetMaker,
+			ASSET_MODEL AS eAssetModel,
+			ASSET_MANUFACTURE_NUMBER AS eAssetSNumber,
+			ASSET_FORM AS aAssetForm,
+			ASSET_INTRODUCER AS aAssetIntroducer,
+			DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') AS eAssetDate,
+			IF(ASSET_COST = '', 0, FORMAT(ASSET_COST, 0)) AS eAssetCost,
+			ASSET_DEVICE_TYPE AS eDeviceType,
+			ASSET_PURPOSE AS eAssetPurpose,
+			ASSET_NETWORK_TYPE AS eNetworkType,
+			ASSET_HOST AS eHostName,
+			ASSET_IP AS eIp,
+			ASSET_OS AS eOs,
+			ASSET_ETC AS eAssetEtc,
+			ASSET_STAFF_NAME AS kStaffName,
+			ASSET_STAFF_NUM AS kStaffKey,
+			DATE_FORMAT(ASSET_WDATE, '%Y-%m-%d')  AS eAssetWdate,
+			ASSET_IMAGE_ID AS eAssetImageId,
+			ASSET_IMAGE_NAME AS eAssetImageName,
+			ASSET_IMAGE_EXT AS eAssetImageExt,
+			ASSET_LIFE AS eLifespan,
+			ASSET_LIFE_TYPE AS eLifeType,
+			ASSET_EOS AS eEosDate,
+			ASSET_EOL AS eEolDate,
+			 CASE 
+		        WHEN SIGN_PROGRESS = SIGN_PROGRESS_CNT THEN '승인'
+		        ELSE sSignStatus
+		   		END AS sSignStatus,
+			IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress, 
+			IF(
+				(SELECT COUNT(*) 
+					FROM S_SIGN_ITEM AS ssi 
+					WHERE ssi.SIGN_TABLE_NUM = A.ASSET_NUM and ssi.SIGN_TABLE_NAME = 'A_ASSET'
+					AND ssi.SIGN_DECISON = '결재대기'
+					AND ssi.SIGN_STAFF_NUM = #kStaffKey#
+					) > 0, 'Y', 'N') AS eViewGubun
+			<!-- 	) > 0, 'Y', 'N')AS gubun  -->
+		FROM A_ASSET AS A 
+		LEFT JOIN S_SIGN AS s 
+		ON (s.SIGN_TABLE_NUM = A.ASSET_NUM and	s.SIGN_TABLE_NAME = 'A_ASSET')
+		WHERE 1=1 AND ASSET_DEL_STATUS  = '사용' AND (sSignStatus = '제외' OR (sSignStatus = '승인요청' AND SIGN_PROGRESS = SIGN_PROGRESS_CNT))
+	
+		<isNotEmpty property="searchType">
+			AND ASSET_STATUS    = #searchType#
+		</isNotEmpty>
+		<isNotEmpty property="searchWord">
+			AND LOWER(ASSET_NUMBER)    LIKE CONCAT('%',LOWER(#searchWord#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet1">
+			AND ASSET_TYPE    = #searchTypeSet1#
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+			AND LOWER(ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4">
+			AND LOWER(ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet4#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5">
+			AND LOWER(ASSET_MANUFACTURE_NUMBER) LIKE CONCAT('%',LOWER(#searchTypeSet5#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">
+			AND LOWER(ASSET_HOST) LIKE CONCAT('%',LOWER(#searchTypeSet6#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet7">
+			AND LOWER(ASSET_IP) LIKE CONCAT('%',LOWER(#searchTypeSet7#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet8">
+			AND LOWER(ASSET_OS) LIKE CONCAT('%',LOWER(#searchTypeSet8#),'%')
+		</isNotEmpty>
+		 <isNotEmpty property="searchTypeSet9">
+			AND LOWER(ASSET_LIFE_TYPE) LIKE CONCAT('%',LOWER(#searchTypeSet9#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+				AND  ( 
+				     DATE_FORMAT(#topStartDate#, '%Y-%m-%d')  >= DATE_FORMAT(ASSET_EOS, '%Y-%m-%d') 
+    			OR  DATE_FORMAT(#topEndDate#, '%Y-%m-%d') >= DATE_FORMAT(ASSET_EOL, '%Y-%m-%d') 		
+				)
+			</isNotEmpty>
+		</isNotEmpty>
+		<isEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+				AND  ( 
+    			  	DATE_FORMAT(#topEndDate#, '%Y-%m-%d') >= DATE_FORMAT(ASSET_EOL, '%Y-%m-%d') 		
+				)
+			</isNotEmpty>
+		</isEmpty>
+		<isEmpty property="topEndDate">
+			<isNotEmpty property="topStartDate">
+				AND  ( 
+    			  	DATE_FORMAT(#topStartDate#, '%Y-%m-%d') >= DATE_FORMAT(ASSET_EOS, '%Y-%m-%d') 		
+				)
+			</isNotEmpty>
+		</isEmpty>
+        ORDER BY ASSET_NUM DESC
+        LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="mesAssetDAO.selectMesAssetListHWCnt" parameterClass="mesAssetVO" resultClass="int">
+		/* mesAssetDAO.selectMesAssetListHWCnt */
+		SELECT 
+			COUNT(*)
+        FROM A_ASSET AS a
+        LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = a.ASSET_NUM and	s.SIGN_TABLE_NAME = 'A_ASSET')
+		WHERE 1=1 AND ASSET_DEL_STATUS  = '사용' AND (sSignStatus = '제외' OR (sSignStatus = '승인요청' AND SIGN_PROGRESS = SIGN_PROGRESS_CNT))
+		<isNotEmpty property="searchType">
+			AND ASSET_STATUS    = #searchType#
+		</isNotEmpty>
+		<isNotEmpty property="searchWord">
+			AND LOWER(ASSET_NUMBER)   LIKE CONCAT('%',LOWER(#searchWord#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet1">
+			AND ASSET_TYPE    = #searchTypeSet1#
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet2">
+			AND LOWER(ASSET_NAME) LIKE CONCAT('%',LOWER(#searchTypeSet2#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet3">
+			AND LOWER(ASSET_MAKER) LIKE CONCAT('%',LOWER(#searchTypeSet3#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet4">
+			AND LOWER(ASSET_MODEL) LIKE CONCAT('%',LOWER(#searchTypeSet4#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet5">
+			AND LOWER(ASSET_MANUFACTURE_NUMBER) LIKE CONCAT('%',LOWER(#searchTypeSet5#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet6">
+			AND LOWER(ASSET_HOST) LIKE CONCAT('%',LOWER(#searchTypeSet6#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet7">
+			AND LOWER(ASSET_IP) LIKE CONCAT('%',LOWER(#searchTypeSet7#),'%')
+		</isNotEmpty>
+		<isNotEmpty property="searchTypeSet8">
+			AND LOWER(ASSET_OS) LIKE CONCAT('%',LOWER(#searchTypeSet8#),'%')
+		</isNotEmpty>
+		 <isNotEmpty property="searchTypeSet9">
+			AND LOWER(ASSET_LIFE_TYPE) LIKE CONCAT('%',LOWER(#searchTypeSet9#),'%')
+		</isNotEmpty> 
+		<isNotEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+				AND  ( 
+				     DATE_FORMAT(#topStartDate#, '%Y-%m-%d')  >= DATE_FORMAT(ASSET_EOS, '%Y-%m-%d') 
+    			OR  DATE_FORMAT(#topEndDate#, '%Y-%m-%d') >= DATE_FORMAT(ASSET_EOL, '%Y-%m-%d') 		
+				)
+			</isNotEmpty>
+		</isNotEmpty>
+		<isEmpty property="topStartDate">
+			<isNotEmpty property="topEndDate">
+				AND  ( 
+    			  	DATE_FORMAT(#topEndDate#, '%Y-%m-%d') >= DATE_FORMAT(ASSET_EOL, '%Y-%m-%d') 		
+				)
+			</isNotEmpty>
+		</isEmpty>
+		<isEmpty property="topEndDate">
+			<isNotEmpty property="topStartDate">
+				AND  ( 
+    			  	DATE_FORMAT(#topStartDate#, '%Y-%m-%d') >= DATE_FORMAT(ASSET_EOS, '%Y-%m-%d') 		
+				)
+			</isNotEmpty>
+		</isEmpty>
+	</select>
+	
 </sqlMap>

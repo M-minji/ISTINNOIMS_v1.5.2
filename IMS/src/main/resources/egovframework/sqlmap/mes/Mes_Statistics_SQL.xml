@@ -88,23 +88,24 @@
 
 	<select id="mesStatisticsDAO.selectAssetMcList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
 		/*mesStatisticsDAO.selectAssetMcList*/
-	 WITH dateTemplate AS (
-         SELECT
-            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
-         FROM 
-            e_tmpyear, e_month, e_date 
-         WHERE 1=1  
-         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN #topStartDate# AND #topEndDate#
-         ORDER BY e_year, e_month, e_date
-      ) SELECT 
-         	d.eDate				AS eDate
-      	,   ASSET_MAKER         AS sAssetMaker
-        ,   COUNT(A.ASSET_NUM) AS sAssetCount
-      FROM dateTemplate d
-        LEFT JOIN A_ASSET A ON (DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') = d.eDate)
-        WHERE   A.ASSET_MAKER IS NOT NULL 
-	    AND A.ASSET_MAKER != '' 
-	    AND A.ASSET_DEL_STATUS != '삭제'
+		WITH dateTemplate AS (
+	         SELECT
+	            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
+	         FROM 
+	            e_tmpyear, e_month, e_date 
+	         WHERE 1=1  
+	         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN #topStartDate# AND #topEndDate#
+	         ORDER BY e_year, e_month, e_date
+	      ) SELECT 
+	         	d.eDate				AS eDate
+	      	,   ASSET_MAKER         AS sAssetMaker
+	        ,   COUNT(A.ASSET_NUM) AS sAssetCount
+	      FROM dateTemplate d
+	        LEFT JOIN A_ASSET A ON (DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') = d.eDate)
+	         LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='A_ASSET' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = A.ASSET_NUM)
+	        WHERE   A.ASSET_MAKER IS NOT NULL AND (A.sSignStatus = '제외' OR (A.sSignStatus = '승인요청' AND S.SIGN_PROGRESS_CNT IS NOT NULL))
+		    AND A.ASSET_MAKER != '' 
+		    AND A.ASSET_DEL_STATUS != '삭제'
 	    <isNotEmpty property="searchType">
 			AND A.ASSET_STATUS    = #searchType#
 		</isNotEmpty>
@@ -114,24 +115,25 @@
 
 	<select id="mesStatisticsDAO.selectIEList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
 		/*mesStatisticsDAO.selectIEList*/
-	 WITH dateTemplate AS (
-         SELECT
-            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
-         FROM 
-            e_tmpyear, e_month, e_date 
-         WHERE 1=1  
-         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN #topStartDate# AND #topEndDate#
-         ORDER BY e_year, e_month, e_date
-      ) SELECT 
-         	d.eDate
-      	,    IF(ASSET_TYPE_NAME='' OR ASSET_TYPE_NAME IS NULL ,'자산유형누락',ASSET_TYPE_NAME)	AS sAssetMaker
-      	,	ASSET_TYPE			AS sAssetUesType
-        ,   COUNT(A.ASSET_NUM)		AS sAssetCount
-      FROM dateTemplate d
-        LEFT JOIN A_ASSET A ON (DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') = d.eDate)
-        WHERE   A.ASSET_MAKER IS NOT NULL 
-	    AND A.ASSET_MAKER != '' 
-	    AND A.ASSET_DEL_STATUS != '삭제'
+			WITH dateTemplate AS (
+		         SELECT
+		            CONCAT(e_year,'-', e_month, '-', e_date)             AS eDate
+		         FROM 
+		            e_tmpyear, e_month, e_date 
+		         WHERE 1=1  
+		         AND CONCAT(e_year,'-', e_month, '-', e_date) BETWEEN #topStartDate# AND #topEndDate#
+		         ORDER BY e_year, e_month, e_date
+		      ) SELECT 
+		         	d.eDate
+		      	,    IF(ASSET_TYPE_NAME='' OR ASSET_TYPE_NAME IS NULL ,'자산유형누락',ASSET_TYPE_NAME)	AS sAssetMaker
+		      	,	ASSET_TYPE			AS sAssetUesType
+		        ,   COUNT(A.ASSET_NUM)		AS sAssetCount
+		      FROM dateTemplate d
+		        LEFT JOIN A_ASSET A ON (DATE_FORMAT(ASSET_DATE, '%Y-%m-%d') = d.eDate)
+		        LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='A_ASSET' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = A.ASSET_NUM)
+		        WHERE   A.ASSET_MAKER IS NOT NULL AND (A.sSignStatus = '제외' OR (A.sSignStatus = '승인요청' AND S.SIGN_PROGRESS_CNT IS NOT NULL))
+			    AND A.ASSET_MAKER != '' 
+			    AND A.ASSET_DEL_STATUS != '삭제'
 	    <isNotEmpty property="searchType">
 			AND A.ASSET_STATUS    = #searchType#
 		</isNotEmpty>
@@ -276,27 +278,34 @@
 		/*mesStatisticsDAO.firstValuList*/
 		SELECT '장애관리' AS eWordA, COUNT(*) AS eValueA
 		FROM I_ISSUE AS ii
-		WHERE eIssueStatus != '삭제' AND DATE_FORMAT(ii.eRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
-		
+		LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='I_ISSUE' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = ii.ISSUE_NUM)
+		WHERE eIssueStatus != '삭제' AND (ii.sSignStatus = '제외' OR (sSignStatus = '승인요청' AND SIGN_PROGRESS_CNT IS NOT NULL)) AND DATE_FORMAT(ii.eRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate# 
+
 		UNION ALL
 		SELECT '점검관리' AS eWordA, COUNT(*) AS eValueA
 		FROM INSPECTION AS insp
-		WHERE insp.eStatus != '삭제' AND DATE_FORMAT(insp.eRegistrationDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
-		
+		LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='INSPECTION' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = insp.INSPECTION_NUM)
+		WHERE insp.eStatus != '삭제' AND (insp.sSignStatus = '제외' OR (sSignStatus = '승인요청' AND SIGN_PROGRESS_CNT IS NOT NULL)) AND DATE_FORMAT(insp.eRegistrationDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+
 		UNION ALL
 		SELECT '변경관리' AS eWordA, COUNT(*) AS eValueA
 		FROM I_CHANGE AS ic
-		WHERE ic.eStatus != '삭제' AND DATE_FORMAT(ic.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
-		
+		LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='I_CHANGE' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = ic.eChangeKey)
+		WHERE ic.eStatus != '삭제' AND (ic.sSignStatus = '제외' OR (sSignStatus = '승인요청' AND SIGN_PROGRESS_CNT IS NOT NULL)) AND DATE_FORMAT(ic.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+
 		UNION ALL
 		SELECT '문제관리' AS eWordA, COUNT(*) AS eValueA
 		FROM I_BLUE_ISSUE AS ibi
-		WHERE ibi.eStatus != '삭제' AND DATE_FORMAT(ibi.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
-		
+		LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='I_BLUE_ISSUE' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = ibi.eIssueKey)
+		WHERE ibi.eStatus != '삭제' AND (ibi.sSignStatus = '제외' OR (sSignStatus = '승인요청' AND SIGN_PROGRESS_CNT IS NOT NULL)) AND DATE_FORMAT(ibi.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+	
 		UNION ALL
 		SELECT 'SR관리' AS eWordA, COUNT(*) AS eValueA
 		FROM I_BLUE_SR AS ibs
-		WHERE ibs.eStatus != '삭제' AND DATE_FORMAT(ibs.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='I_BLUE_SR' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = ibs.eIssueKey)
+		WHERE ibs.eStatus != '삭제' AND (ibs.sSignStatus = '제외' OR (sSignStatus = '승인요청' AND SIGN_PROGRESS_CNT IS NOT NULL)) AND DATE_FORMAT(ibs.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+		
+
 		
 		
      </select>
@@ -307,28 +316,32 @@
 			SELECT COUNT(aa.ASSET_TYPE) AS eValueA, aa.ASSET_TYPE_NAME AS eWordA FROM I_ISSUE_ASSET  as iia
 			LEFT JOIN I_ISSUE AS ii  on(iia.ISSUE_NUM = ii.ISSUE_NUM)
 			LEFT JOIN A_ASSET AS aa   on(aa.ASSET_NUM = iia.ASSET_NUM)
-			WHERE ii.eIssueStatus != '삭제' AND aa.ASSET_TYPE IS NOT NULL AND DATE_FORMAT(ii.eRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
-			GROUP BY aa.ASSET_TYPE 
+			LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='I_ISSUE' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = ii.ISSUE_NUM)
+			WHERE ii.eIssueStatus != '삭제' AND (ii.sSignStatus = '제외' OR (ii.sSignStatus = '승인요청' AND SIGN_PROGRESS_CNT IS NOT NULL)) AND aa.ASSET_TYPE IS NOT NULL AND DATE_FORMAT(ii.eRequestDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			GROUP BY aa.ASSET_TYPE
 			UNION ALL 
 			
 			SELECT COUNT(aa.ASSET_TYPE) AS eValueA, aa.ASSET_TYPE_NAME AS eWordA FROM I_CHANGE_ASSET  as ica
 			LEFT JOIN I_CHANGE AS ic  on(ica.eChangeKey =ic.eChangeKey)
 			LEFT JOIN A_ASSET AS aa   on(aa.ASSET_NUM = ica.eAssetKey)
-			WHERE ic.eStatus != '삭제' AND aa.ASSET_TYPE IS NOT NULL AND DATE_FORMAT(ic.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='I_CHANGE' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = ic.eChangeKey)
+			WHERE ic.eStatus != '삭제' AND (ic.sSignStatus = '제외' OR (ic.sSignStatus = '승인요청' AND SIGN_PROGRESS_CNT IS NOT NULL)) AND aa.ASSET_TYPE IS NOT NULL AND DATE_FORMAT(ic.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
 			GROUP BY aa.ASSET_TYPE 
 			UNION ALL 
 			
 			SELECT COUNT(aa.ASSET_TYPE) AS eValueA, aa.ASSET_TYPE_NAME AS eWordA FROM I_BLUE_ISSUE_ASSET  as ibia
 			LEFT JOIN I_BLUE_ISSUE AS ibi  on(ibia.eIssueKey = ibi.eIssueKey)
 			LEFT JOIN A_ASSET AS aa   on(aa.ASSET_NUM = ibia.eAssetKey)
-			WHERE ibi.eStatus != '삭제' AND aa.ASSET_TYPE IS NOT NULL AND DATE_FORMAT(ibi.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='I_BLUE_ISSUE' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = ibi.eIssueKey)
+			WHERE ibi.eStatus != '삭제' AND (ibi.sSignStatus = '제외' OR (ibi.sSignStatus = '승인요청' AND SIGN_PROGRESS_CNT IS NOT NULL)) AND aa.ASSET_TYPE IS NOT NULL AND DATE_FORMAT(ibi.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
 			GROUP BY aa.ASSET_TYPE  
 			UNION ALL 
 			
 			SELECT COUNT(aa.ASSET_TYPE) AS eValueA, aa.ASSET_TYPE_NAME AS eWordA FROM I_BLUE_SR_ASSET  as ibsa
 			LEFT JOIN I_BLUE_SR AS ibs  on(ibsa.eIssueKey = ibs.eIssueKey)
 			LEFT JOIN A_ASSET AS aa   on(aa.ASSET_NUM = ibsa.eAssetKey)
-			WHERE ibs.eStatus != '삭제' AND aa.ASSET_TYPE IS NOT NULL AND DATE_FORMAT(ibs.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='I_BLUE_SR' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = ibs.eIssueKey)	
+			WHERE ibs.eStatus != '삭제' AND (ibs.sSignStatus = '제외' OR (ibs.sSignStatus = '승인요청' AND SIGN_PROGRESS_CNT IS NOT NULL)) AND aa.ASSET_TYPE IS NOT NULL AND DATE_FORMAT(ibs.eReqDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
 			GROUP BY aa.ASSET_TYPE 
 			
 		) as aa
@@ -337,29 +350,27 @@
        <select id="mesStatisticsDAO.eAssetMakerList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
     	 /*mesStatisticsDAO.eAssetMakerList*/
      		SELECT  
-	     		COUNT(eei.ENTRY_ITEM_NUM) AS eValueA
+			COUNT(eei.ENTRY_ITEM_NUM) AS eValueA
 				,aa.ASSET_MAKER  AS eWordA 
 				,SUM(CASE WHEN eei.eEntryImportDate IS NULL OR eei.eEntryImportDate = '' THEN 1 ELSE 0 END) AS eValueB
 			FROM E_ENTRY_ITEM AS eei
 			LEFT JOIN E_ENTRY AS ee ON (ee.ENTRY_NUM  =eei.ENTRY_NUM) 
-			
 			LEFT JOIN A_ASSET AS aa ON (aa.ASSET_NUM =eei.ASSET_NUM)
-			
-			WHERE ee.ENTRY_STATUS != '삭제' AND aa.ASSET_DEL_STATUS != '삭제' AND aa.ASSET_MAKER != '삭제' AND  DATE_FORMAT(ee.eEntryExitDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='E_ENTRY' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = ee.ENTRY_NUM)
+			WHERE ee.ENTRY_STATUS != '삭제' AND aa.ASSET_DEL_STATUS != '삭제' AND aa.ASSET_MAKER != '삭제'AND (ee.sSignStatus = '제외' OR (ee.sSignStatus = '승인요청' AND S.SIGN_PROGRESS_CNT IS NOT NULL)) AND  DATE_FORMAT(ee.eEntryExitDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
 			GROUP BY aa.ASSET_MAKER
      </select>
     <select id="mesStatisticsDAO.eAssetTypeList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
      /*mesStatisticsDAO.secondValuList*/
      		SELECT  
-     			COUNT(aa.ASSET_TYPE)  AS eValueC
+				COUNT(aa.ASSET_TYPE)  AS eValueC
 				,aa.ASSET_TYPE_NAME  AS eWordB
 				,SUM(CASE WHEN eei.eEntryImportDate IS NULL OR eei.eEntryImportDate = '' THEN 1 ELSE 0 END) AS eValueD
 			FROM E_ENTRY_ITEM AS eei
 			LEFT JOIN E_ENTRY AS ee ON (ee.ENTRY_NUM  =eei.ENTRY_NUM) 
-			
 			LEFT JOIN A_ASSET AS aa ON (aa.ASSET_NUM =eei.ASSET_NUM)
-			
-			WHERE ee.ENTRY_STATUS != '삭제' AND aa.ASSET_DEL_STATUS != '삭제' AND  DATE_FORMAT(ee.eEntryExitDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='E_ENTRY' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = ee.ENTRY_NUM)
+			WHERE ee.ENTRY_STATUS != '삭제' AND aa.ASSET_DEL_STATUS != '삭제' AND (ee.sSignStatus = '제외' OR (ee.sSignStatus = '승인요청' AND S.SIGN_PROGRESS_CNT IS NOT NULL)) AND  DATE_FORMAT(ee.eEntryExitDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
 			GROUP BY aa.ASSET_TYPE
      </select>
     <select id="mesStatisticsDAO.selectOutputList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
@@ -377,8 +388,8 @@
 		    SUM(CASE WHEN pdf.eFileRowGubun = 'C' THEN 1 ELSE 0 END) AS eValueC
 		FROM P_PROJECT AS pp
 		LEFT JOIN P_Deliverable_file AS pdf ON pp.P_PROJECT_NUM = pdf.eProjectNum 
-		
-		WHERE eProjectStatus != '삭제' AND 
+		LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='P_PROJECT' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = pp.P_PROJECT_NUM)
+		WHERE SIGN_STATUS != '삭제' AND (pp.sSignStatus = '제외' OR (pp.sSignStatus = '승인요청' AND S.SIGN_PROGRESS_CNT IS NOT NULL)) AND
 		    ((eStartDate BETWEEN #topStartDate# AND #topEndDate#)  
 		    OR 
 		    (eEndDate BETWEEN #topStartDate# AND #topEndDate#)) 
@@ -387,21 +398,21 @@
      </select>
     <select id="mesStatisticsDAO.selectProjectList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
      /*mesStatisticsDAO.selectProjectList*/
-   		SELECT 
-		    eProjectName AS eWordA, 
-		    DATE_FORMAT(eStartDate, '%Y-%m-%d')  AS eWordB, 
-		    DATE_FORMAT(eEndDate, '%Y-%m-%d')    AS eWordC, 
-		    eManager  AS eWordD, 
-		    eProjectPM AS eWordE, 
-		    ePMContact AS eWordF, 
-		    COUNT(prf.eReportFileNUM) eValueD,
-		     SUM(CASE WHEN prf.eFileRowGubun = 'A' THEN 1 ELSE 0 END) AS eValueA,
-		    SUM(CASE WHEN prf.eFileRowGubun = 'B' THEN 1 ELSE 0 END) AS eValueB,
-		    SUM(CASE WHEN prf.eFileRowGubun = 'C' THEN 1 ELSE 0 END) AS eValueC
-		FROM P_PROJECT AS pp
-		LEFT JOIN P_Report_file AS prf ON pp.P_PROJECT_NUM = prf.eProjectNum 
-		
-		WHERE 1=1  AND eProjectStatus != '삭제' 
+		   		SELECT 
+				    eProjectName AS eWordA, 
+				    DATE_FORMAT(eStartDate, '%Y-%m-%d')  AS eWordB, 
+				    DATE_FORMAT(eEndDate, '%Y-%m-%d')    AS eWordC, 
+				    eManager  AS eWordD, 
+				    eProjectPM AS eWordE, 
+				    ePMContact AS eWordF, 
+				    COUNT(prf.eReportFileNUM) eValueD,
+				     SUM(CASE WHEN prf.eFileRowGubun = 'A' THEN 1 ELSE 0 END) AS eValueA,
+				    SUM(CASE WHEN prf.eFileRowGubun = 'B' THEN 1 ELSE 0 END) AS eValueB,
+				    SUM(CASE WHEN prf.eFileRowGubun = 'C' THEN 1 ELSE 0 END) AS eValueC
+				FROM P_PROJECT AS pp
+				LEFT JOIN P_Report_file AS prf ON pp.P_PROJECT_NUM = prf.eProjectNum 
+				LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='P_PROJECT' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = pp.P_PROJECT_NUM)
+				WHERE 1=1  AND SIGN_STATUS != '삭제' AND (pp.sSignStatus = '제외' OR (pp.sSignStatus = '승인요청' AND S.SIGN_PROGRESS_CNT IS NOT NULL))
 		     <isNotEmpty property="topStartDate">
 		            <![CDATA[
 		                AND DATE_FORMAT(eStartDate, '%Y-%m-%d') >= #topStartDate#
@@ -420,13 +431,14 @@
     	 /*mesStatisticsDAO.eAssetTmpMakerList*/
     	 	SELECT  
 	     		COUNT(eei.eEquipmentItemKey) AS eValueA
-				,eei.eAssetMaker  AS eWordA 
+				,IF(eei.eAssetMaker IS NULL OR eei.eAssetMaker = '','제조사 없음', eei.eAssetMaker)  AS eWordA 
 				,SUM(CASE WHEN eei.eEntryExporterDate IS NULL OR eei.eEntryExporterDate = '' THEN 1 ELSE 0 END) AS eValueB
 			FROM E_EQUIPMENT_IN_ITEM AS eei
 			LEFT JOIN E_EQUIPMENT_IN AS ee ON (ee.eEquipmentInKey =eei.eEquipmentInKey) 
-			WHERE ee.eStatus != '삭제' AND (eei.eAssetMaker IS NOT NULL AND eei.eAssetMaker != '') 
-				AND  DATE_FORMAT(ee.eEntryImportDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
-			GROUP BY eei.eAssetMaker
+			LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='E_EQUIPMENT_IN' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = ee.eEquipmentInKey)
+			WHERE ee.eStatus != '삭제' AND (ee.sSignStatus = '제외' OR (ee.sSignStatus = '승인요청' AND S.SIGN_PROGRESS_CNT IS NOT NULL))
+				AND  DATE_FORMAT(ee.eEntryImportDate, '%Y-%m-%d') BETWEEN '2025-01-01' AND '2025-06-26'
+			GROUP BY eWordA 
      </select>
     <select id="mesStatisticsDAO.eAssetTmpTypeList" parameterClass="mesStatisticsVO"  resultClass="mesStatisticsVO">
      /*mesStatisticsDAO.eAssetTmpTypeList*/
@@ -436,7 +448,8 @@
 				,SUM(CASE WHEN eei.eEntryExporterDate IS NULL OR eei.eEntryExporterDate = '' THEN 1 ELSE 0 END) AS eValueD
 			FROM E_EQUIPMENT_IN_ITEM AS eei
 			LEFT JOIN E_EQUIPMENT_IN AS ee ON (ee.eEquipmentInKey =eei.eEquipmentInKey) 
-			WHERE ee.eStatus != '삭제'  AND  DATE_FORMAT(ee.eEntryImportDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
+			LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='E_EQUIPMENT_IN' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = ee.eEquipmentInKey)
+			WHERE ee.eStatus != '삭제' AND (ee.sSignStatus = '제외' OR (ee.sSignStatus = '승인요청' AND S.SIGN_PROGRESS_CNT IS NOT NULL)) AND  DATE_FORMAT(ee.eEntryImportDate, '%Y-%m-%d') BETWEEN #topStartDate# AND #topEndDate#
 			GROUP BY eei.eAssetTypeName
      </select>
         

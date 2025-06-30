@@ -183,7 +183,7 @@ function rowCheck(index){
 								<td onclick="event.cancelBubble = true;" style="cursor: default;">
 					        		<input type="hidden" id="cnt_${i.index}" name="rowIndex" value="${i.index}"/>
 					        		<label class="inp_chkbox">
-					        			<input type="checkbox" id="check_${list.eFieldKey}" name="check" style="pointer-events: none;">
+					        			<input type="checkbox" id="check_${list.eFieldKey}" name="check" style="pointer-events: none;" onclick="rowCheck('${list.eFieldKey}')">
 					        			<i></i>
 					        		</label>
 									<input type="hidden" id="eFieldKey" name="eFieldKey" value="${list.eFieldKey}" />

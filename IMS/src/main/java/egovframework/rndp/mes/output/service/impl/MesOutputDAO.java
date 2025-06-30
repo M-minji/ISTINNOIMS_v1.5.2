@@ -76,23 +76,12 @@ public class MesOutputDAO extends EgovAbstractDAO {
 			vo.setoutputCnt(outputCnt+"건");
 			vo.setreportCnt(reportCnt+"건");
 		}
-		
-		for(int i=listCopy.size()-1; i>=0; i--) {
-			MesOutputVO output = listCopy.get(i);
-			String status = output.getsSignStatus();
-			if(!status.equals("제외")  && !status.equals("승인")) {
-				outputList.remove(i);
-			}
-		}
 		return outputList;
 	}
 
 	public int mesProjectInfoListCnt(MesOutputVO mesOutputVO) throws Exception {
 		// TODO Auto-generated method stub
-		List outputList = mesProjectInfoList(mesOutputVO);
-		int cnt = outputList.size();
-//		return  (int) select("mesOutputDAO.mesProjectInfoListCnt",mesOutputVO);
-		return cnt;
+		return  (int) select("mesOutputDAO.mesProjectInfoListCnt",mesOutputVO);
 	}
 
 	public void mesProjectStatusUpdate(MesOutputVO mesOutputVO) throws Exception {
