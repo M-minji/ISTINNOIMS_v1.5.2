@@ -105,7 +105,10 @@ public class MesGubunController {
 		
 		redirectAttributes.addFlashAttribute("mesGubunVO", mesGubunVO);
 		
-		return "mes/gubun/kw_gubun_lf.tiles";
+		if(staffVo.getkAdminAuth().equals("T") || staffVo.getkStaffAuthModifyFlag().equals("T") || staffVo.getkStaffAuthDelFlag().equals("T")) {
+			return "mes/gubun/kw_gubun_lf.tiles";
+		}
+		return "mes/gubun/kw_gubun_lf_noselect.tiles";
 	}
 	
 	@RequestMapping(value = "/mes/gubun/kw_gubun_uf.do")

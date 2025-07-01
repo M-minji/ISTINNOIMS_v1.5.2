@@ -869,14 +869,28 @@
 					<button type="button" onclick="eInspectionResult_go();" class="form_btn active">점검결과 등록</button>
 				</c:when>
 			</c:choose>
-			<c:if test="${selInfo.sSignStatus eq '등록' || selInfo.sSignStatus eq '반려' || selInfo.sSignStatus eq '제외'}">
-				<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T' || staffVO.kAdminAuth eq 'T'}">
+			<c:choose>
+				<c:when test="${selInfo.sSignStatus eq '등록' || selInfo.sSignStatus eq '반려' || selInfo.sSignStatus eq '제외'}"> 
+					<c:choose>
+						<c:when test="${staffVO.kAdminAuth eq 'T'}"> 
+							<button type="button" onclick="eModifunction();" class="form_btn bg">수정</button>
+							<button type="button" onclick="eDelete();" class="form_btn bg">삭제</button>
+						</c:when>
+						<c:otherwise>
+							<c:if test="${staffVO.kStaffAuthModifyFlag eq 'T'}">
+								<button type="button" onclick="eModifunction();" class="form_btn bg">수정</button>
+							</c:if>
+							<c:if test="${staffVO.kStaffAuthDelFlag eq 'T'}">
+								<button type="button" onclick="eDelete();" class="form_btn bg">삭제</button>
+							</c:if>
+						</c:otherwise>
+					</c:choose>
+				</c:when>
+				<c:when test="${selInfo.sSignStatus eq '승인' && staffVO.kAdminAuth eq 'T'}">
 					<button type="button" onclick="eModifunction();" class="form_btn bg">수정</button>
-				</c:if>
-				<c:if test="${staffVO.kStaffAuthDelFlag eq 'T' || staffVO.kAdminAuth eq 'T'}">
 					<button type="button" onclick="eDelete();" class="form_btn bg">삭제</button>
-				</c:if>
-			</c:if>
+				</c:when>
+			</c:choose>
 		</c:if>
 		<button type="button" onclick="cancle();" class="form_btn">목록</button>		
 	</div>

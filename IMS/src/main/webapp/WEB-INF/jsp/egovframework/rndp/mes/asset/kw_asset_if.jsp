@@ -906,7 +906,7 @@
 			<h2>라이선스 정보</h2>
 		</div>
 		<div class="btns">
-			 <button type="button" class="form_btn md" onclick="addLicense();">라이선스 정보 추가</button>
+			 <button type="button" class="form_btn md" onclick="addLicense();">라이선스 추가</button>
 		</div>
 	</div>
 	<div class="normal_table">

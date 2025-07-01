@@ -31,7 +31,7 @@
          $("#eExportLocation").val(eExportLocation);
          
         var sSignStatus  = $("#eStatus").val();
-		if(sSignStatus == "등록"){
+		if(sSignStatus == "등록" || sSignStatus == "반려" || sSignStatus == "승인"){
 			$("#oSignPass").val("N");
 			 $('#oPass').prop('checked', false);
 		}else{
@@ -754,9 +754,7 @@
 	</div>
 	
 	<div class="bottom_btn">
-		<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T' }">
 		<button type="button" class="form_btn active" onclick="update_go();">저장</button>
-		</c:if>
 		<button type="button" class="form_btn" onclick="cancle();">취소</button>
 	</div>
 </form>

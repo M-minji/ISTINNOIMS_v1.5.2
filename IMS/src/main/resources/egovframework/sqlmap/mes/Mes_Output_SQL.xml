@@ -295,6 +295,21 @@
 		AND O_OUTPUT_NUM = #outputKey#
 	</update>
 	
+	<select id="mesOutputDAO.mesOutputCount" parameterClass="mesOutputVO" resultClass="int">
+			/*mesOutputDAO.mesOutputCount*/
+		SELECT COUNT(eDeliverableNUM) AS outputCnt
+		FROM P_Deliverable
+		WHERE eProjectNum = #eProjectNum#
+	</select>
+	
+	<select id="mesOutputDAO.mesReportCount" parameterClass="mesOutputVO" resultClass="int">
+			/*mesOutputDAO.mesReportCount*/
+		SELECT COUNT(eReportNUM) AS reportCnt
+		FROM P_Report
+		WHERE eProjectNum = #eProjectNum#
+	</select>
+	
+	
 	
 	<select id="mesOutputDAO.mesProjectInfoList" parameterClass="mesOutputVO" resultClass="mesOutputVO">
 		/*mesOutputDAO.mesProjectInfoList*/
@@ -322,7 +337,7 @@
 		   	 	IFNULL(s.SIGN_PROGRESS,0) AS sSignProgress
 			FROM P_PROJECT
 			LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = P_PROJECT_NUM  AND s.SIGN_TABLE_NAME = 'P_PROJECT')
-			WHERE 1=1 AND SIGN_STATUS != '삭제'
+			WHERE 1=1 AND SIGN_STATUS != '삭제'  AND (sSignStatus = '제외' OR (sSignStatus = '승인요청' AND SIGN_PROGRESS = SIGN_PROGRESS_CNT))
 				 <isNotEmpty property="eStartDate">
 			         AND (DATE_FORMAT(eStartDate, '%Y') = #eStartDate# OR DATE_FORMAT(eEndDate, '%Y') = DATE_FORMAT(#eStartDate#, '%Y') )  
 		         </isNotEmpty>
@@ -346,10 +361,10 @@
 	<select id="mesOutputDAO.mesProjectInfoListCnt" parameterClass="mesOutputVO" resultClass="int">
 		/*mesOutputDAO.mesProjectInfoListCnt*/
 			SELECT 
-			    COUNT(P_PROJECT_NUM)  
-			FROM P_PROJECT
-			
-			WHERE 1=1 AND SIGN_STATUS != '삭제'
+				    COUNT(P_PROJECT_NUM)  
+				FROM P_PROJECT
+				LEFT JOIN S_SIGN AS s 	ON (s.SIGN_TABLE_NUM = P_PROJECT_NUM  AND s.SIGN_TABLE_NAME = 'P_PROJECT')
+				WHERE 1=1 AND SIGN_STATUS != '삭제' AND (sSignStatus = '제외' OR (sSignStatus = '승인요청' AND SIGN_PROGRESS = SIGN_PROGRESS_CNT))
 				 <isNotEmpty property="eStartDate">
 			         AND (DATE_FORMAT(eStartDate, '%Y') = #eStartDate# OR DATE_FORMAT(eEndDate, '%Y') = DATE_FORMAT(#eStartDate#, '%Y') )  
 		         </isNotEmpty>

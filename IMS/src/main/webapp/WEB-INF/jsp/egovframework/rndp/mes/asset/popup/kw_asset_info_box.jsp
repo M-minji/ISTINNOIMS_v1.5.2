@@ -214,6 +214,7 @@ window.resizeTo(1430, 800);
 		<!-- 		    			상세검색 -->
 		<!-- 		     		</a> -->
 		<!-- 				</li> -->
+						<li><button type="button" class="form_btn bg" onclick="fn_guestList(1);">검색</button></li>
 					</ul>
 		<!-- 			<ul id="search_detail" style="display: none;"> -->
 		<!-- 				<li> -->
@@ -227,7 +228,8 @@ window.resizeTo(1430, 800);
 		<!-- 			</ul> -->
 				</div>
 				<div class="button_wrap">
-					<button type="button" class="form_btn bg" onclick="fn_guestList(1);">검색</button>
+					
+					<button type="button" class="form_btn active" onclick='selectItem()'>선택</button>
 				</div>
 			</div>
 		</div>
@@ -339,7 +341,7 @@ window.resizeTo(1430, 800);
 				</div>
 				<div class="paging"><ui:pagination paginationInfo="${paginationInfo}" type="text" jsFunction="fn_guestList" /></div>
 				<div class="btns">
-					<button type="button" class="form_btn active" onclick='selectItem()'>선택</button>
+		<!-- 			<button type="button" class="form_btn active" onclick='selectItem()'>선택</button>   -->
 				</div>
 			</div>
 		</div>

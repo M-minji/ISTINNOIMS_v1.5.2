@@ -48,7 +48,7 @@ $(document).ready(function() {
 	$('table[role="grid"].gridjs-table th:nth-child(1) button').hide();
 });
 new gridjs.Grid({
-	  columns: ['No.', '구분', '세부항목', '영문표기(약어)'],
+	  columns: ['No.', '구분', '구분명', '영문표기(약어)'],
 	  data: [], // 빈 데이터
 	  language: {
 	    noRecordsFound: '조회 정보가 없습니다.'
@@ -60,6 +60,12 @@ new gridjs.Grid({
 </script>
 <style>
 td.gridjs-td{padding:.7rem;}
+
+
+.gridjs-tr > td {
+  pointer-events: none;
+}
+
 
 </style>              
 <form id="frm" name="frm" method="post" action="/mes/gubun/kw_gubun_lf.do">
@@ -109,7 +115,8 @@ td.gridjs-td{padding:.7rem;}
     	   	</thead>
        		<tbody>
          		<c:forEach var="gubunList" items="${gubunList}" varStatus="i">
-  					<tr style="cursor: pointer;" onclick="go_update('${gubunList.sGubunKey}');">
+   <!--  				<tr style="cursor: pointer;" onclick="go_update('${gubunList.sGubunKey}');">   수정 권한 있을때만 클릭 가능하도록 바꿈    -->
+					<tr style="pointer-events: auto !important; cursor: pointer;" onclick="go_update('${gubunList.sGubunKey}');">
 						<td>
          					${paginationInfo.totalRecordCount - (mesGubunVO.pageIndex-1) * paginationInfo.recordCountPerPage  - i.index}
          					<input type="hidden" value="${gubunList.sGubunKey}" />

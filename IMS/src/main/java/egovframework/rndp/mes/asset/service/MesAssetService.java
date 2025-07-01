@@ -79,6 +79,10 @@ public interface MesAssetService {
 
 	public int mesSoftwareListCnt(MesAssetVO mesAssetVO) throws Exception;
 
+	public List mesSoftwareListPop(MesAssetVO mesAssetVO) throws Exception;
+
+	public int mesSoftwareListCntPop(MesAssetVO mesAssetVO) throws Exception;
+	
 	public List mesSoftwareExcelList(MesAssetVO mesAssetVO)throws Exception;
 
 	public MesAssetVO mesSoftwareInfo(MesAssetVO mesAssetVO) throws Exception;

@@ -211,8 +211,8 @@ public class MesMainController {
 				model.addAttribute("ass763", eVO.getSearchTypeSet2() );
 			}else if("758".equals(eVO.getSearchTypeSet1())) {			 
 				model.addAttribute("ass758", eVO.getSearchTypeSet2() );
-			}else if("746".equals(eVO.getSearchTypeSet1())) {			 
-				model.addAttribute("ass746", eVO.getSearchTypeSet2() );
+			}else if("762".equals(eVO.getSearchTypeSet1())) {			 
+				model.addAttribute("ass762", eVO.getSearchTypeSet2() );
 			}else if("764".equals(eVO.getSearchTypeSet1())) {			 
 				model.addAttribute("ass764", eVO.getSearchTypeSet2() );
 			}else if("742".equals(eVO.getSearchTypeSet1())) {			 

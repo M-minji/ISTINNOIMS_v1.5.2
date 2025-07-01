@@ -40,6 +40,9 @@ $(document).ready(function() {
 </script>
 <style>
 td.gridjs-td{padding:.7rem;}
+.gridjs-tr > td {
+  pointer-events: none;
+}
 </style>              
 <form id="frm" name="frm" method="post">
 	<input type="hidden" id="pageIndex" name="pageIndex" value="${mesContactVO.pageIndex}" />

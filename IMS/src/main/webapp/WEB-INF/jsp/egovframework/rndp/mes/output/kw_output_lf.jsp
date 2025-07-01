@@ -296,28 +296,45 @@ function eReport_update(eProjectNum){
  							${outputList.eStartDate} - ${outputList.eEndDate}
  						</td> 
 						<td onclick="event.cancelBubble = true;"> 
-							<c:if test="${outputList.sSignStatus eq '제외' || outputList.sSignStatus eq '승인' || outputList.sSignStatus eq '반려'}">
-							<!-- 	결재 ${outputList.sSignStatus}:   -->
+							<c:choose>
+								<c:when test="${outputList.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
+									<a class="form_btn sm" onclick="eDeliverable_update(${outputList.eProjectNum});">산출물 등록</a> 
+								</c:when>
+								<c:otherwise>
+									&nbsp;&nbsp;&nbsp;${outputList.outputCnt}
+								</c:otherwise>
+							</c:choose>
+			<!-- 				<c:if test="${outputList.sSignStatus eq '제외' || outputList.sSignStatus eq '승인' || outputList.sSignStatus eq '반려'}">
+							<!-- 	결재 ${outputList.sSignStatus}:   
 							</c:if>
 							<c:if test="${outputList.sSignStatus eq '등록'}">
-							<!-- 	 결재 준비  -->
-							</c:if>	
+							<!-- 	 결재 준비  
+							</c:if>
 							<c:if test="${outputList.sSignStatus eq '승인' || outputList.sSignStatus eq '제외'}">
 								<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">			
 									<c:if test="${outputList.kStaffKey eq staffVO.kStaffKey}">
 			 							<a class="form_btn sm" onclick="eDeliverable_update(${outputList.eProjectNum});">산출물 등록</a> 
 		 							</c:if>
+		 							
 	 							</c:if> 
-							</c:if>
+							</c:if>   -->
 						</td>
  						<td onclick="event.cancelBubble = true;">
- 						<c:if test="${outputList.sSignStatus eq '승인' || outputList.sSignStatus eq '제외'}">
+ 							<c:choose>
+								<c:when test="${outputList.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
+ 									<a class="form_btn sm" onclick="eReport_update(${outputList.eProjectNum});">보고서 등록</a>
+								</c:when>
+								<c:otherwise>
+									&nbsp;&nbsp;${outputList.reportCnt}
+								</c:otherwise>
+							</c:choose>
+ 					<!-- 	<c:if test="${outputList.sSignStatus eq '승인' || outputList.sSignStatus eq '제외'}">
  							<c:if test="${staffVO.kStaffAuthWriteFlag eq 'T'}">		
  								<c:if test="${outputList.kStaffKey eq staffVO.kStaffKey}">
  								<a class="form_btn sm" onclick="eReport_update(${outputList.eProjectNum});">보고서 등록</a> 
  								</c:if>
  							 </c:if>
-						</c:if>
+						</c:if> -->
 						</td>
  						<td style="text-align:left;"> 
  							<c:out value="${outputList.eManager}" /> 

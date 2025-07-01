@@ -11,7 +11,7 @@ $(document).ready(function(){
 	datepickerIdSet("blueprintWdate");
 
 	var sSignStatus  = $("#sSignStatus").val();
-	if(sSignStatus == "등록"  || sSignStatus == "반려"){
+	if(sSignStatus == "등록" || sSignStatus == "반려" || sSignStatus == "승인"){
 		$("#oSignPass").val("N");
 		 $('#oPass').prop('checked', false);
 	}else{

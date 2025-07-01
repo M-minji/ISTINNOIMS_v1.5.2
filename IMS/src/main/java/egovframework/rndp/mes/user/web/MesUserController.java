@@ -100,7 +100,10 @@ public class MesUserController {
 		paginationInfo.setTotalRecordCount(totCnt);
 		model.addAttribute("paginationInfo", paginationInfo);
 		
-		return "mes/user/kw_user_lf.tiles";
+		if(staffVo.getkAdminAuth().equals("T") || staffVo.getkStaffAuthModifyFlag().equals("T") || staffVo.getkStaffAuthDelFlag().equals("T")) {
+			return "mes/user/kw_user_lf.tiles";
+		}
+		return "mes/user/kw_user_lf_noselect.tiles";
 	} 
 	                          
 	@RequestMapping(value = "/mes/user/kw_user_if.do")

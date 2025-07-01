@@ -491,7 +491,7 @@ public class MesIssueController {
 				
 		mesIssueService.eIssueProcessUpdate(mesIssueVO);
 		
-		model.addAttribute("staffVo", staffVo);
+		model.addAttribute("staffVO", staffVo);
 		
 		
 		MesIssueVO issueInfo = mesIssueService.eSelectIssueInfo(mesIssueVO);		

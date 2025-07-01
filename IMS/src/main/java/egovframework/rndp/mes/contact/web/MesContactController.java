@@ -70,7 +70,10 @@ public class MesContactController {
 		
 		redirectAttributes.addFlashAttribute("mesContactVO", mesContactVO);
 		
-		return "mes/contact/kw_contact_lf.tiles";
+		if(staffVo.getkAdminAuth().equals("T") || staffVo.getkStaffAuthModifyFlag().equals("T") || staffVo.getkStaffAuthDelFlag().equals("T")) {
+			return "mes/contact/kw_contact_lf.tiles";
+		}
+		return "mes/contact/kw_contact_lf_noselect.tiles";
 	}
 	
 	@RequestMapping(value = "/mes/contact/kw_contact_if.do")

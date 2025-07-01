@@ -691,7 +691,12 @@ public class MesInspectionController {
 			paginationInfo.setTotalRecordCount(totCnt);
 			model.addAttribute("paginationInfo", paginationInfo);
 			
-			return "mes/inspection/kw_inspection_field_lf.tiles";
+			if(staffVO.getkAdminAuth().equals("T") || staffVO.getkStaffAuthModifyFlag().equals("T") || staffVO.getkStaffAuthDelFlag().equals("T")) {
+				return "mes/inspection/kw_inspection_field_lf.tiles";
+			}
+			return "mes/inspection/kw_inspection_field_lf_noselect.tiles";
+			
+			
 		}
 		
 		@RequestMapping(value = "/mes/inspection/kw_inspection_field_if.do")

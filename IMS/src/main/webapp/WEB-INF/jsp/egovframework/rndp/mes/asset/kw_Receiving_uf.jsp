@@ -24,7 +24,7 @@
          $("#eEntryExitDate").val(eEntryImportDate);
          $("#eEntryRequestReason").val(eEntryNote);
          $("#eEntryStaff").val(eEntryImporter);
- 		if(firstsSignStatus == "등록"){
+ 		if(firstsSignStatus == "등록" || sSignStatus == "반려" || sSignStatus == "승인"){
  			$("#oSignPass").val("N");
  			 $('#oPass').prop('checked', false);
  		}else{

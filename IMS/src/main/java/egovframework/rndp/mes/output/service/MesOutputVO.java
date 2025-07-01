@@ -84,9 +84,24 @@ public class MesOutputVO extends DefultVO{
 	private String	eReportFileNUM		= "";
 	private String	eProjectKey		= "";
 	private String	sSignProgress		= "";
+	
+
+	private String	outputCnt		= "";
+	private String	reportCnt		= "";
 
 	
-	
+	public String getoutputCnt() {
+		return outputCnt;
+	}
+	public void setoutputCnt(String outputCnt) {
+		this.outputCnt = outputCnt;
+	}
+	public String getreportCnt() {
+		return reportCnt;
+	}
+	public void setreportCnt(String reportCnt) {
+		this.reportCnt = reportCnt;
+	}
 	
 	
 	public String getsSignProgress() {

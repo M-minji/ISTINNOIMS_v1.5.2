@@ -410,6 +410,31 @@ public class MesAssetServiceImpl implements MesAssetService {
 		// TODO Auto-generated method stub
 		return mesAssetDAO.mesSoftwareListCnt(mesAssetVO);
 	}
+	
+	@Override
+	public List mesSoftwareListPop(MesAssetVO mesAssetVO) throws Exception {
+		// TODO Auto-generated method stub
+//		return mesAssetDAO.mesSoftwareList(mesAssetVO);
+		List swList = mesAssetDAO.mesSoftwareList(mesAssetVO);
+		ArrayList<MesAssetVO> listCopy = new ArrayList<>(swList);
+		for(int i=listCopy.size()-1; i>=0; i--) {
+			MesAssetVO sw = listCopy.get(i);
+			String status = sw.geteStatus();
+			if(!status.equals("제외")  && !status.equals("승인")) {
+				swList.remove(i);
+			}
+		}
+		return swList;
+	}
+
+	@Override
+	public int mesSoftwareListCntPop(MesAssetVO mesAssetVO) throws Exception {
+		// TODO Auto-generated method stub
+//		return mesAssetDAO.mesSoftwareListCnt(mesAssetVO);
+		List swList = mesSoftwareListPop(mesAssetVO);
+		int cnt = swList.size();
+		return cnt;
+	}
 
 	@Override
 	public List mesSoftwareExcelList(MesAssetVO mesAssetVO) throws Exception {

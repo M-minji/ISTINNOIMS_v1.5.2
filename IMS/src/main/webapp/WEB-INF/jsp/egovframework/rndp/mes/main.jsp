@@ -153,7 +153,7 @@ function moveDetail(url){
 		 	<div class="dashboard_wrap">
 		 		<div class="top">
 		 			<div class="error">
-		 				<div <c:if test="${ass766 eq 'T' }">onclick="moveDetail('/mes/issue/kw_issue_lf.do');" </c:if> style="cursor:pointer;">
+		 				<div <c:if test="${ass766 eq 'T' || staff.kAdminAuth eq 'T'}">onclick="moveDetail('/mes/issue/kw_issue_lf.do');" </c:if> style="cursor:pointer;">
 		 					<h4>장애 처리</h4>
 		 					<ul class="error_statu">
 		 						<li class="regist">
@@ -209,12 +209,12 @@ function moveDetail(url){
 		 						<button type="button" class="tab_button active" data-tab="all_content">자산유형별</button>
 		 						<button type="button" class="tab_button" data-tab="programming_content">제조사별</button>
 		 					</div>
-		 					<div class="tab_contents">
+		 					<div class="tab_contents" >
 			 					<div class="tab_content" id="all_content">
-							        <div id="containerGraph1" onclick="moveDetail('/mes/asset/kw_asset_lf.do');"></div>
+							        <div id="containerGraph1" <c:if test="${ass742 eq 'T' || staff.kAdminAuth eq 'T'}"> onclick="moveDetail('/mes/asset/kw_asset_lf.do');" </c:if>></div>
 							    </div> 
 								<div class="tab_content" id="programming_content">
-							        <div id="containerGraph2" onclick="moveDetail('/mes/asset/kw_asset_lf.do');"></div>
+							        <div id="containerGraph2" <c:if test="${ass742 eq 'T' || staff.kAdminAuth eq 'T'}"> onclick="moveDetail('/mes/asset/kw_asset_lf.do');" </c:if>></div>
 							    </div>
 							</div>
 		 				</div>
@@ -224,23 +224,23 @@ function moveDetail(url){
 		 					<h4>유지관리</h4>
 		 					<ul class="main_statu">
 		 						<li class="error">
-		 							<em <c:if test="${ass766 eq 'T' }">onclick="moveDetail('/mes/issue/kw_issue_lf.do');" </c:if>>장애</em>
+		 							<em <c:if test="${ass766 eq 'T' || staff.kAdminAuth eq 'T'}">onclick="moveDetail('/mes/issue/kw_issue_lf.do');" </c:if>>장애</em>
 		 							<p><strong>${mainIssueTotal.eSearchWordA }건</strong></p>
 		 						</li>
 		 						<li class="problem">
-		 							<em <c:if test="${ass763 eq 'T' }">onclick="moveDetail('/mes/blueprint/kw_issue_lf.do');" </c:if>>문제</em>
+		 							<em <c:if test="${ass763 eq 'T' || staff.kAdminAuth eq 'T'}">onclick="moveDetail('/mes/blueprint/kw_issue_lf.do');" </c:if>>문제</em>
 		 							<p><strong>${mainIssueTotal.eSearchWordC }건</strong></p>
 		 						</li>
 		 						<li class="change">
-		 							<em <c:if test="${ass746 eq 'T' }">onclick="moveDetail('/mes/blueprint/kw_blueprint_lf.do');"</c:if>>변경</em>
+		 							<em <c:if test="${ass762 eq 'T' || staff.kAdminAuth eq 'T'}">onclick="moveDetail('/mes/blueprint/kw_blueprint_lf.do');"</c:if>>변경</em>
 		 							<p><strong>${mainIssueTotal.eSearchWordB }건</strong></p>
 		 						</li>
 		 						<li class="sr">
-		 							<em <c:if test="${ass764 eq 'T' }">onclick="moveDetail('/mes/blueprint/kw_sr_lf.do');" </c:if>>SR</em>
+		 							<em <c:if test="${ass764 eq 'T' || staff.kAdminAuth eq 'T'}">onclick="moveDetail('/mes/blueprint/kw_sr_lf.do');" </c:if>>SR</em>
 		 							<p><strong>${mainIssueTotal.eSearchWordD }건</strong></p>
 		 						</li>
 		 					</ul>
-		 					<div class="num_box" <c:if test="${ass758 eq 'T' }"> onclick="moveDetail('/mes/inspection/kw_inspection_lf.do');"</c:if>>
+		 					<div class="num_box" <c:if test="${ass758 eq 'T' || staff.kAdminAuth eq 'T'}"> onclick="moveDetail('/mes/inspection/kw_inspection_lf.do');"</c:if>>
 		 						<p>정기점검</p>
 		 						<ul>
 		 							<li>
@@ -260,7 +260,7 @@ function moveDetail(url){
 		 				</div>
 	 					<div class="data">
 	 						<h4>자산변동</h4>
-	 						<div class="num_box" <c:if test="${ass756 eq 'T' }"> onclick="moveDetail('/mes/asset/kw_eCondition_lf.do');"</c:if>>
+	 						<div class="num_box" <c:if test="${ass756 eq 'T' || staff.kAdminAuth eq 'T'}"> onclick="moveDetail('/mes/asset/kw_eCondition_lf.do');"</c:if>>
 		 						<p>보유자산</p>
 		 						<ul>
 		 							<li>
@@ -277,7 +277,7 @@ function moveDetail(url){
 		 							</li>
 		 						</ul>
 		 					</div>
-		 					<div class="num_box" <c:if test="${ass767 eq 'T' }"> onclick="moveDetail('/mes/equipment/kw_equipment_in_lf.do');"</c:if>>
+		 					<div class="num_box" <c:if test="${ass767 eq 'T' || staff.kAdminAuth eq 'T'}"> onclick="moveDetail('/mes/equipment/kw_equipment_in_lf.do');"</c:if>>
 		 						<p>임시자산</p>
 		 						<ul>
 		 							<li>
@@ -300,7 +300,7 @@ function moveDetail(url){
 		 		<div class="btm">
 		 			<div>
 		 				<h4>EoS</h4>
-		 				<table  class="dash_table" <c:if test="${ass755 eq 'T' }">  onclick="moveDetail('/mes/asset/kw_Hardware_lf.do');" </c:if>>
+		 				<table  class="dash_table" <c:if test="${ass755 eq 'T' || staff.kAdminAuth eq 'T'}">  onclick="moveDetail('/mes/asset/kw_Hardware_lf.do');" </c:if>>
 							<thead>
 								<tr>
 									<th>No.</th>
@@ -328,7 +328,7 @@ function moveDetail(url){
 		 			</div>
 		 			<div>
 		 				<h4>EoL</h4>
-		 				<table class="dash_table" <c:if test="${ass755 eq 'T' }"> onclick="moveDetail('/mes/asset/kw_Hardware_lf.do');" </c:if>>
+		 				<table class="dash_table" <c:if test="${ass755 eq 'T' || staff.kAdminAuth eq 'T'}"> onclick="moveDetail('/mes/asset/kw_Hardware_lf.do');" </c:if>>
 							<thead>
 								<tr>
 									<th>No.</th>
@@ -356,7 +356,7 @@ function moveDetail(url){
 		 			</div>
 		 			<div>
 		 				<h4>라이선스</h4>
-		 				<table class="dash_table" <c:if test="${ass754 eq 'T' }">  onclick="moveDetail('/mes/asset/kw_Software_Register_lf.do');" </c:if>>
+		 				<table class="dash_table" <c:if test="${ass754 eq 'T' || staff.kAdminAuth eq 'T'}">  onclick="moveDetail('/mes/asset/kw_Software_Register_lf.do');" </c:if>>
 							<thead>
 								<tr>
 									<th>No.</th>
@@ -384,7 +384,7 @@ function moveDetail(url){
 		 			</div>
 		 			<div>
 		 				<h4>노후장비</h4>
-		 				<table class="dash_table" <c:if test="${ass742 eq 'T' }"> onclick="moveDetail('/mes/asset/kw_asset_lf.do');" </c:if>>
+		 				<table class="dash_table" <c:if test="${ass742 eq 'T' || staff.kAdminAuth eq 'T'}"> onclick="moveDetail('/mes/asset/kw_asset_lf.do');" </c:if>>
 							<thead>
 								<tr>
 									<th>No.</th>

@@ -125,6 +125,9 @@ function mesSetPass(key){
 </script>
 <style>
 td.gridjs-td:last-child{text-align:center !important;} 
+.gridjs-tr > td {
+  pointer-events: none;
+}
 </style>
 
 <form name="listForm" id="listForm" action="/mes/user/kw_user_lf.do"  method="post">		

@@ -790,7 +790,7 @@ document.ondragstart = function() {
 			<div class="search_filter">
 				<ul> 
 					<li>
-						<span>자산유형</li></span>
+						<span>자산유형</span>
 						<select id='searchTypeSet1' name='searchTypeSet1'  >
 							<option value=''>전체조회</option>
 							<c:forEach var='list' items='${gubun36List}'>

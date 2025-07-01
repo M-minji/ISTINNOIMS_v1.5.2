@@ -72,12 +72,12 @@ td.gridjs-td:last-child{text-align:center !important;}
 						<td>${levelList.kClassName}</td>
 						<td>
 							<div class="table_btn">
-								<c:if test="${staffVo.kStaffAuthModifyFlag eq 'T'}">
+								<c:if test="${staffVo.kStaffAuthModifyFlag eq 'T' || staffVo.kAdminAuth eq 'T'}">
 									<a class="form_btn sm" onclick="userLevelInfo(${levelList.kClassKey})">
 										수정
 									</a>
 								</c:if>
-							 	<c:if test="${staffVo.kStaffAuthDelFlag eq 'T'}">
+							 	<c:if test="${staffVo.kStaffAuthDelFlag eq 'T' || staffVo.kAdminAuth eq 'T'}">
 									<a class="form_btn sm" onclick="userLevelDel(${levelList.kClassKey})">
 										삭제
 									</a>									
@@ -92,7 +92,7 @@ td.gridjs-td:last-child{text-align:center !important;}
 	
 	<div class="list_btm right">
 		<div class="btns">
-			<c:if test="${staffVo.kStaffAuthWriteFlag eq 'T'}">
+			<c:if test="${staffVo.kStaffAuthWriteFlag eq 'T' || staffVo.kAdminAuth eq 'T'}">
 			<button type="button" class="form_btn active" onclick="go_insert()">등록</button>
 			</c:if>
 		</div>

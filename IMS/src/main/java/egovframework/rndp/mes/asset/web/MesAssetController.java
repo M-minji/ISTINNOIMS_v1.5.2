@@ -2319,8 +2319,8 @@ public class MesAssetController {
 			mesAssetVO.setTopEndDate(String.valueOf(dateFormat.format(nowDate)));
 		}
 		
-		List assetList = mesAssetService.mesSoftwareList(mesAssetVO);
-		int totCnt = mesAssetService.mesSoftwareListCnt(mesAssetVO);
+		List assetList = mesAssetService.mesSoftwareListPop(mesAssetVO);
+		int totCnt = mesAssetService.mesSoftwareListCntPop(mesAssetVO);
 		paginationInfo.setTotalRecordCount(totCnt);
 		
 		model.addAttribute("assetList", assetList);
