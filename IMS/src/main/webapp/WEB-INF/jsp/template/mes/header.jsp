@@ -10,8 +10,21 @@
 <link rel="stylesheet" type="text/css" href="/js/jquery-ui-1.14.1/jquery-ui.min.css" />
 <script src="/js/jquery/jquery-3.7.1.min.js"></script>
 <script src="/js/jquery-ui-1.14.1/jquery-ui.min.js"></script>
-
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 <script>
+
+function modal3(message, onConfirm, onCancel) {
+	new jBox('Confirm', {
+		content: message,
+	    cancelButton: '아니요',
+	    confirmButton: '네',
+	    blockScrollAdjust: ['header'],
+	    confirm: onConfirm,
+	    cancel: onCancel
+	  }).open();
+  }
+  
 function replaceSpecialCharacters(str) {
     if (!str) return ""; // 빈 문자열 처리
 
@@ -240,7 +253,7 @@ $(window).resize(function() {
         $(".container").css({
             "width": "99%",
             "max-width": "99%",
-            "margin-right": marginValue,
+            "margin-right": "2%",
             "margin-left": "0"
         });
 
@@ -426,13 +439,21 @@ function handleOPassClick() {
     	 $("#oSignPass").val("Y");
     		var elements = document.getElementsByName("sSignStaffKey");
 	        if (elements.length > 0) {
-	            if (confirm("선택한 결재자 정보를 삭제하고 \n결재 제외처리 하시겠습니까?")) {
-	                $('#lineRow3').empty();
-	            } else {
-	            	$("#oPass").prop('checked', false);
+	        	modal3("선택한 결재라인을 삭제하고 결재 제외 하시겠습니까?", function () {
+	        		 $('#lineRow3').empty();
+	    		},  function () {
+	    			$("#oPass").prop('checked', false);
 	            	 $("#oSignPass").val("N");
 	                return; 
-	            }
+	    		});
+	        	
+//	            if (confirm("선택한 결재자 정보를 삭제하고 \n결재 제외처리 하시겠습니까?")) {
+//	                $('#lineRow3').empty();
+//	            } else {
+//	            	$("#oPass").prop('checked', false);
+//	            	 $("#oSignPass").val("N");
+//	                return; 
+//	            }
 	        }
     } else {
         $("#oSignPass").val("N");
