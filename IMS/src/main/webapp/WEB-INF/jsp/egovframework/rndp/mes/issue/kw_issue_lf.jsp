@@ -11,9 +11,39 @@
 <link href="/css/mes/jquery-ui.min.css" rel="stylesheet" type="text/css" />
 
 <script src="/js/jquery.table2excel.js"></script>
-
+<link rel="stylesheet" href="/js/PretendardGOV-1.3.9/pretendard-gov-all.css">
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 <script type="text/javascript">
-
+function notice(message) {
+	new jBox('Notice', {
+		content: message,
+		color: 'green',
+	      offset: {
+	        y: 62
+	      },
+	      autoClose: 2500,
+	      addClass: 'complite-notice'
+		});
+  }
+window.addEventListener("DOMContentLoaded", function () {
+	const type = sessionStorage.getItem("actionType");
+	if (type) {     
+		let message;
+		switch (type) {
+	      case 'create':
+	        message = "등록이 완료되었습니다!";
+	        break;
+	      case 'delete':
+	        message = "삭제가 완료되었습니다!";
+	        break;
+	      default:
+	        message = ""; 
+	    }
+		notice(message);
+	    sessionStorage.removeItem("actionType");
+  }
+});
 $(document).ready(function(){
 	
 		// 달력 설정
@@ -181,6 +211,11 @@ $(document).ready(function(){
 </script>
 
 <style>
+	.jBox-Notice.complite-notice .jBox-content {
+	  font-size: 16px; 
+	  font-family: 'Pretendard GOV', sans-serif;
+	  font-weight: 400; 
+	}
   .highlighted-row {
     background-color: #c0c0c0 !important;
      #tableContainer {

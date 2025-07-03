@@ -352,7 +352,7 @@ function eDownloadAll(fileGubun){
 					</td>
 				</tr>
 				<tr>
-					<th>담당자명</th>
+					<th>담당자</th>
 					<td>${projectInfo.eManager}
 						<input type="hidden" id="eManager" name="eManager" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
@@ -366,7 +366,7 @@ function eDownloadAll(fileGubun){
 					</td>
 				</tr>
 				<tr>
-					<th>사업 PM명</th>
+					<th>사업 PM</th>
 					<td>${projectInfo.eProjectPM}
 	 					<input type="hidden" id="eProjectPM" name="eProjectPM" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>

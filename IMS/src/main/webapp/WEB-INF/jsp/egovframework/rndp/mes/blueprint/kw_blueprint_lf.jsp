@@ -10,8 +10,39 @@
 <script type="text/javascript" src="/js/cdnjs_cloudflare_com_ajax_libs_jqueryui_1.12.1/jquery-ui.min.js"></script>
 
 <link href="/css/mes/jquery-ui.min.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="/js/PretendardGOV-1.3.9/pretendard-gov-all.css">
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 <script type="text/javascript">
- 
+function notice(message) {
+	new jBox('Notice', {
+		content: message,
+		color: 'green',
+	      offset: {
+	        y: 62
+	      },
+	      autoClose: 2500,
+	      addClass: 'complite-notice'
+		});
+  }
+window.addEventListener("DOMContentLoaded", function () {
+	const type = sessionStorage.getItem("actionType");
+	if (type) {     
+		let message;
+		switch (type) {
+	      case 'create':
+	        message = "등록이 완료되었습니다!";
+	        break;
+	      case 'delete':
+	        message = "삭제가 완료되었습니다!";
+	        break;
+	      default:
+	        message = ""; 
+	    }
+		notice(message);
+	    sessionStorage.removeItem("actionType");
+  }
+});
 //현재날짜
 function nowDate(){
     var date = new Date();
@@ -105,7 +136,13 @@ function excelDwonload(){
 }
 
 </script>
-
+<style>
+	.jBox-Notice.complite-notice .jBox-content {
+	  font-size: 16px; 
+	  font-family: 'Pretendard GOV', sans-serif;
+	  font-weight: 400; 
+	}
+</style>
 
 <form id="frm" name="frm" method="post" action="/mes/blueprint/kw_blueprint_lf.do">
 	<input type="hidden" id="pageIndex" name="pageIndex" value="${mesBlueprintVO.pageIndex}" />

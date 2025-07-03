@@ -3,15 +3,63 @@
 <%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
+<link rel="stylesheet" href="/js/PretendardGOV-1.3.9/pretendard-gov-all.css">
 <link rel="stylesheet" type="text/css" href="/js/jquery-ui-1.14.1/jquery-ui.min.css" />
 <script src="/js/jquery/jquery-3.7.1.min.js"></script>
 <script src="/js/jquery-ui-1.14.1/jquery-ui.min.js"></script>
 <!-- jBox -->
 <link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
 <script src="/js/jBox/jBox.all.min.js"></script>
-
+<link rel="stylesheet" type="text/css" href='/css/mes/pretendard.css'>
 <script type="text/javascript">
+
+	function modal1(message, focusSelector) {
+		lastScrollY = window.scrollY;
+		new jBox('Modal', {
+		    height: 200,
+		    title: message,
+		    blockScrollAdjust: ['header'],
+		    content:'',
+		    overlay: false,   
+		    addClass: 'no-content-modal',
+		    position: {
+		        x: 'center',
+		        y: 'top'
+		      },
+		      offset: {
+		        y: 65
+		      },
+		        onCloseComplete: function () {
+		            window.scrollTo(0, lastScrollY);
+		            if (focusSelector) {
+		                setTimeout(() => {
+		                    document.querySelector(focusSelector)?.focus();
+		                }, 10);
+		            }
+		        }
+		  }).open();
+	  }
+	function modal3(message, onConfirm) {
+		new jBox('Confirm', {
+			content: message,
+		    cancelButton: '아니요',
+		    confirmButton: '네',
+		    blockScrollAdjust: ['header'],
+		    confirm: onConfirm
+		  }).open();
+	  }
+	function modal3(message, onConfirm, onCancel) {
+			new jBox('Confirm', {
+				content: message,
+			    cancelButton: '아니요',
+			    confirmButton: '네',
+			    blockScrollAdjust: ['header'],
+			    confirm: onConfirm,
+			    cancel: onCancel
+			  }).open();
+		  }
+
+	 
 	$(document).ready(function(){	
 		datepickerSet("eRequestDate", "eProcessingDate");
 		const today = nowDate();
@@ -203,16 +251,17 @@
 		
 		rowIndex++;
 	}
-	
+
 	
 	// 등록
 	function insert_go(){
 		if(chkIns()){
-			if(confirm("등록하시겠습니까?")){
+			modal3("등록하시겠습니까?", function () {
 				$("#mloader").show();
+				sessionStorage.setItem("actionType", "create");
 				document.frm.action = "/mes/issue/kw_issue_i.do";
 				document.frm.submit();
-			}
+			});
 		}
 	}
 	
@@ -223,27 +272,25 @@
 // 			return false;
 // 		}
 		
-		if($("#eIssueTypeName").val() == ""){
-			alert("상세구분을 선택하세요.");
-			$("#eIssueTypeName").focus();
-			return false;
-		}
+	
 		
 		if($("#eAssetType").val() == ""){
-			alert("자산유형을 선택하세요.");
-			$("#eAssetType").focus();
-			return false;
-		}
-		if($("#eRequester").val() == ""){
-			alert("요청자를 선택하세요.");
-			$("#eRequester").focus();
+			modal1("자산유형을 선택하세요.", "#eAssetType");
 			return false;
 		}
 		if($("#eProcessingTypeName").val() == ""){
-			alert("처리유형을 선택하세요.");
-			$("#eProcessingTypeName").focus();
+			modal1("처리유형을 선택하세요.", "#eProcessingType");
 			return false;
 		}
+		if($("#eIssueTypeName").val() == ""){
+			modal1("상세구분을 선택하세요.", "#eIssueType");
+			return false;
+		}
+		if($("#eRequester").val() == ""){
+			modal1("요청자를 입력하세요.", "#eRequester");
+			return false;
+		}
+		
 		
 		
 		
@@ -254,8 +301,12 @@
 			for(var j=0; j < eRowWorkerArr ; j++){
 				var eRowWorker = document.getElementsByName("eRowWorker")[j].value;
 				if (eRowWorker.trim() == '') {
-					alert((j+1)+"번째 처리자명을 입력하세요.");
-					document.getElementsByName("eRowWorker")[j].focus;
+					var text = "";
+					if(j+1 > 1) {
+						text = (j+1)+"번째 "
+					}
+
+					modal1(text + "처리자명을 입력하세요.", "#eRowWorker_" + j);
 					return false;
 				}
 			}
@@ -280,14 +331,14 @@
 				
 			}
 		}else{
-			alert("처리자 정보가 없습니다.");
+			modal1("등록할 처리자가 없습니다.");
 			return false;
 		}
 		
 		
 		if($("#oSignPass").val() != 'Y'){
 		if(document.getElementsByName("sSignStaffKey").length == 0){
-			alert("승인권자를 선택해주세요.");
+			modal1("결재자를 선택하세요.");
 			return false;
 			}
 		}
@@ -458,29 +509,65 @@
 		    	 $("#oSignPass").val("Y");
 		    		var elements = document.getElementsByName("sSignStaffKey");
 			        if (elements.length > 0) {
-			            if (confirm("선택한 결재자 정보를 삭제하고 \n결재 제외처리 하시겠습니까?")) {
-			                $('#lineRow3').empty();
-			            } else {
-			            	$("#oPass").prop('checked', false);
+			        	$('#lineRow3').empty();
+			        /* 	modal3("선택한 결재라인을 삭제하고 결재 제외 하시겠습니까?", function () {
+			        		 $('#lineRow3').empty();
+			    		},  function () {
+			    			$("#oPass").prop('checked', false);
 			            	 $("#oSignPass").val("N");
 			                return; 
-			            }
+			    		}); */
 			        }
 		    } else {
 	            $("#oSignPass").val("N");
 		    }
-		}
+	}
+	 
+	 
+	 	function setToolTip(){
+	 		var elements = document.getElementsByName("sSignStaffKey");
+	 		var checkbox = $('#oPass');
+	 		if (checkbox.prop('checked')) {
+	 		} else if(elements.length > 0){
+	 			$("#approvalWrap").addClass("hoverToolTip");
+	 				window.hoverTipBox = new jBox('Tooltip', {
+				    attach: '.hoverToolTip',
+				    theme: 'TooltipDark',
+				    animation: 'zoomOut',
+				    content: '선택된 결재선이 삭제됩니다.',
+				    adjustDistance: {
+				      top: 70,
+				      right: 5,
+				      bottom: 5,
+				      left: 5
+				    },
+				    zIndex: 90
+				  }); 
 
+	 		}
+	 		
+	 	}
+	 	function removeToolTip() {
+	 		if (window.hoverTipBox) {
+	 			$('.jBox-wrapper').remove();
+	 			$('.jBox-tooltip').remove();
+	 			
+	 			$('#approvalWrap').removeClass('hoverToolTip');
+
+	 			window.hoverTipBox = null;
+	 		}
+		 }
 		function approvalPop(){
-			
 			 var checkbox = $('#oPass');
 		    if (checkbox.prop('checked')) {
-		    	if(confirm("결재 제외로 선택되었습니다.\n결재자를 선택하시겠습니까?")){
-		    		checkbox.prop('checked', false);
+//		    	if(confirm("결재 제외로 선택되었습니다.\n결재자를 선택하시겠습니까?")){
+//		    		checkbox.prop('checked', false);
+//		    		$("#oSignPass").val("N");
+//		    	}else{
+//		    		return;
+//		    	}
+				checkbox.prop('checked', false);
 		    		$("#oSignPass").val("N");
-		    	}else{
-		    		return;
-		    	}
 		    }
 			
 			
@@ -543,6 +630,7 @@
 
 		    // 폼 제거
 		    document.body.removeChild(form);
+		    
 		}
 		
 
@@ -578,6 +666,7 @@
 			$(innerStr).appendTo("#lineRow3");		
 			
 			referIndex++;
+			setToolTip();
 		}
 		
 		function deleteGyeoljaeList(){
@@ -683,7 +772,28 @@
 		}
 		
 </script>
+<style>
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
 
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	 	font-weight: 400;  
+	    font-family: 'Pretendard GOV', sans-serif;
+	}
+	
+	.jBox-Modal {
+	  background: #4869fb !important;
+	  border-radius: 8px !important;
+   	  overflow: hidden !important;
+   	  
+}    
+</style>
 
 <form id="frm" name="frm" method="post" enctype="multipart/form-data" action="/mes/issue/kw_issue_i.do"> 
 	<input type="hidden" id="pageIndex" 		name="pageIndex" 			value="${mesIssueVO.pageIndex}" />
@@ -696,6 +806,7 @@
  	<input type="hidden" id="eIssueStaffKey" name="eIssueStaffKey" value="${staffVo.kStaffKey}"/>
 	<input type="hidden" id="eIssueStaffName" name="eIssueStaffName" value="${staffVo.kStaffName}"/>
 	<input type="hidden" id="oSignPass" name="oSignPass" value="" />
+	<input type="hidden" id="signSt" name="signSt" value="" />
 	
 	<input type="hidden" id="eHandler" name="eHandler"     />
 	<input type="hidden" id="eHandlerOrg" name="eHandlerOrg"   />
@@ -891,15 +1002,17 @@
 	
 	<div class="content_top nofirst with_btn">
 		<div class="content_tit flex">
-			<h2>승인권자</h2>
+			<h2>결재 정보</h2>
+			<div id="approvalWrap">
 			<label for="oPass" class="inp_chkbox">
-				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();"/>
+				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();" onchange="removeToolTip();"/>
 				<i></i>
 				결재 제외
 			</label>
+			</div>
 		</div>
 		<div class="btns">
-			 <button type="button" onclick="approvalPop()" class="form_btn md">승인권자 선택</button>
+			 <button type="button" onclick="approvalPop();" class="form_btn md">결재선 선택</button>
 		</div>
 	</div>
 	<div class="normal_table">
@@ -910,9 +1023,9 @@
 				<col />
 			</colgroup>
 			<thead>
-				<tr>
+	<!-- 			<tr>
 					<th colspan="3">결재 정보</th>
-				</tr>
+				</tr> 	 -->
 				<tr>
 					<th>결재순서</th>
 					<th>결재구분</th>
@@ -921,7 +1034,7 @@
 			</thead>
 			<tbody id="lineRow3">	
 				<tr>
-					<td colspan="3">결재정보가 없습니다.</td>
+					<td colspan="3">결재 정보가 없습니다.</td>
 				</tr>		
 			</tbody>
 		</table>
