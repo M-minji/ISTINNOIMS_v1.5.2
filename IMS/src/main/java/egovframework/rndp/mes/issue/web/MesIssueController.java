@@ -292,7 +292,7 @@ public class MesIssueController {
 		mesIssueVO.setkStaffKey(String.valueOf(staffVo.getkStaffKey()));
 		mesIssueVO.setkStaffName(String.valueOf(staffVo.getkStaffName()));
 		model.addAttribute("staffVo", staffVo);
-		
+		model.addAttribute("signSt", "");
 		
 		MesGubunVO vo = new MesGubunVO();
 		vo.setsGubunCateKey("33"); //유형

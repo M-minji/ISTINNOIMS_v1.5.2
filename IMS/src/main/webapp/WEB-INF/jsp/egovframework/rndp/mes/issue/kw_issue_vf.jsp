@@ -2,7 +2,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://egovframework.gov/ctl/ui" prefix="ui" %>
-
+<script src="/js/PretendardGOV-1.3.9/web/static/pretendard-gov.css"></script>
+<script src="/js/PretendardGOV-1.3.9/web/static/pretendard-gov-subset.css"></script>
+<script src="/js/PretendardGOV-1.3.9/web/variable/pretendardvariable-gov.css"></script>
 <link rel="stylesheet" type="text/css" href="/js/jquery-ui-1.14.1/jquery-ui.min.css" />
 <script src="/js/jquery/jquery-3.7.1.min.js"></script>
 <script src="/js/jquery-ui-1.14.1/jquery-ui.min.js"></script>
@@ -16,8 +18,39 @@
 <script type="text/javascript" src="<c:url value='/js/html2canvas.js'/>"></script>
 <link rel="stylesheet" type="text/css" href="/js/jquery-ui-1.14.1/jquery-ui.min.css" />
 <script src="/js/jquery-ui-1.14.1/jquery-ui.min.js"></script>
-
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 <script type="text/javascript">
+
+function modal3(message, onConfirm) {
+	new jBox('Confirm', {
+		content: message,
+	    cancelButton: '아니요',
+	    confirmButton: '네',
+	    blockScrollAdjust: ['header'],
+	    confirm: onConfirm
+	  }).open();
+  }
+function notice(message) {
+	new jBox('Notice', {
+		content: message,
+		color: 'green',
+	      offset: {
+	        y: 62
+	      },
+	      autoClose: 2500,
+	      addClass: 'complite-notice'
+		});
+  }
+window.addEventListener("DOMContentLoaded", function () {
+	const type = sessionStorage.getItem("actionType");
+	if (type) {     
+		notice("수정이 완료되었습니다!");
+	    sessionStorage.removeItem("actionType");
+  }
+});
+
+
 	$(document).ready(function(){	
 		toggleViewProcess();
 // 		datepickerIdSet("eActualWorkDate");
@@ -110,11 +143,12 @@
 	// 삭제
 	function delete_go(){
 		var status = $("#eIssueStatus").val();
-			if(confirm("해당 등록정보를 삭제하시겠습니까?")){
+			modal3("삭제하시겠습니까?", function () {
 				$("#mloader").show();
+				sessionStorage.setItem("actionType", "delete");
 				document.frm.action = "/mes/issue/kw_issue_d.do";
 				document.frm.submit();
-			}
+			});
 	 
 	}
 	
@@ -464,7 +498,14 @@
 		}); 
 	}
 </script>
+<style>
 
+	.jBox-Notice.complite-notice .jBox-content {
+	  font-size: 16px; 
+	  font-family: 'Pretendard GOV', sans-serif;
+	  font-weight: 400; 
+	}
+</style>
 <form id="frm" name="frm" method="post" enctype="multipart/form-data">
 	<input type="hidden" id="pageIndex" name="pageIndex" value="${mesIssueVO.pageIndex}" />
 	<input type="hidden" id="recordCountPerPage" name="recordCountPerPage" value="${mesIssueVO.recordCountPerPage}" />

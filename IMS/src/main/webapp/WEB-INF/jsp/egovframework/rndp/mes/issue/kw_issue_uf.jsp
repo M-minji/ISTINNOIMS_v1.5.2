@@ -9,6 +9,43 @@
 <script src="/js/jquery-ui-1.14.1/jquery-ui.min.js"></script>
 
 <script type="text/javascript">
+
+function modal1(message) {
+	new jBox('Modal', {
+	    height: 200,
+	    title: message,
+	    blockScrollAdjust: ['header'],
+	    content:'',
+	    overlay: false,   
+	    addClass: 'no-content-modal',
+	    position: {
+	        x: 'center',
+	        y: 'top'
+	      },
+	      offset: {
+	        y: 65
+	      }
+	  }).open();
+  }
+function modal3(message, onConfirm) {
+	new jBox('Confirm', {
+		content: message,
+	    cancelButton: '아니요',
+	    confirmButton: '네',
+	    blockScrollAdjust: ['header'],
+	    confirm: onConfirm
+	  }).open();
+  }
+  function modal3(message, onConfirm, onCancel) {
+		new jBox('Confirm', {
+			content: message,
+		    cancelButton: '아니요',
+		    confirmButton: '네',
+		    blockScrollAdjust: ['header'],
+		    confirm: onConfirm,
+		    cancel: onCancel
+		  }).open();
+	  }
 	$(document).ready(function(){	
 		datepickerSet("eCreationDate");
 		datepickerIdSet("eRequestDate");
@@ -725,7 +762,29 @@
 	
 	
 </script>
+<style>
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
 
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	 	font-weight: 400;  
+	    font-family: 'Pretendard GOV', sans-serif;
+	}
+	
+	.jBox-Modal {
+	  background: #4869fb !important;
+	  border-radius: 8px !important;
+   	  overflow: hidden !important;
+   	  
+}    
+
+</style>
 <form id="frm" name="frm" method="post" enctype="multipart/form-data" action="/mes/issue/kw_issue_u.do"> 
  	<input type="hidden" id="eIssueStaffKey" name="eIssueStaffKey" value="${staffVo.kStaffKey}"/>
 	<input type="hidden" id="eIssueStaffName" name="eIssueStaffName" value="${staffVo.kStaffName}"/>

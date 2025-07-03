@@ -3,14 +3,77 @@
 <%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
+<link rel="stylesheet" href="/js/PretendardGOV-1.3.9/pretendard-gov-all.css">
 <link rel="stylesheet" type="text/css" href="/js/jquery-ui-1.14.1/jquery-ui.min.css" />
 <script src="/js/jquery/jquery-3.7.1.min.js"></script>
 <script src="/js/jquery-ui-1.14.1/jquery-ui.min.js"></script>
-
-</style>
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 <script type="text/javascript">
-
+function modal1(message, focusSelector) {
+	lastScrollY = window.scrollY;
+	new jBox('Modal', {
+	    height: 200,
+	    title: message,
+	    blockScrollAdjust: ['header'],
+	    content:'',
+	    overlay: false,   
+	    addClass: 'no-content-modal',
+	    position: {
+	        x: 'center',
+	        y: 'top'
+	      },
+	      offset: {
+	        y: 65
+	      },
+	        onCloseComplete: function () {
+	            window.scrollTo(0, lastScrollY);
+	            if (focusSelector) {
+	                setTimeout(() => {
+	                    document.querySelector(focusSelector)?.focus();
+	                }, 10);
+	            }
+	        }
+	  }).open();
+  }
+function modal3(message, onConfirm) {
+	new jBox('Confirm', {
+		content: message,
+	    cancelButton: '아니요',
+	    confirmButton: '네',
+	    blockScrollAdjust: ['header'],
+	    confirm: onConfirm
+	  }).open();
+  }
+function setToolTip(){
+		var elements = document.getElementsByName("sSignStaffKey");
+		var checkbox = $('#oPass');
+		if (checkbox.prop('checked')) {
+		} else if(elements.length > 0){
+			$("#approvalWrap").addClass("hoverToolTip");
+				window.hoverTipBox = new jBox('Tooltip', {
+		    attach: '.hoverToolTip',
+		    theme: 'TooltipDark',
+		    animation: 'zoomOut',
+		    content: '선택된 결재선이 삭제됩니다.',
+		    adjustDistance: {
+		      top: 70,
+		      right: 5,
+		      bottom: 5,
+		      left: 5
+		    },
+		    zIndex: 90
+		  }); 
+		}
+	}
+	function removeToolTip() {
+		if (window.hoverTipBox) {
+			$('.jBox-wrapper').remove();
+			$('.jBox-tooltip').remove();
+			$('#approvalWrap').removeClass('hoverToolTip');
+			window.hoverTipBox = null;
+		}
+ }
 
 $(document).ready(function(){	
 	datepickerSet('eStartDate', 'eEndDate');
@@ -46,31 +109,30 @@ function cancel(){
 
 function insert_go(){
 	if(chkIns()){  
-	    if(confirm("저장하시겠습니까?")){
-    		$("#mloader").show(); 
-  	        document.frm.action = "/mes/project/kw_project_i.do";
+		modal3("등록하시겠습니까?", function () {
+			$("#mloader").show();
+			sessionStorage.setItem("actionType", "create");
+			document.frm.action = "/mes/project/kw_project_i.do";
   	        document.frm.submit();
-	    }
+		});
 	}
 }
 
 //validation
 function chkIns(){
 	if($("#eProjectName").val() == ""){
-		alert("사업명을 입력하세요.");
-		$("#eProjectName").focus();
+		modal1("사업명을 입력하세요.", "#eProjectName");
 		return false;
 	}
 
 	if($("#eManager").val() == ""){
-		alert("담당자를 입력하세요.");
-		$("#eManager").focus();
+		modal1("담당자를 입력하세요.", "#eManager");
 		return false;
 	}
 	
 	if($("#oSignPass").val() != 'Y'){
 		if(document.getElementsByName("sSignStaffKey").length == 0){
-			alert("승인권자를 선택해주세요.");
+			modal1("결재자를 선택하세요.");
 			return false;
 			}
 		}
@@ -135,12 +197,9 @@ function approvalPop(){
 	
 	 var checkbox = $('#oPass');
    if (checkbox.prop('checked')) {
-   	if(confirm("결재 제외로 선택되었습니다.\n결재자를 선택하시겠습니까?")){
    		checkbox.prop('checked', false);
    		$("#oSignPass").val("N");
-   	}else{
-   		return;
-   	}
+  
    }
 	
 	
@@ -238,6 +297,7 @@ function approvalPop(){
 		$(innerStr).appendTo("#lineRow3");		
 		
 		referIndex++;
+		setToolTip();
 	}
 	
 	function deleteGyeoljaeList(){
@@ -250,7 +310,24 @@ function approvalPop(){
 	}
 
 </script>
-
+<style>
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	.no-content-modal .jBox-title {
+	  	color: white;
+	 	font-weight: 400;  
+	    font-family: 'Pretendard GOV', sans-serif;
+	}
+	.jBox-Modal {
+	  background: #4869fb !important;
+	  border-radius: 8px !important;
+   	  overflow: hidden !important;
+}    
+</style>
 <form id="frm" name="frm" method="post" enctype="multipart/form-data">
   	<input type="hidden" id="oSignPass" name="oSignPass" value="" />
 	<div class="content_top">
@@ -339,15 +416,16 @@ function approvalPop(){
 
 	<div class="content_top nofirst with_btn">
 		<div class="content_tit flex">
-			<h2>승인권자</h2>
+			<h2>결재 정보</h2>
+			<div id="approvalWrap">
 			<label for="oPass" class="inp_chkbox">
-				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();"/>
+				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();" onchange="removeToolTip();"/>
 				<i></i>
 				결재 제외
-			</label>
+			</label></div>
 		</div>
 		<div class="btns">
-			 <button type="button" onclick="approvalPop()" class="form_btn md">승인권자 선택</button>
+			 <button type="button" onclick="approvalPop()" class="form_btn md">결재선 선택</button>
 		</div>
 	</div>
 	<div class="normal_table">
@@ -359,17 +437,14 @@ function approvalPop(){
 			</colgroup>
 			<thead>
 				<tr>
-					<th colspan="3">결재 정보</th>
-				</tr>
-				<tr>
 					<th>결재순서</th>
-					<th>부서</th>
-					<th>성명</th>
+					<th>결재구분</th>
+					<th>결재자</th>
 				</tr>
 			</thead>
 			<tbody id="lineRow3">		
 				<tr>
-					<td colspan="3">결재정보가 없습니다.</td>
+					<td colspan="3">결재 정보가 없습니다.</td>
 				</tr>	
 			</tbody>
 		</table>

@@ -3,17 +3,81 @@
 <%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
+<link rel="stylesheet" href="/js/PretendardGOV-1.3.9/pretendard-gov-all.css">
 <link rel="stylesheet" type="text/css" href="/js/jquery-ui-1.14.1/jquery-ui.min.css" />
 <script src="/js/jquery/jquery-3.7.1.min.js"></script>
 <script src="/js/jquery-ui-1.14.1/jquery-ui.min.js"></script>
 
 <link href="/css/mes/mermaid.min.css" rel="stylesheet"	type="text/css" />
 <link href="/css/mes/jquery-ui.min.css" rel="stylesheet"	type="text/css" />
-
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 
 <script type="text/javascript">
-
+function modal1(message, focusSelector) {
+	lastScrollY = window.scrollY;
+	new jBox('Modal', {
+	    height: 200,
+	    title: message,
+	    blockScrollAdjust: ['header'],
+	    content:'',
+	    overlay: false,   
+	    addClass: 'no-content-modal',
+	    position: {
+	        x: 'center',
+	        y: 'top'
+	      },
+	      offset: {
+	        y: 65
+	      },
+	        onCloseComplete: function () {
+	            window.scrollTo(0, lastScrollY);
+	            if (focusSelector) {
+	                setTimeout(() => {
+	                    document.querySelector(focusSelector)?.focus();
+	                }, 10);
+	            }
+	        }
+	  }).open();
+  }
+function modal3(message, onConfirm) {
+	new jBox('Confirm', {
+		content: message,
+	    cancelButton: '아니요',
+	    confirmButton: '네',
+	    blockScrollAdjust: ['header'],
+	    confirm: onConfirm
+	  }).open();
+  }
+function setToolTip(){
+		var elements = document.getElementsByName("sSignStaffKey");
+		var checkbox = $('#oPass');
+		if (checkbox.prop('checked')) {
+		} else if(elements.length > 0){
+			$("#approvalWrap").addClass("hoverToolTip");
+				window.hoverTipBox = new jBox('Tooltip', {
+		    attach: '.hoverToolTip',
+		    theme: 'TooltipDark',
+		    animation: 'zoomOut',
+		    content: '선택된 결재선이 삭제됩니다.',
+		    adjustDistance: {
+		      top: 70,
+		      right: 5,
+		      bottom: 5,
+		      left: 5
+		    },
+		    zIndex: 90
+		  }); 
+		}
+	}
+	function removeToolTip() {
+		if (window.hoverTipBox) {
+			$('.jBox-wrapper').remove();
+			$('.jBox-tooltip').remove();
+			$('#approvalWrap').removeClass('hoverToolTip');
+			window.hoverTipBox = null;
+		}
+ }
 $(document).ready(function(){
 	datepickerIdSet("eReqDate");
 	datepickerIdSet("blueprintWdate");
@@ -80,19 +144,21 @@ function delRow(obj){
 // 등록
 function insert_go(){
 	if(chkIns()){
-		if(confirm("저장하시겠습니까?")){
+		
+		modal3("등록하시겠습니까?", function () {
 			$("#mloader").show();
+			$("#mloader").show();
+			sessionStorage.setItem("actionType", "create");
 			document.frm.action = "/mes/blueprint/kw_blueprint_i.do";
 			document.frm.submit();
-		}
+		});
 	}
 }
 
 // validation
 function chkIns(){
 	if($("#eRequester").val() == ""){
-		alert("요청자 명을 입력하세요.");
-		$("#eRequester").focus();
+		modal1("요청자를 입력하세요.", "#eRequester");
 		return false;
 	}
 	
@@ -102,8 +168,11 @@ function chkIns(){
 		for(var i=0; i < idx ; i++){
 			var eWorker = document.getElementsByName("eWorker")[i].value;
 			if (eWorker.trim() == '') {
-				alert((i+1)+"번째 작업자를 입력하세요.");
-				document.getElementsByName("eWorker")[i].focus;
+				var text = "";
+				if(i+1 > 1) {
+					text = (i+1)+"번째 "
+				}
+				modal1(text + "작업자를 입력하세요.", "#eWorker_" + i);
 				return false;
 			}
 		}
@@ -124,7 +193,7 @@ function chkIns(){
 	
   	if($("#oSignPass").val() != 'Y'){
 		if(document.getElementsByName("sSignStaffKey").length == 0){
-			alert("승인권자를 선택해주세요");
+			modal1("결재자를 선택하세요.");
 			return false;
 			}
 		}
@@ -147,7 +216,7 @@ $(function() {
 			var fileSize = this.files[0].size;
 
 			if (fileSize > maxSize) {
-				alert("첨부파일 사이즈는 10MB 이내로 등록 가능합니다.");
+				modal1("첨부파일은 10MB 이내로 등록 가능합니다.");
 				$(this).val('');
 				return false;
 			} else {
@@ -472,9 +541,9 @@ function delFileRow(link, fileId) {
 
 function eDownload(eFileId){
 	 
-	 if(confirm("선택한 파일을 다운로드 하시겠습니까?")){
+//	 if(confirm("선택한 파일을 다운로드 하시겠습니까?")){
 			window.open("<c:url value='/cmm/fms/FileDown.do?atchFileId="+eFileId+"&fileSn=0'/>");
-		}
+//		}
 }
 
 function eDownloadAll(){
@@ -494,12 +563,8 @@ function approvalPop(){
 	
 	 var checkbox = $('#oPass');
    if (checkbox.prop('checked')) {
-   	if(confirm("결재 제외로 선택되었습니다.\n결재자를 선택하시겠습니까?")){
-   		checkbox.prop('checked', false);
-   		$("#oSignPass").val("N");
-   	}else{
-   		return;
-   	}
+	   checkbox.prop('checked', false);
+  		$("#oSignPass").val("N");
    }
 	
 	
@@ -597,6 +662,7 @@ function approvalPop(){
 		$(innerStr).appendTo("#lineRow3");		
 		
 		referIndex++;
+		setToolTip();
 	}
 	
 	function deleteGyeoljaeList(){
@@ -616,7 +682,29 @@ function approvalPop(){
      }
 	 
 </script>
+<style>
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
 
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	 	font-weight: 400;  
+	    font-family: 'Pretendard GOV', sans-serif;
+	}
+	
+	.jBox-Modal {
+	  background: #4869fb !important;
+	  border-radius: 8px !important;
+   	  overflow: hidden !important;
+   	  
+}    
+
+</style>
 <form id="frm" name="frm" method="post" enctype="multipart/form-data" action="/mes/blueprint/kw_blueprint_i.do">
 	<input type="hidden" id="pageIndex" name="pageIndex" value="${mesBlueprintVO.pageIndex}" />
 	<input type="hidden" id="recordCountPerPage" name="recordCountPerPage" value="${mesBlueprintVO.recordCountPerPage}" />
@@ -785,15 +873,16 @@ function approvalPop(){
 	
 	<div class="content_top nofirst with_btn">
 		<div class="content_tit flex">
-			<h2>승인권자</h2>
+			<h2>결재 정보</h2>
+			<div id="approvalWrap">
 			<label for="oPass" class="inp_chkbox">
-				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();"/>
+				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();" onchange="removeToolTip();"/>
 				<i></i>
 				결재 제외
-			</label>
+			</label></div>
 		</div>
 		<div class="btns">
-			 <button type="button" onclick="approvalPop()" class="form_btn md">승인권자 선택</button>
+			 <button type="button" onclick="approvalPop()" class="form_btn md">결재선 선택</button>
 		</div>
 	</div>
 	<div class="normal_table">
@@ -805,17 +894,14 @@ function approvalPop(){
 			</colgroup>
 			<thead>
 				<tr>
-					<th colspan="3">결재 정보</th>
-				</tr>
-				<tr>
 					<th style="width: 200px;">결재순서</th>
-					<th style="width: 200px;">부서</th>
-					<th style="width: *%;">성명</th>
+					<th style="width: 200px;">결재구분</th>
+					<th style="width: *%;">결재자</th>
 				</tr>
 			</thead>
 			<tbody id="lineRow3">	
 				<tr>
-					<td colspan="3">결재정보가 없습니다.</td>
+					<td colspan="3">결재 정보가 없습니다.</td>
 				</tr>		
 			</tbody>
 		</table>

@@ -11,12 +11,33 @@
 <link href="/css/mes/login.css" rel="stylesheet" type="text/css" />  
 <link rel="stylesheet" type="text/css" href='/css/mes/pretendard.css'>
 <script src="/js/jquery/jquery-3.7.1.min.js"></script>
-
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 <title>로그인</title>
 </head>
 
 
 <script type="text/javascript">
+
+function modal1(message) {
+	new jBox('Modal', {
+	    height: 200,
+	    title: message,
+	    blockScrollAdjust: ['header'],
+	    content:'',
+	    overlay: false,   
+	    addClass: 'no-content-modal',
+	    position: {
+	        x: 'center',
+	        y: 'center'
+	      },
+	      offset: {
+	        y: -130
+	      }
+	  }).open();
+  }
+
+
 $(document).ready(function(){  
 	window.addEventListener("beforeunload", function (event) {
 		sessionStorage.setItem("num", Number(sessionStorage.getItem("num"))+ 1 );
@@ -28,20 +49,18 @@ $(document).ready(function(){
 	    history.go(1);
 	};
 	
-	
-	
 	if("${confirm}" == "O" && sessionStorage.getItem("num") == "1"){
 		var str = "";
 		if(Number("${count}") == 100){
-			str = "아이디 또는 비밀번호가 잘못되었습니다.";	
+			str = "<p>아이디 또는 비밀번호가 잘못되었습니다.</p><p>5회 틀리면 계정이 잠금됩니다.</p>";	
 		}else{
 			if(Number("${count}") >= 5){
-				str = "로그인 실패로 계정이 잠금 상태 입니다.\n시스템 관리자에게 잠금 해제를 요청하세요.";
+				str = "<p>로그인 실패로 계정이 잠금 상태 입니다.</p><p>관리자에게 잠금 해제를 요청하세요.</p>";
 			}else{
-				str = "${count}회 로그인 실패했습니다.\n5회 틀리면 계정 잠금됩니다.";
+				str = "<p>아이디 또는 비밀번호가 잘못되었습니다.</p><p>5회 틀리면 계정이 잠금됩니다.</p>";
 			}
 		}
-		alert(str);
+		modal1(str);
 	}
 });
 
@@ -59,14 +78,14 @@ function sendLogin(){
 	
 	  var inputElement = document.getElementById('kStaffId');
 	    if (!inputElement.value.trim()) { // 빈값 또는 공백 체크
-	        alert("아이디를 입력해주세요.");
+	        modal1("아이디를 입력하세요.");
 	        inputElement.focus(); // 입력창으로 포커스 이동
 	        return false;
 	    }
 	    
 	    var passwordElement = document.getElementById('password');
 	    if (!passwordElement.value.trim()) { // 빈값 또는 공백 체크
-	        alert("비밀번호를 입력해주세요.");
+	    	modal1("비밀번호를 입력하세요.");
 	        passwordElement.focus(); // 입력창으로 포커스 이동
 	        return false;
 	    }
@@ -84,7 +103,24 @@ function fn_keyDown(){
 }
 	
 </script>
-     
+<style>
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
+
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	}
+	.jBox-Modal {
+	  background: #4869fb;
+	  border-radius: 8px;
+   	  overflow: hidden;
+	}
+</style>
 
 <body class="login_type_a"><!--  login_type_b 클래스 부여시 b타입 -->  
 	<div class="login_wrap">

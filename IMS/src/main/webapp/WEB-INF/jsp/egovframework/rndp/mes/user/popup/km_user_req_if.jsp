@@ -7,18 +7,60 @@
 
 <link href="/css/mes/common.css" rel="stylesheet"	type="text/css" />
 <link href="/css/mes/popup.css" rel="stylesheet"	type="text/css" />
-
 <script src="/js/egovframework/com/cmm/jquery-1.4.2.min.js" type="text/javascript"></script>
+<script src="/js/jquery-3.6.0.min.js"></script>
 <script src="/js/km_staff_req.js"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 <script type="text/javascript">
+function modal1(message) {
+	new jBox('Modal', {
+	    height: 200,
+	    title: message,
+	    blockScrollAdjust: ['header'],
+	    content:'',
+	    overlay: false,   
+	    addClass: 'no-content-modal',
+	    position: {
+	        x: 'center',
+	        y: 'top'
+	      },
+	      offset: {
+	        y: 65
+	      }
+	  }).open();
+  }
+  
+function modal3(message, onConfirm) {
+	new jBox('Confirm', {
+		content: message,
+	    cancelButton: '아니요',
+	    confirmButton: '네',
+	    blockScrollAdjust: ['header'],
+	    confirm: onConfirm
+	  }).open();
+  }
+
+function notice(message) {
+	new jBox('Notice', {
+		content: message,
+		color: 'green',
+	      offset: {
+	        y: 62
+	      },
+	      autoClose: 2500,
+	      addClass: 'complite-notice'
+		});
+ }  
+
+
 var idCheck = "F";
 function checmesUserId() {
 	var mesUserId = $.trim(document.getElementById("mesUserId").value);
 	document.subfrm.mesUserId.value = mesUserId;
 	if (mesUserId == "") {		/* 아이디 널값 체크 */
-		alert("아이디를 입력하세요.");
+		modal1("아이디를 입력하세요.");
 		document.writeform.mesUserId.focus();
 	} else {
 		$.ajax({			/* 아이디 중복체크 */
@@ -29,9 +71,9 @@ function checmesUserId() {
 			success : function(msg) { //응답이 성공 상태 코드를 반환하면 호출
 				var resultFlag = msg.result.resultFlag;
 				if (resultFlag == "T") {
-					alert("사용 가능한 아이디 입니다.");
+					notice("사용 가능한 아이디 입니다.");
 				} else {
-					alert("중복된 아이디입니다.");
+					modal1("중복된 아이디입니다.");
 				}
 				idCheck = resultFlag;
 			},
@@ -53,43 +95,43 @@ function onlyNumber() {		/* 문자입력 제한 */
 
 function insert_go() {		/* 전제적인 입력창 널값 체크 */
 	with (document.writeform) {
-		if (kSectorKey.value == "") {
+		/*	if (kSectorKey.value == "") {
 			alert("사업부문을 선택하세요.");
 			kSectorKey.focus();
 			return;
-		}
+		} */
 		if (kClassKey.value == "") {
-			alert("직급을 선택하세요.");
+			modal1("직급을 선택하세요.");
 			kClassKey.focus();
 			return;
 		}
 		if (kPositionKey.value == "") {
-			alert("부서를 선택하세요.");
+			modal1("부서를 선택하세요.");
 			kPositionKey.focus();
 			return;
 		}
 		if (mesUserId.value == "") {
-			alert("아이디를 입력하세요.");
+			modal1("아이디를 입력하세요.");
 			mesUserId.focus();
 			return;
 		}
 		if (idCheck == "F") {
-			alert("아이디를 확인 하세요. 중복된 아이디는 사용 할 수 없습니다.");
+			modal1("아이디를 확인 하세요. 중복된 아이디는 사용할 수 없습니다.");
 			mesUserId.focus();
 			return;
 		}
 		if (mesUserName.value == "") {
-			alert("이름을 입력하세요.");
+			modal1("이름을 입력하세요.");
 			mesUserName.focus();
 			return;
 		}
 		if (mesUserPassword1.value == "") {
-			alert("비밀번호를 입력하세요.");
+			modal1("비밀번호를 입력하세요.");
 			mesUserPassword1.focus();
 			return;
 		}
 		if (mesUserPassword1.value != mesUserPassword2.value) {
-			alert("비밀번호를 맞게 입력하세요.");
+			modal1("비밀번호가 일치하지 않습니다.");
 			mesUserPassword2.focus();
 			return;
 		}
@@ -99,20 +141,20 @@ function insert_go() {		/* 전제적인 입력창 널값 체크 */
 		}
 		if (idCheck == 'F') {
 			alert(resultFlag);
-			alert("아이디를 확인 하세요. 중복된 아이디는 사용 할 수 없습니다.");
+			modal1("아이디를 확인 하세요. 중복된 아이디는 사용할 수 없습니다.");
 			mesUserId.focus();
 			return;
 		}
-		if (confirm("등록 하시겠습니까?")){		/* 등록여부 최종확인 */
+		modal3("등록하시겠습니까?", function () {
 			submit();
-		}
+		});
 	}
 }
 function insert_close() {		/* 등록 후 팝업창 닫기 */
 	var aa = "${closeValue}";
 	if (aa == '1') {
-		alert("신청이 등록되었습니다.");
-		window.close();
+		notice("신청이 완료되었습니다.");
+	//	window.close();
 	}
 }
 function nextclose() {		/* 아이디 중복 체크 후 아이디를 변경하였을경우 다시 기본 값 셋팅 */
@@ -162,11 +204,11 @@ function sample6_execDaumPostcode() {
 }
 function checkPassword(password,id){	
     if(!/^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{9,25}$/.test(password)){            
-        alert('숫자+영문자+특수문자 조합으로 9자리 이상 사용해야 합니다.');
+    	modal1("비밀번호는 영문, 숫자, 특수문자를 조합하여 9자리 이상이어야 합니다.");
         $('#password').val('').focus();
         return false;
     }    
-    var checkNumber = password.search(/[0-9]/g);
+ /*   var checkNumber = password.search(/[0-9]/g);
     var checkEnglish = password.search(/[a-z]/ig);
     if(checkNumber <0 || checkEnglish <0){
         alert("숫자와 영문자를 혼용하여야 합니다.");
@@ -178,7 +220,7 @@ function checkPassword(password,id){
         $('#password').val('').focus();
         return false;
     }
-    return true;
+    return true; */
 }
 function passwordResultCheck(){
 	var pw = $("#mesUserPassword1").val();
@@ -211,7 +253,24 @@ function samePassword(){
 
 </script>
 </head>
+<style>
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
 
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	}
+	.jBox-Modal {
+	  background: #4869fb;
+	  border-radius: 8px;
+   	  overflow: hidden;
+	}
+</style>
 <body onLoad="javascript:insert_close(); ">
 	<!-- document.writeform.id.focus(); -->
 <form name="writeform" method="post" action="/popup/checmesUserId.do" class="popup_wrap">
