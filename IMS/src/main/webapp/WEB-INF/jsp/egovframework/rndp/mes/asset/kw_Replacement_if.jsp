@@ -100,6 +100,11 @@ function setToolTip(){
 	
 	function insert_go(){
 		
+		if(document.getElementById("eReplacedBy").value == ""){
+			modal1("교체확인자를 입력하세요.", "#eReplacedBy");
+			return false;
+		}
+		
 		
 		  var eAssetKeyArr = document.getElementsByName("eAssetKey").length;
 		    

@@ -439,13 +439,14 @@ function handleOPassClick() {
     	 $("#oSignPass").val("Y");
     		var elements = document.getElementsByName("sSignStaffKey");
 	        if (elements.length > 0) {
-	        	modal3("선택한 결재라인을 삭제하고 결재 제외 하시겠습니까?", function () {
+	        	$('#lineRow3').empty();
+	        /* 	modal3("선택한 결재라인을 삭제하고 결재 제외 하시겠습니까?", function () {
 	        		 $('#lineRow3').empty();
 	    		},  function () {
 	    			$("#oPass").prop('checked', false);
 	            	 $("#oSignPass").val("N");
 	                return; 
-	    		});
+	    		}); */
 	        	
 //	            if (confirm("선택한 결재자 정보를 삭제하고 \n결재 제외처리 하시겠습니까?")) {
 //	                $('#lineRow3').empty();
