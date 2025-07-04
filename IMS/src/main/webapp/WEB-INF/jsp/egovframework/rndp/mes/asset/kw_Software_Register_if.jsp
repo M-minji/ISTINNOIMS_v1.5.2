@@ -26,11 +26,13 @@ function modal1(message, focusSelector) {
 	        y: 65
 	      },
 	        onCloseComplete: function () {
-	            window.scrollTo(0, lastScrollY);
-	            if (focusSelector) {
+	        	if (focusSelector) {
+	            	window.scrollTo(0, 0);
 	                setTimeout(() => {
 	                    document.querySelector(focusSelector)?.focus();
 	                }, 10);
+	            } else{
+	            	window.scrollTo(0, lastScrollY);
 	            }
 	        }
 	  }).open();
@@ -224,7 +226,7 @@ function setToolTip(){
 					if(i+1 > 1) {
 						text = (i+1)+"번째 "
 					}
-					modal1(text + "수량을 입력하세요.", "#eeLicenseQuantity_" + i);
+					modal1(text + "수량을 입력하세요.", "#eLicenseQuantity_" + i);
 				//	document.getElementsByName("eLicenseQuantity")[i].focus;
 					return false;
 				}

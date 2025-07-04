@@ -38,11 +38,13 @@
 		        y: 65
 		      },
 		        onCloseComplete: function () {
-		            window.scrollTo(0, lastScrollY);
 		            if (focusSelector) {
+		            	window.scrollTo(0, 0);
 		                setTimeout(() => {
 		                    document.querySelector(focusSelector)?.focus();
 		                }, 10);
+		            } else{
+		            	window.scrollTo(0, lastScrollY);
 		            }
 		        }
 		  }).open();
@@ -101,12 +103,13 @@
 		    var eInspector = document.getElementById('eInspector').value;
 
 		    if (!inspectionType) {
-				modal1("점검구분을 선택하세요.", "#inspectionType");
+		    //	eInspectionType.focus();
+				modal1("점검구분을 선택하세요.", "#eInspectionType");
 		        return false;
 		    }
 
 		    if (!inspectionCycle) {
-				modal1("점검주기를 선택하세요.", "#inspectionCycle");
+				modal1("점검주기를 선택하세요.", "#eInspectionCycle");
 		        return false;
 		    }
 		    if (!eInspector) {

@@ -28,11 +28,13 @@ function modal1(message, focusSelector) {
 	        y: 65
 	      },
 	        onCloseComplete: function () {
-	            window.scrollTo(0, lastScrollY);
-	            if (focusSelector) {
+	        	if (focusSelector) {
+	            	window.scrollTo(0, 0);
 	                setTimeout(() => {
 	                    document.querySelector(focusSelector)?.focus();
 	                }, 10);
+	            } else{
+	            	window.scrollTo(0, lastScrollY);
 	            }
 	        }
 	  }).open();
