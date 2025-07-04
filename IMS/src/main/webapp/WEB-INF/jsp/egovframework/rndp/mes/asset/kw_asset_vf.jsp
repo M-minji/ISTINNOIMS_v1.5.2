@@ -10,12 +10,82 @@
 <script type="text/javascript" src="<c:url value='/js/html2canvas.js'/>"></script>
 <link rel="stylesheet" type="text/css" href="/js/jquery-ui-1.14.1/jquery-ui.min.css" />
 <script src="/js/jquery-ui-1.14.1/jquery-ui.min.js"></script>
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 <script type="text/javascript">
+function modal1(message, position) {
+	if(position == null || position == "") {
+		position = 65;
+	}
+	lastScrollY = window.scrollY;
+	window.scrollTo(0, 0);
+	new jBox('Modal', {
+	    height: 200,
+	    title: message,
+	    blockScrollAdjust: ['header'],
+	    content:'',
+	    overlay: false,   
+	    addClass: 'no-content-modal',
+	    position: {
+	        x: 'center',
+	        y: 'top'
+	      },
+	      offset: {
+	        y: position  //65
+	      },
+	        onCloseComplete: function () {
+	        	window.scrollTo(0, lastScrollY);
+	        }
+	  }).open();
+  }
+function modal3(message, onConfirm, onCancel) {
+	new jBox('Confirm', {
+		content: message,
+	    cancelButton: '아니요',
+	    confirmButton: '네',
+	    blockScrollAdjust: ['header'],
+	    confirm: onConfirm,
+	    cancel: onCancel
+	  }).open();
+  }
+function notice(message) {
+	new jBox('Notice', {
+		content: message,
+		color: 'green',
+	      offset: {
+	        y: 62
+	      },
+	      autoClose: 2500,
+	      addClass: 'complite-notice'
+		});
+  }
+window.addEventListener("DOMContentLoaded", function () {
+	const type = sessionStorage.getItem("actionType");
+	if (type) {     
+		let message;
+		switch (type) {
+	      case 'update':
+	        message = "수정이 완료되었습니다!";
+	        break;
+	      case 'sign':
+	        message = "승인되었습니다.";
+	        break;
+	      case 'reject':
+		        message = "반려되었습니다.";
+		        break;
+	      default:
+	        message = ""; 
+	    }
+		notice(message);
+	    sessionStorage.removeItem("actionType");
+  }
+});
 function delete_go(){
-	if(confirm("삭제하시겠습니까?")){
+	modal3("삭제하시겠습니까?", function () {
+		sessionStorage.setItem("actionType", "delete");
 		document.frm.action = "/mes/asset/kw_asset_d.do";
 		document.frm.submit();
-	}
+	});
 }
 function list_go(){
 	document.frm.action = "/mes/asset/kw_asset_lf.do";
@@ -168,7 +238,7 @@ function changeContent(value){
 		innerStr += "<textarea style='display:none' rows='5' cols='5' id='sSignContent' name='sSignContent'></textarea>";
 	} else if(value == "반려"){
 		innerStr += "<input type='text' id='sSignContent' name='sSignContent' value='' placeholder='반려 사유' style='width:500px' maxLength='50'/>";
-		innerStr += "<a class='form_btn bg ml5' onclick='sSignContentAdd();'>반려 사유 저장</a>";
+		innerStr += "<a class='form_btn bg ml5' onclick='sSignContentAdd();'>반려</a>";
 	}
 	document.getElementById("sSignContentSet").innerHTML = innerStr;
 }
@@ -178,6 +248,12 @@ function sSignContentAdd(){
 	var eAssetKey = $("#eAssetKey").val();
 	var kStaffKey = $("#kStaffKey").val();
 	if(sSignContent != ""){
+		
+	}else{
+		modal1("반려사유를 입력하세요.");
+		return;
+	}
+	modal3("반려하시겠습니까?", function () {
 		$.ajax({
 			type : "post"
 		,	url : "/mes/asset/kw_uploadSignRejectionReasonAjax.do"
@@ -191,16 +267,12 @@ function sSignContentAdd(){
 		,	async : false
 		,	cache : false
 		,	success : function(msg){
-			 alert("반려처리되었습니다.")
+				sessionStorage.setItem("actionType", "reject");
 				document.frm.action = "/mes/asset/kw_asset_vf.do";
 				document.frm.submit();
 			}
 		});
-	}else{
-		alert("반려사유를 입력하세요.");
-		$("#sSignContent").focus();
-		return;
-	}
+	});
 	
 }
 
@@ -215,8 +287,10 @@ function settingSign(){
 	
 	$("#save").on("click", function() {
 		if(signature.isEmpty()) {
-			alert("내용이 없습니다.");
-		} else {
+			modal1("사인을 해주세요.", 415);
+			return;
+		} 
+		modal3("승인하시겠습니까?", function () {
 			
 			//저장버튼시 부서, 날짜, 서명을 저장한다.
 			var data = signature.toDataURL("image/png");
@@ -244,12 +318,13 @@ function settingSign(){
 					saveObj.parentNode.innerHTML = innerStr;
 					
 					$('#modal-close').get(0).click();
+					sessionStorage.setItem("actionType", "sign");
 					document.frm.action = "/mes/asset/kw_asset_vf.do";
 					document.frm.submit();
 					
 				}
 			});
-		}
+		});
 	});
 	
 }
@@ -389,10 +464,24 @@ input[name="tab_item"] {
    border-left: 3px solid #22499d;
    border-right: 3px solid #22499d;
 }
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
+
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	}
+	
+	.jBox-Modal {
+	  background: #4869fb !important;
+	  border-radius: 8px !important;
+   	  overflow: hidden !important;
+	}    
 </style> 
-
-
-
 <form id="frm" name="frm" method="post" enctype="multipart/form-data">
 	<input  type="hidden" id="eAssetKey" name="eAssetKey" value="${assetInfo.eAssetKey}" />
 	<input type="hidden" name="searchWord" id="searchWord" value="${mesAssetVO.searchWord}">

@@ -30,22 +30,15 @@
 		        y: 65
 		      },
 		        onCloseComplete: function () {
-		            window.scrollTo(0, lastScrollY);
-		            if (focusSelector) {
+		        	if (focusSelector) {
+		            	window.scrollTo(0, 0);
 		                setTimeout(() => {
 		                    document.querySelector(focusSelector)?.focus();
 		                }, 10);
+		            } else{
+		            	window.scrollTo(0, lastScrollY);
 		            }
 		        }
-		  }).open();
-	  }
-	function modal3(message, onConfirm) {
-		new jBox('Confirm', {
-			content: message,
-		    cancelButton: '아니요',
-		    confirmButton: '네',
-		    blockScrollAdjust: ['header'],
-		    confirm: onConfirm
 		  }).open();
 	  }
 	function modal3(message, onConfirm, onCancel) {
@@ -1023,9 +1016,6 @@
 				<col />
 			</colgroup>
 			<thead>
-	<!-- 			<tr>
-					<th colspan="3">결재 정보</th>
-				</tr> 	 -->
 				<tr>
 					<th>결재순서</th>
 					<th>결재구분</th>

@@ -6,9 +6,81 @@
 <link rel="stylesheet" type="text/css" href="/js/jquery-ui-1.14.1/jquery-ui.min.css" />
 <script src="/js/jquery/jquery-3.7.1.min.js"></script>
 <script src="/js/jquery-ui-1.14.1/jquery-ui.min.js"></script>
-
+<link rel="stylesheet" href="/js/PretendardGOV-1.3.9/pretendard-gov-all.css">
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 <script type="text/javascript">
+function modal1(message, focusSelector) {
+	lastScrollY = window.scrollY;
+	new jBox('Modal', {
+	    height: 200,
+	    title: message,
+	    blockScrollAdjust: ['header'],
+	    content:'',
+	    overlay: false,   
+	    addClass: 'no-content-modal',
+	    position: {
+	        x: 'center',
+	        y: 'top'
+	      },
+	      offset: {
+	        y: 65
+	      },
+	        onCloseComplete: function () {
+	        	if (focusSelector) {
+	            	window.scrollTo(0, 0);
+	                setTimeout(() => {
+	                    document.querySelector(focusSelector)?.focus();
+	                }, 10);
+	            } else{
+	            	window.scrollTo(0, lastScrollY);
+	            }
+	        }
+	  }).open();
+  }
+function modal3(message, onConfirm, onCancel) {
+		new jBox('Confirm', {
+			content: message,
+		    cancelButton: '아니요',
+		    confirmButton: '네',
+		    blockScrollAdjust: ['header'],
+		    confirm: onConfirm,
+		    cancel: onCancel
+		  }).open();
+  }
+function setToolTip(){
+		var elements = document.getElementsByName("sSignStaffKey");
+		var checkbox = $('#oPass');
+		if (checkbox.prop('checked')) {
+		} else if(elements.length > 0){
+			$("#approvalWrap").addClass("hoverToolTip");
+				window.hoverTipBox = new jBox('Tooltip', {
+		    attach: '.hoverToolTip',
+		    theme: 'TooltipDark',
+		    animation: 'zoomOut',
+		    content: '선택된 결재선이 삭제됩니다.',
+		    adjustDistance: {
+		      top: 70,
+		      right: 5,
+		      bottom: 5,
+		      left: 5
+		    },
+		    zIndex: 90
+		  }); 
 
+		}
+		
+	}
+	function removeToolTip() {
+		if (window.hoverTipBox) {
+			$('.jBox-wrapper').remove();
+			$('.jBox-tooltip').remove();
+			
+			$('#approvalWrap').removeClass('hoverToolTip');
+
+			window.hoverTipBox = null;
+		}
+ }
 	$(document).ready(function(){
 		datepickerIdSet("eAssetDate");
 		datepickerIdSet("eEosDate");
@@ -104,7 +176,7 @@
 		        return ; // 숫자인 경우
 		    }
 		}
-		if(confirm("저장하시겠습니까?")){
+		modal3("등록하시겠습니까?", function() {
 			if($("#eAssetCost").val() == ""){
 				$("#eAssetCost").val(0);
 			}
@@ -126,9 +198,10 @@
 			$("#eAssetEtc").val(ConverttoHtml($("#eAssetEtc").val())); 
 			$("#eDeviceType").val(ConverttoHtml($("#eDeviceType").val())); 
 			
+			sessionStorage.setItem("actionType", "update");
 			document.writeForm.action = "/mes/asset/kw_asset_u.do";
 			document.writeForm.submit();
-		}
+		});
 			
 	}
 	function clearInput(inputId) {
@@ -262,9 +335,8 @@
 	
 	function eDownload(){
 		 var eIMGregId  = $('#eAssetImageId').val();
-		 if(confirm("이미지를 다운로드 하시겠습니까?")){
 				window.open("<c:url value='/cmm/fms/FileDown.do?atchFileId="+eIMGregId+"&fileSn=0'/>");
-			}
+			
 	}
 	
 	 function convertToUppercase(input) {
@@ -443,12 +515,8 @@
 			
 			 var checkbox = $('#oPass');
 		    if (checkbox.prop('checked')) {
-		    	if(confirm("결재 제외로 선택되었습니다.\n결재자를 선택하시겠습니까?")){
 		    		checkbox.prop('checked', false);
 		    		$("#oSignPass").val("N");
-		    	}else{
-		    		return;
-		    	}
 		    }
 			
 			
@@ -552,13 +620,14 @@
 				$(innerStr).appendTo("#lineRow3");		
 				
 				referIndex++;
+				setToolTip();
 			}
 			
 			function deleteGyeoljaeList(){
 				$('#lineRow3').empty();
 			}
 			
-			function handleOPassClick() {
+	/* 		function handleOPassClick() {
 				// 체크박스의 상태를 직접 변수에 저장
 			    var isChecked = $("#oPass").is(":checked");
 			    if(isChecked){
@@ -576,7 +645,7 @@
 			    } else {
 		            $("#oSignPass").val("N");
 			    }
-			}
+			} */
 			
 			 function eAssetSNumberCheck(ogj){
 		         var value = $(ogj).val();
@@ -907,34 +976,33 @@
 	
 	<div class="content_top nofirst with_btn">
 		<div class="content_tit flex">
-			<h2>승인권자</h2>
+			<h2>결재 정보</h2>
+			<div id="approvalWrap">
 			<label for="oPass" class="inp_chkbox">
-				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();"/>
+				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();" onchange="removeToolTip();"/>
 				<i></i>
 				결재 제외
 			</label>
+			</div>
 		</div>
 		<div class="btns">
-			 <button type="button" onclick="approvalPop()" class="form_btn md">승인권자 선택</button>
+			 <button type="button" onclick="approvalPop()" class="form_btn md">결재선 선택</button>
 		</div>
 	</div>
 	<div class="normal_table">
 		<table>
 			<colgroup>
-				<col style="width: 200px;"/>
-				<col style="width: 200px;"/>
+				<col style="width: 200px;" />
+				<col style="width: 200px;" />
 				<col />
 			</colgroup>
 			<thead>
-					<tr>
-						<th colspan="3">결재 정보</th>
-					</tr>
-					<tr>
-						<th style="width: 10%;">결재순서</th>
-						<th style="width: 10%;">결재구분</th>
-						<th style="width: *%;">결재자</th>
-					</tr>
-				</thead>
+				<tr>
+					<th>결재순서</th>
+					<th>결재구분</th>
+					<th>결재자</th>
+				</tr>
+			</thead>
 				<tbody id="lineRow3"> 
 					<c:forEach var="slist" items="${signList}" varStatus="j">
 							<tr>
@@ -960,7 +1028,7 @@
 						</c:forEach>
 					<c:if test="${empty signList}">
 						<tr>
-							<td colspan="3" style="text-align: center;">등록 정보가 없습니다.</td>
+							<td colspan="3" style="text-align: center;">결재 정보가 없습니다.</td>
 						</tr>
 					</c:if>
 				</tbody>

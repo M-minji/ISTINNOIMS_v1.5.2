@@ -7,10 +7,13 @@
 <link rel="stylesheet" type="text/css" href="/js/jquery-ui-1.14.1/jquery-ui.min.css" />
 <script src="/js/jquery/jquery-3.7.1.min.js"></script>
 <script src="/js/jquery-ui-1.14.1/jquery-ui.min.js"></script>
-
+<link rel="stylesheet" href="/js/PretendardGOV-1.3.9/pretendard-gov-all.css">
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 <script type="text/javascript">
 
-function modal1(message) {
+function modal1(message, focusSelector) {
+	lastScrollY = window.scrollY;
 	new jBox('Modal', {
 	    height: 200,
 	    title: message,
@@ -24,19 +27,20 @@ function modal1(message) {
 	      },
 	      offset: {
 	        y: 65
-	      }
+	      },
+	        onCloseComplete: function () {
+	        	if (focusSelector) {
+	            	window.scrollTo(0, 0);
+	                setTimeout(() => {
+	                    document.querySelector(focusSelector)?.focus();
+	                }, 10);
+	            } else{
+	            	window.scrollTo(0, lastScrollY);
+	            }
+	        }
 	  }).open();
   }
-function modal3(message, onConfirm) {
-	new jBox('Confirm', {
-		content: message,
-	    cancelButton: '아니요',
-	    confirmButton: '네',
-	    blockScrollAdjust: ['header'],
-	    confirm: onConfirm
-	  }).open();
-  }
-  function modal3(message, onConfirm, onCancel) {
+function modal3(message, onConfirm, onCancel) {
 		new jBox('Confirm', {
 			content: message,
 		    cancelButton: '아니요',
@@ -45,7 +49,40 @@ function modal3(message, onConfirm) {
 		    confirm: onConfirm,
 		    cancel: onCancel
 		  }).open();
-	  }
+  }
+function setToolTip(){
+		var elements = document.getElementsByName("sSignStaffKey");
+		var checkbox = $('#oPass');
+		if (checkbox.prop('checked')) {
+		} else if(elements.length > 0){
+			$("#approvalWrap").addClass("hoverToolTip");
+				window.hoverTipBox = new jBox('Tooltip', {
+		    attach: '.hoverToolTip',
+		    theme: 'TooltipDark',
+		    animation: 'zoomOut',
+		    content: '선택된 결재선이 삭제됩니다.',
+		    adjustDistance: {
+		      top: 70,
+		      right: 5,
+		      bottom: 5,
+		      left: 5
+		    },
+		    zIndex: 90
+		  }); 
+
+		}
+		
+	}
+	function removeToolTip() {
+		if (window.hoverTipBox) {
+			$('.jBox-wrapper').remove();
+			$('.jBox-tooltip').remove();
+			
+			$('#approvalWrap').removeClass('hoverToolTip');
+
+			window.hoverTipBox = null;
+		}
+ } 
 	$(document).ready(function(){	
 		datepickerSet("eCreationDate");
 		datepickerIdSet("eRequestDate");
@@ -266,9 +303,8 @@ function modal3(message, onConfirm) {
 		    document.body.removeChild(form);
 		}
 	  function eDownload(fileId,eFileName){
-			 if(confirm(eFileName+"을 다운로드 하시겠습니까?")){
 					window.open("<c:url value='/cmm/fms/FileDown.do?atchFileId="+fileId+"&fileSn=0'/>");
-				}
+				
 		}
 	
 	var fileIndex = 0;
@@ -348,37 +384,34 @@ function modal3(message, onConfirm) {
 	// 등록
 	function insert_go(){
 		if(chkIns()){
-			if(confirm("등록하시겠습니까?")){
+			modal3("등록하시겠습니까?", function() {
 				$("#mloader").show();
 				$("#eActualWorker").val($("<div>").text($("#eActualWorker").val()).html());
+				sessionStorage.setItem("actionType", "update");
 				document.frm.action = "/mes/issue/kw_issue_u.do";
 				document.frm.submit();
-			}
+			});
 		}
 	}
 	
 	// validation
 	function chkIns(){
 		if($("#eIssueTypeName").val() == ""){
-			alert("상세구분을 선택하세요.");
-			$("#eIssueTypeName").focus();
+			modal1("상세구분을 선택하세요.", "#eIssueTypeName")
 			return false;
 		}
 		
 		if($("#eAssetType").val() == ""){
-			alert("자산유형을 선택하세요.");
-			$("#eAssetType").focus();
+			modal1("자산유형을 선택하세요.", "#eAssetType")
 			return false;
 		}
 		
 		if($("#eProcessingTypeName").val() == ""){
-			alert("처리유형을 선택하세요.");
-			$("#eProcessingTypeName").focus();
+			modal1("처리유형을 선택하세요.", "#eProcessingTypeName")
 			return false;
 		}
 		if($("#eRequester").val() == ""){
-			alert("요청자를 선택하세요.");
-			$("#eRequester").focus();
+			modal1("요청자를 입력하세요.", "#eRequester")
 			return false;
 		}
 // 		if($("#eRequester").val() == ""){
@@ -391,8 +424,11 @@ function modal3(message, onConfirm) {
 			for(var j=0; j < eRowWorkerArr ; j++){
 				var eRowWorker = document.getElementsByName("eRowWorker")[j].value;
 				if (eRowWorker.trim() == '') {
-					alert((j+1)+"번째 처리자명을 입력하세요.");
-					document.getElementsByName("eRowWorker")[j].focus;
+					var text = "";
+					if(j+1 > 1) {
+						text = (j+1) + "번째 ";
+					}
+					modal1(text + "처리자명을 입력하세요.", "#eRowWorker" + j)
 					return false;
 				}
 			}
@@ -417,13 +453,13 @@ function modal3(message, onConfirm) {
 				
 			}
 		}else{
-			alert("처리자 정보가 없습니다.");
+			modal1("등록할 처리자가 없습니다.");
 			return false;
 		}
 		
 		if($("#oSignPass").val() != 'Y'){
 			if(document.getElementsByName("sSignStaffKey").length == 0){
-				alert("승인권자를 선택해주세요");
+				modal1("결재자를 선택하세요.");
 				return false;
 				}
 			}		
@@ -599,12 +635,9 @@ function modal3(message, onConfirm) {
 		
 		 var checkbox = $('#oPass');
 	    if (checkbox.prop('checked')) {
-	    	if(confirm("결재 제외로 선택되었습니다.\n결재자를 선택하시겠습니까?")){
 	    		checkbox.prop('checked', false);
 	    		$("#oSignPass").val("N");
-	    	}else{
-	    		return;
-	    	}
+	    	
 	    }
 		
 		
@@ -702,6 +735,7 @@ function modal3(message, onConfirm) {
 		$(innerStr).appendTo("#lineRow3");		
 		
 		referIndex++;
+		setToolTip();
 	}
 	
 	function deleteGyeoljaeList(){
@@ -781,9 +815,7 @@ function modal3(message, onConfirm) {
 	  background: #4869fb !important;
 	  border-radius: 8px !important;
    	  overflow: hidden !important;
-   	  
-}    
-
+	}
 </style>
 <form id="frm" name="frm" method="post" enctype="multipart/form-data" action="/mes/issue/kw_issue_u.do"> 
  	<input type="hidden" id="eIssueStaffKey" name="eIssueStaffKey" value="${staffVo.kStaffKey}"/>
@@ -1078,15 +1110,17 @@ function modal3(message, onConfirm) {
 	</div>
 	<div class="content_top nofirst with_btn">
 		<div class="content_tit flex">
-			<h2>승인권자</h2>
+			<h2>결재 정보</h2>
+			<div id="approvalWrap">
 			<label for="oPass" class="inp_chkbox">
 				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();"/>
 				<i></i>
 				결재 제외
 			</label>
+			</div>
 		</div>
 		<div class="btns">
-			 <button type="button" onclick="approvalPop()" class="form_btn md">승인권자 선택</button>
+			 <button type="button" onclick="approvalPop()" class="form_btn md">결재선 선택</button>
 		</div>
 	</div>			
 	<div class="normal_table">
@@ -1097,9 +1131,6 @@ function modal3(message, onConfirm) {
 				<col />
 			</colgroup>
 			<thead>
-				<tr>
-					<th colspan="3">결재 정보</th>
-				</tr>
 				<tr>
 					<th>결재순서</th>
 					<th>결재구분</th>
@@ -1132,7 +1163,7 @@ function modal3(message, onConfirm) {
 				</c:forEach>
 				<c:if test="${empty signList}">
 					<tr>
-						<td colspan="3" style="text-align: center;">등록 정보가 없습니다.</td>
+						<td colspan="3" style="text-align: center;">결재 정보가 없습니다.</td>
 					</tr>
 				</c:if>
 			</tbody>

@@ -2,9 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://egovframework.gov/ctl/ui" prefix="ui" %>
-<script src="/js/PretendardGOV-1.3.9/web/static/pretendard-gov.css"></script>
-<script src="/js/PretendardGOV-1.3.9/web/static/pretendard-gov-subset.css"></script>
-<script src="/js/PretendardGOV-1.3.9/web/variable/pretendardvariable-gov.css"></script>
+
 <link rel="stylesheet" type="text/css" href="/js/jquery-ui-1.14.1/jquery-ui.min.css" />
 <script src="/js/jquery/jquery-3.7.1.min.js"></script>
 <script src="/js/jquery-ui-1.14.1/jquery-ui.min.js"></script>
@@ -21,14 +19,39 @@
 <link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
 <script src="/js/jBox/jBox.all.min.js"></script>
 <script type="text/javascript">
-
-function modal3(message, onConfirm) {
+function modal1(message, position) {
+	if(position == null || position == "") {
+		position = 65;
+	}
+	lastScrollY = window.scrollY;
+	window.scrollTo(0, 0);
+	new jBox('Modal', {
+	    height: 200,
+	    title: message,
+	    blockScrollAdjust: ['header'],
+	    content:'',
+	    overlay: false,   
+	    addClass: 'no-content-modal',
+	    position: {
+	        x: 'center',
+	        y: 'top'
+	      },
+	      offset: {
+	        y: position  //65
+	      },
+	        onCloseComplete: function () {
+	        	window.scrollTo(0, lastScrollY);
+	        }
+	  }).open();
+  }
+function modal3(message, onConfirm, onCancel) {
 	new jBox('Confirm', {
 		content: message,
 	    cancelButton: '아니요',
 	    confirmButton: '네',
 	    blockScrollAdjust: ['header'],
-	    confirm: onConfirm
+	    confirm: onConfirm,
+	    cancel: onCancel
 	  }).open();
   }
 function notice(message) {
@@ -45,7 +68,21 @@ function notice(message) {
 window.addEventListener("DOMContentLoaded", function () {
 	const type = sessionStorage.getItem("actionType");
 	if (type) {     
-		notice("수정이 완료되었습니다!");
+		let message;
+		switch (type) {
+	      case 'update':
+	        message = "수정이 완료되었습니다!";
+	        break;
+	      case 'sign':
+	        message = "승인되었습니다.";
+	        break;
+	      case 'reject':
+		        message = "반려되었습니다.";
+		        break;
+	      default:
+	        message = ""; 
+	    }
+		notice(message);
 	    sessionStorage.removeItem("actionType");
   }
 });
@@ -100,6 +137,8 @@ window.addEventListener("DOMContentLoaded", function () {
 			 $link.attr('onclick', 'processUpdate();'); // 새로운 함수로 변경
              $link.text('처리정보 저장'); // 텍스트 변경
              
+             eActualDetails.focus();
+             
 		}
 		// 처리내역 등록 
 		
@@ -128,9 +167,9 @@ window.addEventListener("DOMContentLoaded", function () {
 	 
 	// 파일다운
 	function fn_egov_downFile(atchFileId, fileSn){
-		if(confirm("파일을 다운로드 하시겠습니까?")){
+	//	if(confirm("파일을 다운로드 하시겠습니까?")){
 			window.open("<c:url value='/cmm/fms/FileDown.do?atchFileId="+atchFileId+"&fileSn="+fileSn+"'/>");
-		}
+	//	}
 	}
 	
 	// 목록
@@ -169,9 +208,6 @@ window.addEventListener("DOMContentLoaded", function () {
 	 
 	}
 	
-	
-  
-
 	function printPop(setKey){
 		var url = "/mes/proreq/popup/kw_proreq_vf_popup.do";
 		url += "?eProreqKey="+setKey;
@@ -191,11 +227,11 @@ window.addEventListener("DOMContentLoaded", function () {
 	
 	function setApproval(){
 		if(document.getElementById("sSignContent") == null){
-			alert("승인 후 싸인이 필요합니다");
+			modal1("승인이 필요합니다");
 			return false;
 		}
 		if(document.getElementById("sSignContent").value == ""){
-			alert("반려사유가 입력되지 않았습니다 ");
+			modal1("반려사유가 입력되지 않았습니다 ");
 			document.getElementById("sSignContent").focus();
 			return false;
 		}
@@ -336,7 +372,7 @@ window.addEventListener("DOMContentLoaded", function () {
 			innerStr += "<textarea style='display:none' rows='5' cols='5' id='sSignContent' name='sSignContent'></textarea>";
 		} else if(value == "반려"){
 			innerStr += "<input type='text' id='sSignContent' name='sSignContent' value='' placeholder='반려 사유' style='width:500px' maxLength='50'/>";
-			innerStr += "<a class='form_btn bg ml5' onclick='sSignContentAdd();'>반려 사유 저장</a>";
+			innerStr += "<a class='form_btn bg ml5' onclick='sSignContentAdd();'>반려</a>";
 		}
 		document.getElementById("sSignContentSet").innerHTML = innerStr;
 	}
@@ -346,7 +382,7 @@ window.addEventListener("DOMContentLoaded", function () {
 		var sSignTableKey = $("#eIssueKey").val();
 		var kStaffKey = $("#kStaffKey").val();
 		if(sSignContent != ""){
-			$.ajax({
+			/* $.ajax({
 				type : "post"
 			,	url : "/mes/issue/kw_uploadSignIssueReasonAjax.do"
 			,	data : {
@@ -364,12 +400,36 @@ window.addEventListener("DOMContentLoaded", function () {
 					 document.frm.action = "/mes/issue/kw_issue_vf.do";
 					document.frm.submit();
 				}
-			});
+			}); */
 		}else{
-			alert("반려사유를 입력하세요.");
-			$("#sSignContent").focus();
+			modal1("반려사유를 입력하세요.");
+		//	$("#sSignContent").focus();
 			return;
 		}
+		modal3("반려하시겠습니까?", function () {
+			$.ajax({
+				type : "post"
+			,	url : "/mes/issue/kw_uploadSignIssueReasonAjax.do"
+			,	data : {
+					"sSignTableKey"		: sSignTableKey
+				,	"sSignTableName"	: "I_ISSUE"
+				,	"sSignStaffKey"		: kStaffKey
+				,	"sSignDecison"		: "반려"
+				,	"sSignContent"		: sSignContent	
+				}
+			,	dataType : "json"
+			,	async : false
+			,	cache : false
+			,	success : function(msg){
+				sessionStorage.setItem("actionType", "reject");
+					 document.frm.action = "/mes/issue/kw_issue_vf.do";
+					document.frm.submit();
+				}
+			});
+		}, function () {
+			return;
+		});
+		
 		
 	}
 
@@ -384,8 +444,10 @@ window.addEventListener("DOMContentLoaded", function () {
 		
 		$("#save").on("click", function() {
 			if(signature.isEmpty()) {
-				alert("내용이 없습니다.");
-			} else {
+				modal1("사인을 해주세요.", 415);
+				return;
+			} 
+			modal3("승인하시겠습니까?", function () {
 				
 				//저장버튼시 부서, 날짜, 서명을 저장한다.
 				var data = signature.toDataURL("image/png");
@@ -412,12 +474,13 @@ window.addEventListener("DOMContentLoaded", function () {
 						saveObj.parentNode.innerHTML = innerStr;
 						
 						$('#modal-close').get(0).click();
+						sessionStorage.setItem("actionType", "sign");
 						document.frm.action = "/mes/issue/kw_issue_vf.do";
 						document.frm.submit();
 						
 					}
 				});
-			}
+			});
 		});
 		
 	}
@@ -467,9 +530,9 @@ window.addEventListener("DOMContentLoaded", function () {
 
 	}
 	function eDownload(fileId,eFileName){
-		 if(confirm(eFileName+"을 다운로드 하시겠습니까?")){
+	//	 if(confirm(eFileName+"을 다운로드 하시겠습니까?")){
 				window.open("<c:url value='/cmm/fms/FileDown.do?atchFileId="+fileId+"&fileSn=0'/>");
-			}
+		//	}
 	}
 
 
@@ -499,12 +562,23 @@ window.addEventListener("DOMContentLoaded", function () {
 	}
 </script>
 <style>
-
-	.jBox-Notice.complite-notice .jBox-content {
-	  font-size: 16px; 
-	  font-family: 'Pretendard GOV', sans-serif;
-	  font-weight: 400; 
+	.no-content-modal .jBox-content {
+  		display: none; 
 	}
+
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	}
+	
+	.jBox-Modal {
+	  background: #4869fb !important;
+	  border-radius: 8px !important;
+   	  overflow: hidden !important;
+	}    
 </style>
 <form id="frm" name="frm" method="post" enctype="multipart/form-data">
 	<input type="hidden" id="pageIndex" name="pageIndex" value="${mesIssueVO.pageIndex}" />

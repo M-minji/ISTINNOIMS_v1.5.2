@@ -26,11 +26,13 @@ function modal1(message, focusSelector) {
 	        y: 65
 	      },
 	        onCloseComplete: function () {
-	            window.scrollTo(0, lastScrollY);
-	            if (focusSelector) {
+	        	if (focusSelector) {
+	            	window.scrollTo(0, 0);
 	                setTimeout(() => {
 	                    document.querySelector(focusSelector)?.focus();
 	                }, 10);
+	            } else{
+	            	window.scrollTo(0, lastScrollY);
 	            }
 	        }
 	  }).open();
@@ -101,6 +103,11 @@ function setToolTip(){
 	function insert_go(){
 		  var eAssetKeyArr = document.getElementsByName("eAssetTypeName").length;
 		 
+		  if($("#eEntryImporter").val() == ""){
+		    	modal1("반입확인자를 입력하세요.", "#eEntryImporter");
+		    	return;
+		    }
+		  
 		    // eAssetKey의 개수가 0이면 메시지를 추가
 		    if (eAssetKeyArr == 0) {
 		    	modal1("반입장비가 없습니다.");
@@ -116,27 +123,16 @@ function setToolTip(){
 							text = (i+1)+"번째 "
 						}
 		    	        if (eAssetTypeNameValue === '') {
-		    	        	modal1(text+"장비 유형을 선택하세요.");
+		    	        	modal1(text+"자산유형을 선택하세요.", "#eAssetType"+i);
 		    	            return;
 		    	        }
-
+		    	        
 		    	        if (eAssetNameValue === '') {
-		    	        	modal1(text+"자산명을 입력하세요.", "eAssetNameInputs_"+i);
-		    	        //    eAssetNameInputs[i].focus();
+		    	        	modal1(text+"자산명을 입력하세요.", "#eAssetName"+i);
 		    	            return;
 		    	        }
 				    }
 		    }
-		    eEntryImporter
-
-		    if($("#eEntryImporter").val() == ""){
-		    	modal1("반입확인자를 입력하세요.", "#eEntryImporter");
-		    	return;
-		    }
-		    
-		    
-		    
-		    
 		    
 		    
 				if($("#oSignPass").val() != 'Y'){

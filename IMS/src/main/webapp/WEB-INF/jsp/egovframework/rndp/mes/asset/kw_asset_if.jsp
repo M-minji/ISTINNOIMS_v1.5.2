@@ -28,11 +28,13 @@ function modal1(message, focusSelector) {
 	        y: 65
 	      },
 	        onCloseComplete: function () {
-	            window.scrollTo(0, lastScrollY);
-	            if (focusSelector) {
+	        	if (focusSelector) {
+	            	window.scrollTo(0, 0);
 	                setTimeout(() => {
 	                    document.querySelector(focusSelector)?.focus();
 	                }, 10);
+	            } else{
+	            	window.scrollTo(0, lastScrollY);
 	            }
 	        }
 	  }).open();
@@ -149,8 +151,13 @@ function setToolTip(){
 	 		});
 
      }
+	var eAssetSNumCheckB = "F"
 	 function eAssetSNumberCheck(ogj){
          var value = $(ogj).val();
+         if (!value) {
+      		// modal1("제조번호를 입력하세요.", "#eAssetSNumber");
+              return; // 빈값일 경우 함수 종료
+          }
 	         $.ajax({
 	 			type		: "post"
 	 		,	dataType	: "json"
@@ -164,16 +171,19 @@ function setToolTip(){
 	                 // 데이터가 있는 경우 -> 중복 제조번호
 					modal1("이미 등록된 제조번호입니다.", "#eAssetSNumber");
 	      //           $("#eAssetSNumber").val(""); // 필드 초기화
+	             }else {
+	            	 eAssetSNumCheckB = "T"
 	             }
 	 			}
 	 		});
 
      }
 	 
+	 var eAssetNumCheckB = "F"
 	 function eAssetNumberCheck(obb){
          var ttvalue = $(obb).val();
          if (!ttvalue) {
-     		modal1("자산번호를 입력하세요.", "#eAssetNumber");
+     	//	modal1("자산번호를 입력하세요.", "#eAssetNumber");
              return; // 빈값일 경우 함수 종료
          }
 	         $.ajax({
@@ -189,6 +199,8 @@ function setToolTip(){
 	                 // 데이터가 있는 경우 -> 중복 제조번호
 					modal1("이미 등록된 자산번호입니다.", "#eAssetNumber");
 	        //         $("#eAssetNumber").val(""); // 필드 초기화
+	             } else {
+	            	 eAssetNumCheckB = "T"
 	             }
 	 			}
 	 		});
@@ -236,6 +248,12 @@ function setToolTip(){
 	//		document.getElementById("eAssetMaker").focus();
 			return false;
 		}
+		
+		if(document.getElementById("eAssetModel").value == ""){
+			modal1("모델명을 입력하세요.", "#eAssetModel");
+	//		document.getElementById("eAssetModel").focus();
+			return false;
+		}
 	 
 		if(document.getElementById("eAssetSNumber").value == ""){
 			modal1("제조번호(S/N)를 입력하세요.", "#eAssetSNumber");
@@ -243,11 +261,18 @@ function setToolTip(){
 			return false;
 		}
 		
-		if(document.getElementById("eAssetModel").value == ""){
-			modal1("모델명을 입력하세요.", "#eAssetModel");
-	//		document.getElementById("eAssetModel").focus();
+		if(eAssetNumCheckB == "F"){
+			modal1("이미 등록된 자산번호입니다.", "#eAssetNumber");
 			return false;
 		}
+		
+		if(eAssetSNumCheckB == "F"){
+			modal1("이미 등록된 제조번호입니다.", "#eAssetSNumber");
+			return false;
+		}
+		
+		
+		
 		var eLicenseQuantityArr = document.getElementsByName("eLicenseQuantity");
 		if(eLicenseQuantityArr.length > 0){
 			for (var aa = 0; aa < eLicenseQuantityArr.length; aa++) {
@@ -257,7 +282,7 @@ function setToolTip(){
 					if(aa+1 > 1) {
 						text = (aa+1)+"번째 "
 					}
-					modal1(text + " 라이선스 사용 수량을 입력하세요.", "#eLicenseQuantityArr_" + aa);
+					modal1(text + " 라이선스 적용 수량을 입력하세요.", "#eLicenseQuantityArr_" + aa);
 				//	eLicenseQuantityArr[aa].focus();
 					return;
 			    }

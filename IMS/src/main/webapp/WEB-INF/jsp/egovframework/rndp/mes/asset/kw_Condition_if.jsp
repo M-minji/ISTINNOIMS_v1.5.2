@@ -26,11 +26,13 @@ function modal1(message, focusSelector) {
 	        y: 65
 	      },
 	        onCloseComplete: function () {
-	            window.scrollTo(0, lastScrollY);
-	            if (focusSelector) {
+	        	if (focusSelector) {
+	            	window.scrollTo(0, 0);
 	                setTimeout(() => {
 	                    document.querySelector(focusSelector)?.focus();
 	                }, 10);
+	            } else{
+	            	window.scrollTo(0, lastScrollY);
 	            }
 	        }
 	  }).open();
@@ -100,16 +102,18 @@ function setToolTip(){
 	function insert_go(){
 		  var eAssetKeyArr = document.getElementsByName("eAssetKey").length;
 		    
+		  if($("#eEntryStaff").val() == ""){
+		    	modal1("반출자를 입력하세요.", "#eEntryStaff");
+		    	return;
+		    }
+		  
 		    // eAssetKey의 개수가 0이면 메시지를 추가
 		    if (eAssetKeyArr == 0) {
 		    	modal1("반출장비가 없습니다.");
 		    	return;
 		    }
 		    
-		    if($("#eEntryStaff").val() == ""){
-		    	modal1("반출자를 입력하세요.", "#eEntryStaff");
-		    	return;
-		    }
+		    
 		    
 		if($("#oSignPass").val() != 'Y'){
 			if(document.getElementsByName("sSignStaffKey").length == 0){
