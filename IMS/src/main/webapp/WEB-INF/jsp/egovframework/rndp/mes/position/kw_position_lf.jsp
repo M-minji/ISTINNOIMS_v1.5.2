@@ -3,8 +3,20 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 	<script type="text/javascript">
+	function notice(message) {
+		new jBox('Notice', {
+			content: message,
+			color: 'green',
+		      offset: {
+		        y: 62
+		      },
+		      autoClose: 2500,
+		      addClass: 'complite-notice'
+			});
+	  }
 		function addRow(startingPosition, depth){
 			var index = document.getElementsByName("kPositionName").length;
 			console.log(startingPosition + " / " + $("#kPositionPath_"+startingPosition).val());
@@ -100,6 +112,11 @@
 
 		
 		function savePosition(index){
+			var positionName = $("#kPositionName_"+index).val();
+			if(positionName == null || positionName == "") {
+				modal1("부서명을 입력하세요.", "#kPositionName_"+index)
+				return;
+			}
 			 $.ajax({
 		     	url: '/mes/position/kw_savePositionAjax.do'
 		    ,	method: 'POST'
@@ -123,7 +140,7 @@
 					document.getElementById('positionName_'+index).innerHTML = $("#kPositionName_"+index).val();
 					
 					document.getElementById('positionPath_'+index).innerHTML = path;
-		        	alert("저장완료");
+		        	notice("저장되었습니다.");
 				}
 		     ,	error: function(xhr, status, error) {
 			      	// 에러 발생 시 처리
@@ -139,48 +156,47 @@
 			var deleteList = [];
 			
 			if(!$("#kPositionStaffName_"+index).val()){
-	    		
-				if(confirm("삭제하시겠습니까?\n삭제 시 복구가 불가능하고 하위 부서까지 삭제가 됩니다")){
-					 $.ajax({
-				     	url: '/mes/position/kw_deletePositionAjax.do'
-				    ,	method: 'POST'
-				    ,	dataType: 'JSON'
-				    ,	data : {
-				    	kPositionKey 	: key
-				    }
-				    ,	success: function(data) {
-				    	 document.frm.submit();
-			    	 	
-			        	// 성공적으로 응답을 받았을 때 처리는 무슨 그냥 새로고침 함 ㅅㅂ
-				    		
-				    		/* for(var i=0; i<document.getElementsByName("kPositionUpKey").length; i++){
-				    			if(document.getElementsByName("kPositionUpKey")[i].value == key){
-				    				deleteList.push(i);
-						    		for(var j=0; j<document.getElementsByName("kPositionUpKey").length; j++){
-						    			if(document.getElementsByName("kPositionUpKey")[j].value == document.getElementsByName("kPositionKeyB")[i].value){
-						    				deleteList.push(j);
-						    			}
-						    		}
-				    			}
-				    		}
-				    		
-				    		console.log(deleteList);
-				    		 
-				    		for(var i=deleteList.length-1; i>=0; i--){
-					    		document.getElementsByClassName('show')[deleteList[i]].remove();
-					    		document.getElementsByClassName('update')[deleteList[i]].remove();
-				    		}
-				    		document.getElementById('show_'+index).remove();
-				    		document.getElementById('update_'+index).remove(); */
-						}
-				     ,	error: function(xhr, status, error) {
-					      	// 에러 발생 시 처리
-					      	console.error('Error:', error);
-						}
-				    });
-				}
+	    		modal3("<p>삭제하시겠습니까?</p>삭제 시 복구가 불가능하고 하위 부서까지 삭제가 됩니다", function() {
+	    			 $.ajax({
+					     	url: '/mes/position/kw_deletePositionAjax.do'
+					    ,	method: 'POST'
+					    ,	dataType: 'JSON'
+					    ,	data : {
+					    	kPositionKey 	: key
+					    }
+					    ,	success: function(data) {
+					    	 document.frm.submit();
+				    	 	notice("삭제되었습니다.");
+				        	// 성공적으로 응답을 받았을 때 처리는 무슨 그냥 새로고침 함 ㅅㅂ
+					    		
+					    		/* for(var i=0; i<document.getElementsByName("kPositionUpKey").length; i++){
+					    			if(document.getElementsByName("kPositionUpKey")[i].value == key){
+					    				deleteList.push(i);
+							    		for(var j=0; j<document.getElementsByName("kPositionUpKey").length; j++){
+							    			if(document.getElementsByName("kPositionUpKey")[j].value == document.getElementsByName("kPositionKeyB")[i].value){
+							    				deleteList.push(j);
+							    			}
+							    		}
+					    			}
+					    		}
+					    		
+					    		console.log(deleteList);
+					    		 
+					    		for(var i=deleteList.length-1; i>=0; i--){
+						    		document.getElementsByClassName('show')[deleteList[i]].remove();
+						    		document.getElementsByClassName('update')[deleteList[i]].remove();
+					    		}
+					    		document.getElementById('show_'+index).remove();
+					    		document.getElementById('update_'+index).remove(); */
+							}
+					     ,	error: function(xhr, status, error) {
+						      	// 에러 발생 시 처리
+						      	console.error('Error:', error);
+							}
+					    });
+	    		});
 			}else{
-				alert("사용중인 부서입니다. 삭제할 수 없습니다.");
+				modal1("사용중인 부서입니다. 삭제할 수 없습니다.");
 				return false;
 			}	
 		}

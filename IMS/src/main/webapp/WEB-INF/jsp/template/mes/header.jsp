@@ -13,7 +13,34 @@
 <link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
 <script src="/js/jBox/jBox.all.min.js"></script>
 <script>
-
+function modal1(message, focusSelector) {
+	lastScrollY = window.scrollY;
+	new jBox('Modal', {
+	    height: 200,
+	    title: message,
+	    blockScrollAdjust: ['header'],
+	    content:'',
+	    overlay: false,   
+	    addClass: 'no-content-modal',
+	    position: {
+	        x: 'center',
+	        y: 'top'
+	      },
+	      offset: {
+	        y: 65
+	      },
+	        onCloseComplete: function () {
+	        	if (focusSelector) {
+	            	window.scrollTo(0, 0);
+	                setTimeout(() => {
+	                    document.querySelector(focusSelector)?.focus();
+	                }, 10);
+	            } else{
+	            	window.scrollTo(0, lastScrollY);
+	            }
+	        }
+	  }).open();
+  }
 function modal3(message, onConfirm, onCancel) {
 	new jBox('Confirm', {
 		content: message,
@@ -717,7 +744,28 @@ window.onload = () => {
 
 
 </script> 
-		
+	<style>
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
+
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	 	font-weight: 400;  
+	    font-family: 'Pretendard GOV', sans-serif;
+	}
+	
+	.jBox-Modal {
+	  background: #4869fb !important;
+	  border-radius: 8px !important;
+   	  overflow: hidden !important;
+   	  
+}    
+</style>	
 	
 
 

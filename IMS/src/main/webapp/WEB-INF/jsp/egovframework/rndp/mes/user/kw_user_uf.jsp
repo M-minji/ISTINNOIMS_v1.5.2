@@ -51,20 +51,25 @@ function sample6_execDaumPostcode() {
 
 function memberUp(){
 	if(chkIns()){
-		if(confirm("저장하시겠습니까?")){
+		if($("#mesUserName").val() == ""){
+			modal1("이름을 입력하세요.", "#mesUserName");
+			return false;
+		}
+		
+		modal3("저장하시겠습니까?", function(){
 			$('#mloader').show();
 			document.writeForm.action = "/mes/kw_user_u.do";
 			document.writeForm.submit();
-		}
+		});
 	}
 }
 
 function delete_go(){
-	if(confirm("삭제하시겠습니까?")){
+	modal3("사용자를 삭제하시겠습니까?", function(){
 		$('#mloader').show();
 		document.writeForm.action = "/mes/kw_user_d.do";
 		document.writeForm.submit();
-	}
+	});
 }
 function cancle(){
 	$('#mloader').show();
@@ -78,20 +83,17 @@ function chkIns(){
 
 function checkPassword(password){	
     if(!/^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{9,25}$/.test(password)){            
-        alert('숫자+영문자+특수문자 조합으로 9자리 이상 사용해야 합니다.');
-        $('#password').val('').focus();
+        modal1('비밀번호는 숫자+영문자+특수문자 조합으로 9자리 이상 사용해야 합니다.', "#password");
         return false;
     }    
     var checkNumber = password.search(/[0-9]/g);
     var checkEnglish = password.search(/[a-z]/ig);
     if(checkNumber <0 || checkEnglish <0){
-        alert("숫자와 영문자를 혼용하여야 합니다.");
-        $('#password').val('').focus();
+    	modal1("비밀번호는 숫자와 영문자를 혼용하여야 합니다.", "#password");
         return false;
     }
     if(/(\w)\1\1\1/.test(password)){
-        alert('같은 문자를 4번 이상 사용하실 수 없습니다.');
-        $('#password').val('').focus();
+    	modal1('비밀번호는 같은 문자를 4번 이상 사용하실 수 없습니다.', "#password");
         return false;
     }
         
@@ -109,20 +111,17 @@ function updatePwd_go(){
 	var chPassword2 = $('#chPassword2').val();
 		
 	if(mesMemberPassword == ""){
-		alert("현재 비밀번호를 입력하세요.");
-		$("#mesMemberPassword").focus();
+		modal1("현재 비밀번호를 입력하세요.", "#mesMemberPassword");
 		return false;
 	}
 	
 	if(chPassword == ""){
-		alert("변경 비밀번호를 입력하세요.");
-		$("#chPassword").focus();
+		modal1("변경 비밀번호를 입력하세요.", "#chPassword");
 		return false;
 	}
 	
 	if(chPassword2 == ""){
-		alert("비밀번호 확인을 입력하세요.");
-		$("#chPassword2").focus();
+		modal1("비밀번호 확인을 입력하세요.", "#chPassword2");
 		return false;
 	}
 	
@@ -131,8 +130,8 @@ function updatePwd_go(){
 	}
 	
  	if(chPassword != chPassword2){
-		alert("변경할 비밀번호 일치하지 않습니다. ");
-		$('#chPassword').focus();
+ 		modal1("변경할 비밀번호 일치하지 않습니다.");
+ 		$('#chPassword2').val("");
 		return false;
 	}else{
 
@@ -153,11 +152,11 @@ function updatePwd_go(){
 				
 				if(idx == 0){
 					//비밀번호 변경 오류
-					alert(message);
+					modal1(message);
 					$('#mesMemberPassword').focus();
 					return false;
 				}else{
-					alert(message);
+					modal1(message);
 					$("#mesMemberPassword").val("");
 					$("#chPassword").val("");
 					$("#chPassword2").val("");
@@ -200,10 +199,10 @@ function generatePassword(length) {
 function updateNewPwd_go(){
 	var mesUserKey = $('#mesUserKey').val();
 	var str = generatePassword(8);
-	if(confirm('비밀번호를 초기화 하시겠습니까? \n변경될 비밀번호는 '+str+' 입니다.\n')){
+	modal3('비밀번호를 초기화 하시겠습니까? \n변경될 비밀번호는 '+str+' 입니다.\n', function() {
 		navigator.clipboard.writeText(str)
         .then(() => {
-          alert("비밀번호가 복사되었습니다.");
+          	modal1("비밀번호가 복사되었습니다.");
           
 	          $.ajax({
 	  			type : "post",
@@ -217,7 +216,7 @@ function updateNewPwd_go(){
 	  			}
 	  		});
         });
-	}
+	});
 }
 
 //비밀번호 안정성
@@ -338,8 +337,8 @@ function autChange(obj){
 				<tr>
 					<th>I D</th>
 					<td>${mesUserInfo.mesUserId}</td>
-					<th>이 름</th>
-					<td><input type="text" name="mesUserName" maxLength="20" style="width:100%;" value="${mesUserInfo.mesUserName }" /></td>
+					<th><span style="color: red">* </span>이 름</th>
+					<td><input type="text" id="mesUserName" name="mesUserName" maxLength="20" style="width:100%;" value="${mesUserInfo.mesUserName }" /></td>
 				</tr>
 				<tr>
 					<th>비밀번호 변경</th>

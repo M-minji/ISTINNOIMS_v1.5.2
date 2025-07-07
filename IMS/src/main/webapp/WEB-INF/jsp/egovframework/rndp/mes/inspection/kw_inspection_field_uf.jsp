@@ -13,54 +13,50 @@ function updateField(){
 	    const eField5 = document.getElementById("eField5").value.trim();
 
 	    if (eFieldName === "") {
-	        alert("이름을 입력하세요.");
-	        document.getElementById("eFieldName").focus();
+	        modal1("이름을 입력하세요.", "#eFieldName");
 	        return false;
 	    }
 
 	    if (eField1 === "") {
-	        alert("모든 필드를 입력하세요.");
-	        document.getElementById("eField1").focus();
+	        modal1("모든 필드를 입력하세요.", "#eField1");
 	        return false;
 	    }
 
 	    if (eField2 === "") {
-	        alert("모든 필드를 입력하세요.");
-	        document.getElementById("eField2").focus();
+	        modal1("모든 필드를 입력하세요.", "#eField2");
 	        return false;
 	    }
 	    
 	    if (eField3 === "") {
-	        alert("모든 필드를 입력하세요.");
-	        document.getElementById("eField3").focus();
+	        modal1("모든 필드를 입력하세요.", "#eField3");
 	        return false;
 	    }
 	    
 	    if (eField4 === "") {
-	        alert("모든 필드를 입력하세요.");
-	        document.getElementById("eField4").focus();
+	        modal1("모든 필드를 입력하세요.", "#eField4");
 	        return false;
 	    }
 	    
 	    if (eField5 === "") {
-	        alert("모든 필드를 입력하세요.");
-	        document.getElementById("eField5").focus();
+	        modal1("모든 필드를 입력하세요.", "#eField5");
 	        return false;
 	    }
 	    
-
-	document.writeForm.action = "/mes/inspection/kw_inspection_field_u.do";
-	document.writeForm.submit();
+	    modal3("저장하시겠습니까?", function() {
+			$("#mloader").show();
+	    	document.writeForm.action = "/mes/inspection/kw_inspection_field_u.do";
+	    	document.writeForm.submit();
+		});
+	
 }
 
 function fieldDel() {
-	
-	$("#eFieldStatus").val("삭제");
-	if(confirm("해당 정보를 삭제하시겠습니까?")){
+	modal3("삭제하시겠습니까?", function() {
+		$("#eFieldStatus").val("삭제");
 		$("#mloader").show();
 		document.writeForm.action = "/mes/inspection/kw_inspection_field_u.do";
 		document.writeForm.submit();
-	}
+	});
 	
 }
 
