@@ -195,24 +195,23 @@ $(document).ready(function(){
 	// 저장
 	function update_go(){  
 		if(chkIns()){
-			modal3("등록하시겠습니까?", function() {
+			modal3("저장하시겠습니까?", function() {
 				$("#mloader").show();
 				sessionStorage.setItem("actionType", "update");
 				document.frm.action = "/mes/blueprint/kw_sr_u.do";
 				document.frm.submit();
-			};
+			});
 		}
 	}
 	function chkIns(){
 		if($("#eRequester").val() == ""){
-			alert("작성자 명을 입력하세요.");
-			$("#eRequester").focus();
+			modal1("작성자를 입력하세요.", "#eRequester");
 			return false;
 		}
 		
 		if($("#oSignPass").val() != 'Y'){
 			if(document.getElementsByName("sSignStaffKey").length == 0){
-				alert("승인권자를 선택해주세요");
+				modal1("결재자를 선택하세요.");
 				return false;
 				}
 			}
@@ -516,6 +515,27 @@ $(document).ready(function(){
 		$('#lineRow3').empty();
 	}
 </script>
+<style>
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
+
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	 	font-weight: 400;  
+	    font-family: 'Pretendard GOV', sans-serif;
+	}
+	
+	.jBox-Modal {
+	  background: #4869fb !important;
+	  border-radius: 8px !important;
+   	  overflow: hidden !important;
+	}
+</style>
 <form id="frm" name="frm" method="post" enctype="multipart/form-data" >
 	<input type="hidden" id="pageIndex" name="pageIndex" value="${mesBlueprintVO.pageIndex}" />
 	<input type="hidden" id="recordCountPerPage" name="recordCountPerPage" value="${mesBlueprintVO.recordCountPerPage}" />

@@ -81,6 +81,8 @@ function setToolTip(){
 			window.hoverTipBox = null;
 		}
  }
+	var firstCheckAssetN = "";
+	var firstCheckSN = "";
 	$(document).ready(function(){
 		datepickerIdSet("eAssetDate");
 		datepickerIdSet("eEosDate");
@@ -95,6 +97,8 @@ function setToolTip(){
 		eAssetStatusCheck();
 		maintanceSetting();
 		
+		firstCheckAssetN = document.getElementById("eAssetNumber").value;
+		firstCheckSN = 	document.getElementById("eAssetSNumber").value;
 		var sSignStatus  = $("#sSignStatus").val();
 		if(sSignStatus == "등록"  || sSignStatus == "반려" || sSignStatus == "승인"){
 			$("#oSignPass").val("N");
@@ -118,26 +122,50 @@ function setToolTip(){
 	
 	function update_go(){
 		if(document.getElementById("eAssetTypeName").value == ""){
-			alert("자산유형를 입력하세요.");
-			document.getElementById("eAssetType").focus();
+			modal1("자산유형을 선택하세요.", "#eAssetType");
+			return false;
+		}
+		
+		if(document.getElementById("eAssetNumber").value == ""){
+			modal1("자산번호를 입력하세요.", "#eAssetNumber");
+	//		document.getElementById("eAssetNumber").focus();
 			return false;
 		}
 
 		if(document.getElementById("eAssetName").value == ""){
-			alert("자산명을 입력하세요.");
-			document.getElementById("eAssetName").focus();
-			return false;
-		}
-	 
-		if(document.getElementById("eAssetSNumber").value == ""){
-			alert("제조번호(S/N)를 입력하세요.");
-			document.getElementById("eAssetSNumber").focus();
+			modal1("자산명을 입력하세요.", "#eAssetName");
 			return false;
 		}
 		
+		if(document.getElementById("eAssetMaker").value == ""){
+			modal1("제조사를 입력하세요.", "#eAssetMaker");
+			return false;
+		}
+	 
 		if(document.getElementById("eAssetModel").value == ""){
-			alert("모델명을 입력하세요.");
+			modal1("모델명을 입력하세요.", "#eAssetModel");
 			document.getElementById("eAssetModel").focus();
+			return false;
+		}
+		
+		if(document.getElementById("eAssetSNumber").value == ""){
+			modal1("제조번호를 입력하세요.", "#eAssetSNumber");
+			return false;
+		}		
+		
+		if(document.getElementById("eAssetSNumber").value == ""){
+			modal1("제조번호를 입력하세요.", "#eAssetSNumber");
+			return false;
+		}
+		
+
+		if(eAssetNumCheckB == "F"){
+			modal1("이미 등록된 자산번호입니다.", "#eAssetNumber");
+			return false;
+		}
+		
+		if(eAssetSNumCheckB == "F"){
+			modal1("이미 등록된 제조번호입니다.", "#eAssetSNumber");
 			return false;
 		}
 		
@@ -154,8 +182,11 @@ function setToolTip(){
 			for (var aa = 0; aa < eLicenseQuantityArr.length; aa++) {
 			 	var value = eLicenseQuantityArr[aa].value;
 				if (isValidLicenseQuantity(value)){
-					alert((aa+1)+"번째 라이선스의 수량을 입력하세요.");
-					eLicenseQuantityArr[aa].focus();
+					var text = "";
+					if(aa+1 > 1){
+						text = (aa+1) + "번째 "
+					}
+					modal1(text+"라이선스의 적용 수량을 입력하세요.", "#eLicenseQuantity_"+aa);
 					return;
 			    }
 			}
@@ -176,7 +207,13 @@ function setToolTip(){
 		        return ; // 숫자인 경우
 		    }
 		}
-		modal3("등록하시겠습니까?", function() {
+		if($("#oSignPass").val() != 'Y'){
+			if(document.getElementsByName("sSignStaffKey").length == 0){
+				modal1("결재자를 선택하세요.");
+				return false;
+				}
+			}
+		modal3("저장하시겠습니까?", function() {
 			if($("#eAssetCost").val() == ""){
 				$("#eAssetCost").val(0);
 			}
@@ -485,9 +522,10 @@ function setToolTip(){
 			innerStr += "		<td>"+obj.eRemarks;
 			innerStr += "		</td>";	
 			// 적용수량
-			innerStr += "		<td>";
-			innerStr +=	"			<input type='text' id='eLicenseQuantity_"+lineRowLicense_Index+"' name='eLicenseQuantity' value='' style='width:98%; text-align:left;' maxLength='4' onkeyup=\"this.value=this.value.replace(/[^0-9]/g,'')\"  />";
-			innerStr += "		</td>";	
+			innerStr += " <td>";
+			innerStr += "  <input type='text' id='eLicenseQuantity_"+lineRowLicense_Index+"' name='eLicenseQuantity' value='' style='width:98%; text-align:left;' maxLength='4' oninput=\"this.value=this.value.replace(/[^0-9]/g,'')\" />";
+			innerStr += " </td>";
+
 			 
 			innerStr += "	</tr>";
 			
@@ -646,49 +684,59 @@ function setToolTip(){
 		            $("#oSignPass").val("N");
 			    }
 			} */
-			
+			var eAssetSNumCheckB = "T"
 			 function eAssetSNumberCheck(ogj){
+				eAssetSNumCheckB = "F"
 		         var value = $(ogj).val();
+		         if (!value) {
+	                  return;
+	              }
 			         $.ajax({
 			 			type		: "post"
 			 		,	dataType	: "json"
 			 		,	url			: "/mes/asset/kw_asset_sNumber_check.do"
 			 		,	data		: {
-			 			eAssetSNumber : value,
-			 			eAssetKey :$("#eAssetKey").val()
+			 			eAssetSNumber : value
+			 		//	eAssetKey :$("#eAssetKey").val()
 			 			}
 			 		,	success		: function(msg){
 			 			var dataInfo  = msg.result.dataAdd;
-			 			 if (dataInfo) {
+			 			 if (dataInfo && firstCheckSN !== value) {
 			                 // 데이터가 있는 경우 -> 중복 제조번호
-			                 alert(value+"는 중복되는 제조번호입니다. 제조번호를 확인해 주십시오. ");
-			                 $("#eAssetSNumber").val(""); // 필드 초기화
+			                 modal1("이미 등록된 제조번호입니다.", "#eAssetSNumber");
+			             }else {
+			            	 eAssetSNumCheckB = "T"
 			             }
 			 			}
 			 		});
 
 		     }
-			 
+			var eAssetNumCheckB = "T"
 			 function eAssetNumberCheck(obb){
+				eAssetNumCheckB = "F"
 		         var value = $(obb).val();
+		         if (!value) {
+		                  return;
+		              }
 			         $.ajax({
 			 			type		: "post"
 			 		,	dataType	: "json"
 			 		,	url			: "/mes/asset/kw_eAssetNumberCheck.do"
 			 		,	data		: {
-			 			eAssetNumber : value,
-			 			eAssetKey :$("#eAssetKey").val()
+			 			eAssetSNumber : value
+			 		//	eAssetKey :$("#eAssetKey").val()
 			 			}
 			 		,	success		: function(msg){
 			 			var dataInfo  = msg.result.dataAdd;
-			 			 if (dataInfo) {
+			 			 if (dataInfo && firstCheckAssetN !== value) {
 			                 // 데이터가 있는 경우 -> 중복 제조번호
-			                 alert(value+"는 중복되는 자산번호입니다. 입력할 자산번호를 확인해 주십시오. ");
-			                 $("#eAssetNumber").val(""); // 필드 초기화
+			                 modal1("이미 등록된 자산번호입니다.", "#eAssetNumber");
+			                 
+			             }else {
+			            	 eAssetNumCheckB = "T"
 			             }
 			 			}
 			 		});
-
 		     }
 			 
 			 function delFile(){
@@ -710,7 +758,27 @@ function setToolTip(){
 			 
 			 
 </script>
+<style>
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
 
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	 	font-weight: 400;  
+	    font-family: 'Pretendard GOV', sans-serif;
+	}
+	
+	.jBox-Modal {
+	  background: #4869fb !important;
+	  border-radius: 8px !important;
+   	  overflow: hidden !important;
+	}
+</style>
 <form name="writeForm" id="writeForm" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="searchWord" id="searchWord" value="${mesAssetVO.searchWord}">
 	<input type="hidden" name="pageIndex" id="pageIndex" value="${mesAssetVO.pageIndex}" />

@@ -19,7 +19,8 @@
 <link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
 <script src="/js/jBox/jBox.all.min.js"></script>
 <script type="text/javascript">
-function modal1(message, position) {
+
+function modal1(message, focusSelector, position) {
 	if(position == null || position == "") {
 		position = 65;
 	}
@@ -37,10 +38,17 @@ function modal1(message, position) {
 	        y: 'top'
 	      },
 	      offset: {
-	        y: position  //65
+	    	  y: position
 	      },
 	        onCloseComplete: function () {
-	        	window.scrollTo(0, lastScrollY);
+	        	if (focusSelector) {
+	            	window.scrollTo(0, 0);
+	                setTimeout(() => {
+	                    document.querySelector(focusSelector)?.focus();
+	                }, 10);
+	            } else{
+	            	window.scrollTo(0, lastScrollY);
+	            }
 	        }
 	  }).open();
   }
@@ -158,11 +166,20 @@ window.addEventListener("DOMContentLoaded", function () {
 // 				$("#eActualWorker").focus();
 // 				return false;
 // 			}
+
+			if($("#eActualDetails").val() == "") {
+				modal1("처리정보를 입력하세요.", "#eActualDetails");
+				return;
+			}
 			
-			$("#eActualDetails").val($("<div>").text($("#eActualDetails").val()).html());
- 			$("#mloader").show();
- 			document.frm.action = "/mes/issue/kw_process_uf.do";
- 			document.frm.submit();
+			modal3("처리정보를 저장하시겠습니까?", function() {
+				$("#eActualDetails").val($("<div>").text($("#eActualDetails").val()).html());
+	 			$("#mloader").show();
+	 			document.frm.action = "/mes/issue/kw_process_uf.do";
+	 			document.frm.submit();
+			});
+			
+			
 		}
 	 
 	// 파일다운
@@ -444,7 +461,7 @@ window.addEventListener("DOMContentLoaded", function () {
 		
 		$("#save").on("click", function() {
 			if(signature.isEmpty()) {
-				modal1("사인을 해주세요.", 415);
+				modal1("사인을 해주세요.", "", 415);
 				return;
 			} 
 			modal3("승인하시겠습니까?", function () {

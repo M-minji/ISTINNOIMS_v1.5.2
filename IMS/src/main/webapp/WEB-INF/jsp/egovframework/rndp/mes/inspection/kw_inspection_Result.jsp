@@ -6,9 +6,30 @@
 <link rel="stylesheet" type="text/css" href="/js/jquery-ui-1.14.1/jquery-ui.min.css" />
 <script src="/js/jquery/jquery-3.7.1.min.js"></script>
 <script src="/js/jquery-ui-1.14.1/jquery-ui.min.js"></script>
-
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 <script type="text/javascript">
-
+function modal1(message) {
+	lastScrollY = window.scrollY;
+	new jBox('Modal', {
+	    height: 200,
+	    title: message,
+	    blockScrollAdjust: ['header'],
+	    content:'',
+	    overlay: false,   
+	    addClass: 'no-content-modal',
+	    position: {
+	        x: 'center',
+	        y: 'top'
+	      },
+	      offset: {
+	        y: 65
+	      },
+	        onCloseComplete: function () {
+	        	window.scrollTo(0, lastScrollY);
+	        }
+	  }).open();
+  }
 	$(document).ready(function(){
 // 		datepickerIdSet("eRegistrationDate");
 // 		datepickerIdSet("eInspectionDate");
@@ -457,16 +478,15 @@
 
 		}
 	  function eDownload(fileId,eFileName){
-			 if(confirm(eFileName+"을 다운로드 하시겠습니까?")){
 					window.open("<c:url value='/cmm/fms/FileDown.do?atchFileId="+fileId+"&fileSn=0'/>");
-				}
+				
 		}
 	  
 		
 		function eInspectionResult_go(){
 			var eAssetKeyArr = document.getElementsByName("eAssetKey").length;
 			if(eAssetKeyArr == 0){
-				alert("장비를 추가하여 정보를 입력하세요.");
+				modal1("점검장비가 없습니다.");
 				return false;
 			}
 			if(eAssetKeyArr > 0){
@@ -492,12 +512,11 @@
 			}
 			
 			
-			
-			if(confirm("점검결과를 저장 하시겠습니까?")){
+			modal3("점검결과를 저장하시겠습니까?", function() {
 				$('#mloader').show();
 				document.writeForm.action = "/mes/inspection/kw_inspection_R_i.do";
 				document.writeForm.submit(); 
-			}
+			});
 		}
 		
 		function setFieldReturnPop(data) {
@@ -513,7 +532,27 @@
 		
 		
 </script>
+<style>
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
 
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	 	font-weight: 400;  
+	    font-family: 'Pretendard GOV', sans-serif;
+	}
+	
+	.jBox-Modal {
+	  background: #4869fb !important;
+	  border-radius: 8px !important;
+   	  overflow: hidden !important;
+	}
+</style>
 <form name="writeForm" id="writeForm" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="pageIndex" id="pageIndex" value="${mesInspectionVO.pageIndex}" />
 	<input type="hidden" name="recordCountPerPage" id="recordCountPerPage" value="${mesInspectionVO.recordCountPerPage}" />

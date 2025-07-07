@@ -112,7 +112,7 @@ function setToolTip(){
 		    
 		    // eAssetKey의 개수가 0이면 메시지를 추가
 		    if (eAssetKeyArr == 0) {
-		    	modal1("교체할 장비가 없습니다.");
+		    	modal1("교체장비가 없습니다.");
 		    	return;
 		    }
 		    

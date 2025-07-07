@@ -683,7 +683,7 @@ window.addEventListener("DOMContentLoaded", function () {
 				</c:choose>
 			</c:if>
 			<c:choose>
-				<c:when test="${info.sSignStatus eq '등록' || info.sSignStatus eq '반려' || infoinfo.sSignStatus eq '제외'}"> 
+				<c:when test="${info.sSignStatus eq '등록' || info.sSignStatus eq '반려' || info.sSignStatus eq '제외'}"> 
 					<c:choose>
 						<c:when test="${staffVO.kAdminAuth eq 'T'}"> 
 							<button type="button" class="form_btn bg" onclick="update_go();">수정</button>

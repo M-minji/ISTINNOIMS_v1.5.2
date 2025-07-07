@@ -131,10 +131,9 @@ function cancel(){
 
 function update_go(){
     
-	if(confirm("수정페이지로 이동 하시겠습니까?")){
 		document.frm.action = "/mes/project/kw_project_uf.do";
  		document.frm.submit();
-	}
+	
 }
 
 function delete_go(){
@@ -507,7 +506,7 @@ function settingSign(){
 						<thead>
 							<tr>
 								<th style="width: 10%;">산출물명</th>
-								<th style="width: 10%;">등록일자</th>
+								<th style="width: 10%;">작성일자</th>
 								<th style="width: 12%;">소속</th> 
 								<th style="width: 12%;">작성자</th> 
 								<th style="width: 18%;">첨부파일
@@ -580,7 +579,7 @@ function settingSign(){
 								<thead>
 								<tr>
 									<th style="width: 10%;">산출물명</th>
-									<th style="width: 10%;">등록일자</th>
+									<th style="width: 10%;">작성일자</th>
 									<th style="width: 12%;">소속</th> 
 									<th style="width: 12%;">작성자</th> 
 									<th style="width: 18%;">첨부파일
@@ -650,7 +649,7 @@ function settingSign(){
 								<thead>
 								<tr>
 									<th style="width: 10%;">산출물명</th>
-									<th style="width: 10%;">등록일자</th>
+									<th style="width: 10%;">작성일자</th>
 									<th style="width: 12%;">소속</th> 
 									<th style="width: 12%;">작성자</th> 
 									<th style="width: 18%;">첨부파일
@@ -747,7 +746,7 @@ function settingSign(){
 							<thead>
 								<tr>
 									<th style="width: 10%;">산출물명</th>
-									<th style="width: 10%;">등록일자</th>
+									<th style="width: 10%;">작성일자</th>
 									<th style="width: 12%;">소속</th> 
 									<th style="width: 12%;">작성자</th> 
 									<th style="width: 18%;">첨부파일
@@ -818,7 +817,7 @@ function settingSign(){
 								<thead>
 								<tr>
 									<th style="width: 10%;">산출물명</th>
-									<th style="width: 10%;">등록일자</th>
+									<th style="width: 10%;">작성일자</th>
 									<th style="width: 12%;">소속</th> 
 									<th style="width: 12%;">작성자</th> 
 									<th style="width: 18%;">첨부파일
@@ -888,7 +887,7 @@ function settingSign(){
 								<thead>
 								<tr>
 									<th style="width: 10%;">산출물명</th>
-									<th style="width: 10%;">등록일자</th>
+									<th style="width: 10%;">작성일자</th>
 									<th style="width: 12%;">소속</th> 
 									<th style="width: 12%;">작성자</th> 
 									<th style="width: 18%;">첨부파일
@@ -959,7 +958,7 @@ function settingSign(){
 								<thead>
 								<tr>
 									<th style="width: 10%;">산출물명</th>
-									<th style="width: 10%;">등록일자</th>
+									<th style="width: 10%;">작성일자</th>
 									<th style="width: 12%;">소속</th> 
 									<th style="width: 12%;">작성자</th> 
 									<th style="width: 18%;">첨부파일
@@ -1089,13 +1088,13 @@ function settingSign(){
 	
 	<div class="bottom_btn">
 		<c:if test="${projectInfo.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
-			<c:if test="${info.sSignStatus ne '승인' && info.sSignStatus ne '제외'}"> 
+			<c:if test="${projectInfo.sSignStatus ne '승인' && projectInfo.sSignStatus ne '제외'}"> 
 				<c:choose>
 					<c:when test="${projectInfo.sSignStatus eq '등록'}"> 
-				<button type="button" class="form_btn active" onclick="startApproval('Y');">승인요청</button>
+						<button type="button" class="form_btn active" onclick="startApproval('Y');">승인요청</button>
 					</c:when>
 					<c:when test="${projectInfo.sSignProgress eq '0'}"> 
-				<button type="button" class="form_btn active" onclick="startApproval('N');">요청취소</button>
+						<button type="button" class="form_btn active" onclick="startApproval('N');">요청취소</button>
 					</c:when>
 				</c:choose>
 			</c:if>

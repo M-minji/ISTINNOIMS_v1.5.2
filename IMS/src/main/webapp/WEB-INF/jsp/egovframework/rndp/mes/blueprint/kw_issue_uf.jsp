@@ -109,7 +109,7 @@ $(document).ready(function(){
 	// 저장
 	function update_go(){  
 		if(chkIns()){
-			modal3("등록하시겠습니까?", function() {
+			modal3("저장하시겠습니까?", function() {
 				$("#mloader").show();
 				sessionStorage.setItem("actionType", "update");
 				document.frm.action = "/mes/blueprint/kw_issue_u.do";
@@ -120,8 +120,7 @@ $(document).ready(function(){
 	
 	function chkIns(){
 		if($("#eRequester").val() == ""){
-			alert("작성자 명을 입력하세요.");
-			$("#eRequester").focus();
+			modal1("작성자를 입력하세요.", "#eRequester");
 			return false;
 		}
 		
@@ -132,8 +131,11 @@ $(document).ready(function(){
 			for(var i=0; i < idx ; i++){
 				var eWorker = document.getElementsByName("eWorker")[i].value;
 				if (eWorker.trim() == '') {
-					alert((i+1)+"번째 작업자를 입력하세요.");
-					document.getElementsByName("eWorker")[i].focus;
+					var text = "";
+					if(i+1 > 1) {
+						text = (i+1) + "번째 ";
+					}
+					modal1(text + "작업자를 입력하세요.", "#eWorker" + i);
 					return false;
 				}
 			}
@@ -148,8 +150,11 @@ $(document).ready(function(){
 			for(var j=0; j < eRowIdx ; j++){
 				var eWorker = document.getElementsByName("eRowWorker")[j].value;
 				if (eWorker.trim() == '') {
-					alert((j+1)+"번째 회의 참석자를 입력하세요.");
-					document.getElementsByName("eRowWorker")[j].focus;
+					var text = "";
+					if(j+1 > 1) {
+						text = (j+1) + "번째 ";
+					}
+					modal1(text + "회의참여자를 입력하세요.", "#eRowWorker" + j);
 					return false;
 				}
 			}
@@ -160,7 +165,7 @@ $(document).ready(function(){
 		
 		if($("#oSignPass").val() != 'Y'){
 			if(document.getElementsByName("sSignStaffKey").length == 0){
-				alert("승인권자를 선택해주세요");
+				modal1("결재자를 선택하세요.");
 				return false;
 				}
 			}
@@ -718,7 +723,27 @@ $(document).ready(function(){
 		$('#lineRow3').empty();
 	}
 </script>
+<style>
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
 
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	 	font-weight: 400;  
+	    font-family: 'Pretendard GOV', sans-serif;
+	}
+	
+	.jBox-Modal {
+	  background: #4869fb !important;
+	  border-radius: 8px !important;
+   	  overflow: hidden !important;
+	}
+</style>
 <form id="frm" name="frm" method="post" enctype="multipart/form-data" >
 	<input type="hidden" id="pageIndex" name="pageIndex" value="${mesBlueprintVO.pageIndex}" />
 	<input type="hidden" id="recordCountPerPage" name="recordCountPerPage" value="${mesBlueprintVO.recordCountPerPage}" />
