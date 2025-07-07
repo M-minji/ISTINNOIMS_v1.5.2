@@ -445,8 +445,11 @@ public class MesOutputController {
 			mesOutputService.eInsertDeliverableInfo(mesOutputVO);
 			
 			redirectAttributes.addFlashAttribute("mesOutputVO", mesOutputVO);
+			MesProjectVO mesProjectVO = new MesProjectVO();
+			mesProjectVO.seteProjectNum(mesOutputVO.geteProjectNum()); 
+			redirectAttributes.addFlashAttribute("mesProjectVO", mesProjectVO);
 			
-			return "redirect:/mes/output/kw_output_lf.do";
+			return "redirect:/mes/project/kw_project_vf.do";
 		} 
 		@RequestMapping(value = "/mes/output/kw_eDeliverable_d.do")
 		public String mesDeliverableD(HttpServletRequest request
@@ -530,8 +533,11 @@ public class MesOutputController {
 			mesOutputService.eInsertReportInfo(mesOutputVO);
 			
 			redirectAttributes.addFlashAttribute("mesOutputVO", mesOutputVO);
+			MesProjectVO mesProjectVO = new MesProjectVO();
+			mesProjectVO.seteProjectNum(mesOutputVO.geteProjectNum()); 
+			redirectAttributes.addFlashAttribute("mesProjectVO", mesProjectVO);
 			
-			return "redirect:/mes/output/kw_output_lf.do";
+			return "redirect:/mes/project/kw_project_vf.do";
 		} 
 		
 		@RequestMapping(value = "/mes/output/kw_eReport_d.do")

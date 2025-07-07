@@ -384,7 +384,7 @@ function setToolTip(){
 	// 등록
 	function insert_go(){
 		if(chkIns()){
-			modal3("등록하시겠습니까?", function() {
+			modal3("저장하시겠습니까?", function() {
 				$("#mloader").show();
 				$("#eActualWorker").val($("<div>").text($("#eActualWorker").val()).html());
 				sessionStorage.setItem("actionType", "update");
@@ -397,21 +397,21 @@ function setToolTip(){
 	// validation
 	function chkIns(){
 		if($("#eIssueTypeName").val() == ""){
-			modal1("상세구분을 선택하세요.", "#eIssueTypeName")
+			modal1("상세구분을 선택하세요.", "#eIssueTypeName");
 			return false;
 		}
 		
 		if($("#eAssetType").val() == ""){
-			modal1("자산유형을 선택하세요.", "#eAssetType")
+			modal1("자산유형을 선택하세요.", "#eAssetType");
 			return false;
 		}
 		
 		if($("#eProcessingTypeName").val() == ""){
-			modal1("처리유형을 선택하세요.", "#eProcessingTypeName")
+			modal1("처리유형을 선택하세요.", "#eProcessingTypeName");
 			return false;
 		}
 		if($("#eRequester").val() == ""){
-			modal1("요청자를 입력하세요.", "#eRequester")
+			modal1("요청자를 입력하세요.", "#eRequester");
 			return false;
 		}
 // 		if($("#eRequester").val() == ""){
@@ -428,7 +428,7 @@ function setToolTip(){
 					if(j+1 > 1) {
 						text = (j+1) + "번째 ";
 					}
-					modal1(text + "처리자명을 입력하세요.", "#eRowWorker" + j)
+					modal1(text + "처리자명을 입력하세요.", "#eRowWorker" + j);
 					return false;
 				}
 			}
@@ -1113,7 +1113,7 @@ function setToolTip(){
 			<h2>결재 정보</h2>
 			<div id="approvalWrap">
 			<label for="oPass" class="inp_chkbox">
-				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();"/>
+				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();" onchange="removeToolTip();"/>
 				<i></i>
 				결재 제외
 			</label>

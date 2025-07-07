@@ -220,12 +220,7 @@ function setToolTip(){
 	}	
 	
 	function insert_go(){
-		if($("#oSignPass").val() != 'Y'){
-			if(document.getElementsByName("sSignStaffKey").length == 0){
-				modal1("결재자를 선택하세요.");
-				return false;
-				}
-			}
+		
 		
 		if(document.getElementById("eAssetTypeName").value == ""){
 			modal1("자산유형를 선택하세요.", "#eAssetType");
@@ -256,7 +251,7 @@ function setToolTip(){
 		}
 	 
 		if(document.getElementById("eAssetSNumber").value == ""){
-			modal1("제조번호(S/N)를 입력하세요.", "#eAssetSNumber");
+			modal1("제조번호를 입력하세요.", "#eAssetSNumber");
 	//		document.getElementById("eAssetSNumber").focus();
 			return false;
 		}
@@ -288,7 +283,12 @@ function setToolTip(){
 			    }
 			}
 		}
-		
+		if($("#oSignPass").val() != 'Y'){
+			if(document.getElementsByName("sSignStaffKey").length == 0){
+				modal1("결재자를 선택하세요.");
+				return false;
+				}
+			}
 		modal3("등록하시겠습니까?", function() {
 			if($("#eAssetCost").val() == ""){
 				$("#eAssetCost").val(0);

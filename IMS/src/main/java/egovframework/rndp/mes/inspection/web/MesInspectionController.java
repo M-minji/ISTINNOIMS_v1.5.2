@@ -553,7 +553,7 @@ public class MesInspectionController {
 		
 		redirectAttributes.addFlashAttribute("mesInspectionVO", mesInspectionVO);		
 		
-		return "redirect:/mes/inspection/kw_inspection_lf.do";
+		return "redirect:/mes/inspection/kw_inspection_vf.do";
 	} 
 	
 	@RequestMapping(value = "/mes/inspection/kw_inspection_d.do")

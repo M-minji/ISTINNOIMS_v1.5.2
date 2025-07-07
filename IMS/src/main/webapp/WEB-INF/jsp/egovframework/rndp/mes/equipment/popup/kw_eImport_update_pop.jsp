@@ -11,9 +11,37 @@
 <link rel="stylesheet" type="text/css" href="/js/jquery-ui-1.14.1/jquery-ui.min.css" />
 <script src="/js/jquery/jquery-3.7.1.min.js"></script>
 <script src="/js/jquery-ui-1.14.1/jquery-ui.min.js"></script>
-
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 <script type="text/javascript">
-
+function modal1(message, focusSelector) {
+	lastScrollY = window.scrollY;
+	new jBox('Modal', {
+	    height: 200,
+	    title: message,
+	    blockScrollAdjust: ['header'],
+	    content:'',
+	    overlay: false,   
+	    addClass: 'no-content-modal',
+	    position: {
+	        x: 'center',
+	        y: 'top'
+	      },
+	      offset: {
+	        y: 65
+	      },
+	        onCloseComplete: function () {
+	        	if (focusSelector) {
+	            	window.scrollTo(0, 0);
+	                setTimeout(() => {
+	                    document.querySelector(focusSelector)?.focus();
+	                }, 10);
+	            } else{
+	            	window.scrollTo(0, lastScrollY);
+	            }
+	        }
+	  }).open();
+  }
 $(document).ready(function(){	
 	var eGubunPage = "${eGubunPage}";
 	if (eGubunPage == "N") {
@@ -32,8 +60,7 @@ function mesIMGregInsert() {
 		return false;
 	}
 	if($("#eExitExporter").val() == ''){
-		alert("반출 확인자를 입력하세요.");
-		$("#eExitExporter").focus();
+		modal1("반출 확인자를 입력하세요.", "#eExitExporter");
 		return false;
 	}
 	
@@ -52,7 +79,28 @@ function nowDate(){
 
 </script>
 
+<style>
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
 
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	 	font-weight: 400;  
+	    font-family: 'Pretendard GOV', sans-serif;
+	}
+	
+	.jBox-Modal {
+	  background: #4869fb !important;
+	  border-radius: 8px !important;
+   	  overflow: hidden !important;
+   	  
+}    
+</style>
 <form id="frm" name="frm" method="post"   action="/mes/equipment/kw_eImport_update.do" class="popup_wrap">
 	<div class="pop_head">
 		<div id="pop_head">

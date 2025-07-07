@@ -187,7 +187,7 @@ function setToolTip(){
 	// 저장
 	function update_go(){
 		if(chkIns()){
-			modal3("등록하시겠습니까?", function() {
+			modal3("저장하시겠습니까?", function() {
 				sessionStorage.setItem("actionType", "update");
 				$("#mloader").show();
 				document.frm.action = "/mes/blueprint/kw_blueprint_u.do";
@@ -200,8 +200,7 @@ function setToolTip(){
 	function chkIns(){
 		
 		if($("#eRequester").val() == ""){
-			alert("요청자 명을 입력하세요.");
-			$("#eRequester").focus();
+			modal1("요청자를 입력하세요.", "#eRequester");
 			return false;
 		}
 		
@@ -211,8 +210,11 @@ function setToolTip(){
 			for(var i=0; i < idx ; i++){
 				var eWorker = document.getElementsByName("eWorker")[i].value;
 				if (eWorker.trim() == '') {
-					alert((i+1)+"번째 작업자를 입력하세요.");
-					document.getElementsByName("eWorker")[i].focus;
+					var text = "";
+					if(i+1 > 1){
+						text = (i+1) + "번째 ";
+					}
+					modal1(text + "작업자를 입력하세요.", "#eWorker"+i);
 					return false;
 				}
 			}
@@ -233,7 +235,7 @@ function setToolTip(){
 		
 		if($("#oSignPass").val() != 'Y'){
 			if(document.getElementsByName("sSignStaffKey").length == 0){
-				alert("승인권자를 선택해주세요");
+				modal1("결재자를 선택하세요.");
 				return false;
 				}
 			}
@@ -255,7 +257,7 @@ function setToolTip(){
 					var fileSize = this.files[0].size;
 
 					if (fileSize > maxSize) {
-						alert("첨부파일 사이즈는 10MB 이내로 등록 가능합니다.");
+						modal1("첨부파일 사이즈는 10MB 이내로 등록 가능합니다.");
 						$(this).val('');
 						return false;
 					} else {
@@ -714,7 +716,27 @@ function setToolTip(){
          document.getElementById('eIsInterruptedName').value = value2;
      }
 </script>
+<style>
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
 
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	 	font-weight: 400;  
+	    font-family: 'Pretendard GOV', sans-serif;
+	}
+	
+	.jBox-Modal {
+	  background: #4869fb !important;
+	  border-radius: 8px !important;
+   	  overflow: hidden !important;
+	}
+</style>
 <form id="frm" name="frm" method="post" enctype="multipart/form-data" action="/mes/blueprint/kw_blueprint_u.do">
 	<input type="hidden" id="pageIndex" name="pageIndex" value="${mesBlueprintVO.pageIndex}" />
 	<input type="hidden" id="recordCountPerPage" name="recordCountPerPage" value="${mesBlueprintVO.recordCountPerPage}" />
@@ -954,7 +976,7 @@ function setToolTip(){
 			<h2>결재 정보</h2>
 			<div id="approvalWrap">
 			<label for="oPass" class="inp_chkbox">
-				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();"/>
+				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();" onchange="removeToolTip();"/>
 				<i></i>
 				결재 제외
 			</label>

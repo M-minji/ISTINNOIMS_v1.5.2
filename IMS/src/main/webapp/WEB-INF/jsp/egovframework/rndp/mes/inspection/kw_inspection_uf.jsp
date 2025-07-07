@@ -545,22 +545,20 @@ function setToolTip(){
 			    var eInspector = document.getElementById('eInspector').value;
 		
 			    if (!inspectionType) {
-			        alert("점검구분을 선택해주세요.");
-			        inspectionType.focus();
+					modal1("점검구분을 선택하세요.", "#inspectionType");
 			        return false;
 			    }
 		
 			    if (!inspectionCycle) {
-			        alert("점검주기를 선택해주세요.");
-			        inspectionCycle.focus();
+					modal1("점검주기를 선택하세요.", "#inspectionCycle");
 			        return false;
 			    }
 			    if (!eInspector) {
-			        alert("점검자를 선택하세요.");
-			        eInspector.focus();
+					modal1("점검자를 입력하세요.", "#eInspector");
 			        return false;
 			    }
-				
+			    
+			    var hasEresultList = ${not empty eResultInfoList}; // 있으면 트루 없으면 폴스
 				var eAssetKeyArr = document.getElementsByName("eAssetKey").length;
 					if(eAssetKeyArr > 0){
 						var eField1 = document.getElementsByName("eField1");
@@ -582,16 +580,19 @@ function setToolTip(){
 						eItemOther[i].value = ConverttoHtml(eItemOther[i].value);
 						 
 					}
+				} else if(hasEresultList){
+					modal1("점검장비가 없습니다.");
+			        return false;
 				}
 					
 			   if($("#oSignPass").val() != 'Y'){
 					if(document.getElementsByName("sSignStaffKey").length == 0){
-						alert("승인권자를 선택해주세요");
+						modal1("결재자를 선택하세요.");
 						return false;
 						}
 					}
 
-				modal3("등록하시겠습니까?", function() {
+				modal3("저장하시겠습니까?", function() {
 					$("#eRemark").val($("<div>").text($("#eRemark").val()).html());
 					$("#eOther").val($("<div>").text($("#eOther").val()).html());
 					sessionStorage.setItem("actionType", "update");
@@ -764,7 +765,27 @@ function setToolTip(){
 		    document.getElementById("field5").innerText = data.eField5;
 		}
 </script>
+<style>
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
 
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	 	font-weight: 400;  
+	    font-family: 'Pretendard GOV', sans-serif;
+	}
+	
+	.jBox-Modal {
+	  background: #4869fb !important;
+	  border-radius: 8px !important;
+   	  overflow: hidden !important;
+	}
+</style>
 <form name="writeForm" id="writeForm" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="pageIndex" id="pageIndex" value="${mesInspectionVO.pageIndex}" />
 	<input type="hidden" name="recordCountPerPage" id="recordCountPerPage" value="${mesInspectionVO.recordCountPerPage}" />
@@ -996,7 +1017,7 @@ function setToolTip(){
 			<h2>결재 정보</h2>
 			<div id="approvalWrap">
 			<label for="oPass" class="inp_chkbox">
-				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();"/>
+				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();" onchange="removeToolTip();"/>
 				<i></i>
 				결재 제외
 			</label>

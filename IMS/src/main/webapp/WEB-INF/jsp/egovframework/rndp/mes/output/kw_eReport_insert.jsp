@@ -11,9 +11,47 @@
 <link href="/css/mes/jquery-ui.min.css" rel="stylesheet"	type="text/css" />
 <link href="/css/mes/mermaid2.min.css" rel="stylesheet"	/>
 <script src="/js/jquery.table2excel.js"></script>
-
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 <script type="text/javascript">
-
+function modal1(message, focusSelector) {
+	lastScrollY = window.scrollY;
+	new jBox('Modal', {
+	    height: 200,
+	    title: message,
+	    blockScrollAdjust: ['header'],
+	    content:'',
+	    overlay: false,   
+	    addClass: 'no-content-modal',
+	    position: {
+	        x: 'center',
+	        y: 'top'
+	      },
+	      offset: {
+	        y: 65
+	      },
+	        onCloseComplete: function () {
+	        	if (focusSelector) {
+	            	window.scrollTo(0, 0);
+	                setTimeout(() => {
+	                    document.querySelector(focusSelector)?.focus();
+	                }, 10);
+	            } else{
+	            	window.scrollTo(0, lastScrollY);
+	            }
+	        }
+	  }).open();
+  }
+function modal3(message, onConfirm, onCancel) {
+		new jBox('Confirm', {
+			content: message,
+		    cancelButton: '아니요',
+		    confirmButton: '네',
+		    blockScrollAdjust: ['header'],
+		    confirm: onConfirm,
+		    cancel: onCancel
+		  }).open();
+  }
 $(document).ready(function(){	
 	datepickerNameSet("eItemDate");                                  
 	
@@ -103,7 +141,7 @@ function addRow(gubun){
 		innerStr += "			<input type='hidden' id='eItemIndex_"+row_Index+"' name='eItemIndex' value='"+row_Index+"'/>";
 		innerStr += "			<input type='hidden' id='eItemGubun_"+row_Index+"' name='eItemGubun' value='"+gubun+"'/>";
 		innerStr += "		</td>";
-		// 등록일자
+		// 작성일자
 		innerStr += "		<td>";
 		innerStr += "			<input type='text' id='eItemDate_"+row_Index+"' name='eItemDate' value='' class='inp_color' style='width:98%; text-align:center;'  readonly  />";
 		innerStr += "		</td>";		
@@ -261,12 +299,12 @@ function delFileRow(link, fileId) {
 
 function insert_go(){
 	if(chkIns()){  
-		if(confirm("저장하시겠습니까?")){
+		modal3("저장하시겠습니까?", function() {
 			processSpecialCharacters();
 			$("#mloader").show(); 
 			document.frm.action = "/mes/output/kw_eReport_i.do";
 	 		document.frm.submit();
-		}
+		});
 	}
 }
 function delete_go(){
@@ -278,33 +316,31 @@ function delete_go(){
 }
 function chkIns(){
 	if($("#eProjectStatus").val() == ""){
-		alert("사업진행 입력하세요.");
-		$("#eProjectStatus").focus();
+		modal1("진행상태를 입력하세요.", "#eProjectStatus");
 		return false;
 	}
 
 	var eItemNameArr = document.getElementsByName("eItemName");
     var eItemGubunArr = document.getElementsByName("eItemGubun");
-    if (eItemNameArr.length === 0) {
+   /*  if (eItemNameArr.length === 0) {
         alert("추가된 정보가 없습니다.");
         return;
-    }
+    } */
 	for(var i = 0; i < eItemNameArr.length; i++){
 		 var eItemGubunValue = eItemGubunArr[i].value;
          var prefix = "";
          if (eItemGubunValue === "A") {
-             prefix = "주간보고서 ";
+             prefix = "주간 보고서의 ";
          } else if (eItemGubunValue === "B") {
-             prefix = "월간보고서 ";
+             prefix = "월간 보고서의 ";
          } else if (eItemGubunValue === "C") {
-             prefix = "분기보고서 ";
+             prefix = "분기 보고서의 ";
          }else if (eItemGubunValue === "D") {
-             prefix = "반기보고서 ";
+             prefix = "반기 보고서의 ";
          }
-         
 		if(!eItemNameArr[i].value.trim()) {  // 빈 값 또는 공백만 있는 경우 체크
-            alert(prefix + (i + 1) + "번째 산출물명을 입력하세요.");
-            eItemNameArr[i].focus();
+			modal1(prefix+"산출물명을 입력하세요.", "#eItemName_"+i);
+          //  eItemNameArr[i].focus();
             return;  // 함수를 종료하여 이후 코드 실행을 막습니다.
         }
 	}
@@ -332,9 +368,8 @@ function processSpecialCharacters() {
 
 function eDownload(eFileId){
 	 
-	 if(confirm("선택한 파일을 다운로드 하시겠습니까?")){
 			window.open("<c:url value='/cmm/fms/FileDown.do?atchFileId="+eFileId+"&fileSn=0'/>");
-		}
+		
 }
 
 function eDownloadAll(fileGubun){
@@ -349,7 +384,28 @@ function eDownloadAll(fileGubun){
 	    }
 }
 </script>
+<style>
+	.no-content-modal .jBox-content {
+  		display: none; 
+	}
 
+	.no-content-modal .jBox-title {
+		padding-bottom: 10px;
+	}
+	
+	.no-content-modal .jBox-title {
+	  	color: white;
+	 	font-weight: 400;  
+	    font-family: 'Pretendard GOV', sans-serif;
+	}
+	
+	.jBox-Modal {
+	  background: #4869fb !important;
+	  border-radius: 8px !important;
+   	  overflow: hidden !important;
+   	  
+}    
+</style>
 <form id="frm" name="frm" method="post" action="/mes/output/kw_output_lf.do">
 	<input type="hidden" id="pageIndex" name="pageIndex" value="${mesOutputVO.pageIndex}">
 	 
@@ -456,7 +512,7 @@ function eDownloadAll(fileGubun){
 						<tr>
 							<th style="width: 8%;">구분</th>
 							<th style="width: 10%;"><span style="color: red">* </span>산출물명</th>
-							<th style="width: 10%;">등록일자</th>
+							<th style="width: 10%;">작성일자</th>
 							<th style="width: 12%;">소속</th> 
 							<th style="width: 12%;">작성자</th> 
 							<th style="width: 18%;">첨부파일
@@ -538,7 +594,7 @@ function eDownloadAll(fileGubun){
 						<tr>
 							<th style="width: 8%;">구분</th>
 							<th style="width: 10%;"><span style="color: red">* </span>산출물명</th>
-							<th style="width: 10%;">등록일자</th>
+							<th style="width: 10%;">작성일자</th>
 							<th style="width: 12%;">소속</th> 
 							<th style="width: 12%;">작성자</th> 
 							<th style="width: 18%;">첨부파일
@@ -621,7 +677,7 @@ function eDownloadAll(fileGubun){
 						<tr>
 							<th style="width: 8%;">구분</th>
 							<th style="width: 10%;"><span style="color: red">* </span>산출물명</th>
-							<th style="width: 10%;">등록일자</th>
+							<th style="width: 10%;">작성일자</th>
 							<th style="width: 12%;">소속</th> 
 							<th style="width: 12%;">작성자</th> 
 							<th style="width: 18%;">첨부파일
@@ -703,7 +759,7 @@ function eDownloadAll(fileGubun){
 						<tr>
 							<th style="width: 8%;">구분</th>
 							<th style="width: 10%;"><span style="color: red">* </span>산출물명</th>
-							<th style="width: 10%;">등록일자</th>
+							<th style="width: 10%;">작성일자</th>
 							<th style="width: 12%;">소속</th> 
 							<th style="width: 12%;">작성자</th> 
 							<th style="width: 18%;">첨부파일
@@ -773,9 +829,9 @@ function eDownloadAll(fileGubun){
 	</div>	
 	
 	<div class="bottom_btn">
-		<c:if test="${staffVO.kStaffAuthDelFlag eq 'T'}">
+	<%-- 	<c:if test="${staffVO.kStaffAuthDelFlag eq 'T'}">
 		<button type="button" class="form_btn ico_refresh" onclick="delete_go();">산출물 초기화</button>
-		</c:if>
+		</c:if> --%>
 		<button type="button" class="form_btn active" onclick="insert_go();">저장</button>
 		<button type="button" class="form_btn" onclick="cancel();">취소</button>
 	</div>

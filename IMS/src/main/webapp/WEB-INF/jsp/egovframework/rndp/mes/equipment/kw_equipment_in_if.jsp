@@ -123,12 +123,12 @@ function setToolTip(){
 							text = (i+1)+"번째 "
 						}
 		    	        if (eAssetTypeNameValue === '') {
-		    	        	modal1(text+"자산유형을 선택하세요.", "#eAssetType"+i);
+		    	        	modal1(text+"자산유형을 선택하세요.", "#eAssetType"+(i+1));
 		    	            return;
 		    	        }
 		    	        
 		    	        if (eAssetNameValue === '') {
-		    	        	modal1(text+"자산명을 입력하세요.", "#eAssetName"+i);
+		    	        	modal1(text+"자산명을 입력하세요.", "#eAssetName"+(i+1));
 		    	            return;
 		    	        }
 				    }
@@ -369,7 +369,7 @@ function setToolTip(){
 	        var messageCell = document.createElement('td');
 	        
 	        messageCell.colSpan = 10;
-	        messageCell.textContent = "행 추가를  선택하여 임시 장비 정보를 입력하세요.";
+	        messageCell.textContent = "장비 추가를  선택하여 반입 장비 정보를 입력하세요.";
 	        
 	        messageRow.appendChild(messageCell);
 	        tbody.appendChild(messageRow);
@@ -590,7 +590,7 @@ function setToolTip(){
 	
 	<div class="content_top nofirst with_btn notit" id="viewDiv1">
 		<div class="btns">
-			 <button type="button" class="form_btn md" onclick="addRow()">행추가</button>
+			 <button type="button" class="form_btn md" onclick="addRow()">장비 추가</button>
 		</div>
 	</div>
 	
@@ -612,7 +612,7 @@ function setToolTip(){
 				</thead>
 			<tbody id="lineRow">
 				<tr>
-					<td colspan="10">행 추가를  선택하여 임시 장비 정보를 입력하세요.</td>
+					<td colspan="10">장비 추가를 선택하여 반입 장비 정보를 입력하세요.</td>
 				</tr>
 			</tbody>
 		</table>
