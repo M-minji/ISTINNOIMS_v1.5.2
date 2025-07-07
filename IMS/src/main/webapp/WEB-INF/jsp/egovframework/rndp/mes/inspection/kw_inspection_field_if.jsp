@@ -10,10 +10,10 @@ $(document).ready(function(){
 
 function insert_go(){
 	if(chkIns()){
-		if(confirm("저장하시겠습니까?")){
+		modal3("등록하시겠습니까?", function() {
 			$("#mloader").show();
-			document.frm.submit();	
-		}
+			document.frm.submit();		
+		});
 	}
 }
 
@@ -29,41 +29,37 @@ function chkIns(){
 		    const eField3 = document.getElementsByName("eField3")[i].value.trim();
 		    const eField4 = document.getElementsByName("eField4")[i].value.trim();
 		    const eField5 = document.getElementsByName("eField5")[i].value.trim();
-		    
-		    
+		    var text = "";
+		    if(i+1 > 1){
+		    	text = (i+1) + "번째 ";
+		    }
 			if(eFieldName == ""){
-				alert((i+1)+"번째 이름을 입력해주세요.");
-				document.getElementsByName("eFieldName")[i].focus();
+				modal1(text + "이름을 입력하세요.", "#eFieldName_"+i);
 				return false;
 			}
 			if(eField1 == ""){
-				alert("모든 항목을 입력해주세요.");
-				document.getElementsByName("eField1")[i].focus();
+				modal1("모든 필드를 입력하세요.", "#eField1_"+i);
 				return false;
 			}
 			if(eField2 == ""){
-				alert("모든 항목을 입력해주세요.");
-				document.getElementsByName("eField2")[i].focus();
+				modal1("모든 필드를 입력하세요.", "#eField2_"+i);
 				return false;
 			}
 			if(eField3 == ""){
-				alert("모든 항목을 입력해주세요.");
-				document.getElementsByName("eField3")[i].focus();
+				modal1("모든 필드를 입력하세요.", "#eField3_"+i);
 				return false;
 			}
 			if(eField4 == ""){
-				alert("모든 항목을 입력해주세요.");
-				document.getElementsByName("eField4")[i].focus();
+				modal1("모든 필드를 입력하세요.", "#eField4_"+i);
 				return false;
 			}
 			if(eField5 == ""){
-				alert("모든 항목을 입력해주세요.");
-				document.getElementsByName("eField5")[i].focus();
+				modal1("모든 필드를 입력하세요.", "#eField5_"+i);
 				return false;
 			}
 		}
 	}else{
-		alert("등록할 행이 없습니다.");
+		modal1("등록할 필드가 없습니다.");
 		return false;
 	} 
 	return true;

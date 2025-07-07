@@ -13,44 +13,7 @@
 <link rel="stylesheet" type="text/css" href='/css/mes/pretendard.css'>
 <script type="text/javascript">
 
-	function modal1(message, focusSelector) {
-		lastScrollY = window.scrollY;
-		new jBox('Modal', {
-		    height: 200,
-		    title: message,
-		    blockScrollAdjust: ['header'],
-		    content:'',
-		    overlay: false,   
-		    addClass: 'no-content-modal',
-		    position: {
-		        x: 'center',
-		        y: 'top'
-		      },
-		      offset: {
-		        y: 65
-		      },
-		        onCloseComplete: function () {
-		        	if (focusSelector) {
-		            	window.scrollTo(0, 0);
-		                setTimeout(() => {
-		                    document.querySelector(focusSelector)?.focus();
-		                }, 10);
-		            } else{
-		            	window.scrollTo(0, lastScrollY);
-		            }
-		        }
-		  }).open();
-	  }
-	function modal3(message, onConfirm, onCancel) {
-			new jBox('Confirm', {
-				content: message,
-			    cancelButton: '아니요',
-			    confirmButton: '네',
-			    blockScrollAdjust: ['header'],
-			    confirm: onConfirm,
-			    cancel: onCancel
-			  }).open();
-		  }
+	
 
 	 
 	$(document).ready(function(){	
@@ -765,29 +728,6 @@
 		}
 		
 </script>
-<style>
-	.no-content-modal .jBox-content {
-  		display: none; 
-	}
-
-	.no-content-modal .jBox-title {
-		padding-bottom: 10px;
-	}
-	
-	.no-content-modal .jBox-title {
-	  	color: white;
-	 	font-weight: 400;  
-	    font-family: 'Pretendard GOV', sans-serif;
-	}
-	
-	.jBox-Modal {
-	  background: #4869fb !important;
-	  border-radius: 8px !important;
-   	  overflow: hidden !important;
-   	  
-}    
-</style>
-
 <form id="frm" name="frm" method="post" enctype="multipart/form-data" action="/mes/issue/kw_issue_i.do"> 
 	<input type="hidden" id="pageIndex" 		name="pageIndex" 			value="${mesIssueVO.pageIndex}" />
 	<input type="hidden" id="recordCountPerPage" name="recordCountPerPage" 	value="${mesIssueVO.recordCountPerPage}" />

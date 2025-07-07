@@ -241,11 +241,11 @@ function dCheak(idx,ref,root){
 }
 var staffKey = "";
 function mesUserMenuUp(){
-	if(confirm("저장하시겠습니까?")){
+	modal3("저장하시겠습니까?", function(){
 		document.listForm.action = "/mes/kw_userMenu_u.do";
 		document.listForm.submit();
 		$('#mloader').show();
-	} 
+	});
 }
 
 function cancle(){

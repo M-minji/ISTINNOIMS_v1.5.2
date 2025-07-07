@@ -24,26 +24,25 @@ function mesUserResInsert(key){
 
 function mesUserResBut(key,gubun){
 	$("#mesUserRequestKey").val(key);
-	var actionUrl = ""
+	var actionUrl = "";
+	var msg = "";
 	if(gubun == "i" ){ 
-		if(confirm("승인하시겠습니까?")){
+		msg = "승인하시겠습니까?";
 			actionUrl ="/mes/user/kw_user_req_i.do";
-		}else{
-			return false;
-		}
+		
 	}else if(gubun == "u" ){  
 		actionUrl ="/mes/user/kw_user_req_uf.do";
 	}else if(gubun == "d" ){  
-		if(confirm("삭제하시겠습니까?")){
+		msg = "삭제하시겠습니까?";
 			actionUrl ="/mes/user/kw_user_req_d.do";
-		}else{
-			return false;
-		}
 	}
 	
+	
 	if(actionUrl != ""){
-		document.listForm.action=actionUrl;
-		document.listForm.submit();
+		modal3(msg, function(){
+			document.listForm.action=actionUrl;
+			document.listForm.submit();
+		});
 	}
 }
 

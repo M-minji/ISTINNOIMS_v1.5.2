@@ -4,33 +4,27 @@
 function meEnvUp(){
 	
 		if($("#companyName").val() == ""){
-			alert("회사명이 입력되지 않았습니다");
-			$("#companyName").focus();
+			modal1("회사명을 입력하세요.", "#companyName");
 			return false;
 		}
 		if($("#companyCeo").val() == ""){
-			alert("기업 대표자가 입력되지 않았습니다");
-			$("#companyCeo").focus();
+			modal1("대표자를 입력하세요.", "#companyCeo");
 			return false;
 		}
 		if($("#companyIncorpo").val() == ""){
-			alert("기업 설립일이 입력되지 않았습니다");
-			$("#companyIncorpo").focus();
+			modal1("설립일을 입력하세요.", "#companyIncorpo");
 			return false;
 		}
 		if($("#companyAddr").val() == ""){
-			alert("소재지가 입력되지 않았습니다");
-			$("#companyAddr").focus();
+			modal1("소재지를 입력하세요.", "#companyAddr");
 			return false;
 		}
 		if($("#companyTel").val() == ""){
-			alert("대표전화가 입력되지 않았습니다");
-			$("#companyTel").focus();
+			modal1("대표전화를 입력하세요.", "#companyTel");
 			return false;
 		}
 		if($("#companyNum").val() == ""){
-			alert("사업자번호가 입력되지 않았습니다");
-			$("#companyNum").focus();
+			modal1("사업자번호를 입력하세요.", "#companyNum");
 			return false;
 		}
 		
@@ -39,7 +33,7 @@ function meEnvUp(){
 			$("tr:has(th:contains('우선순위:2'))").find("input[name='envVal']").val("null");
 		}   --%>
 		
-		if(confirm("저장하시겠습니까?")){
+		modal3("저장하시겠습니까?", function() {
 			$("#mloader").show();
 			
 			var ln = document.getElementsByName("envVal").length;
@@ -49,7 +43,7 @@ function meEnvUp(){
 			}
 			document.writeform.action = "/mes/user/env_List_i.do";
 	 		document.writeform.submit();
-		} 
+		});
 	
 	
 }

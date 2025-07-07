@@ -9,22 +9,22 @@ function memberIn(){
 	    const className = document.getElementById("kClassName").value.trim();
 
 	    if (rank === "") {
-	        alert("순서를 입력하세요.");
-	        document.getElementById("kClassRank").focus();
+	        modal1("순서를 입력하세요.", "#kClassRank");
 	        return false;
 	    }
 	   // 숫자만 남기도록 rank 값을 필터링
 	    document.getElementById("kClassRank").value = rank.replace(/[^0-9]/g, '');
 	    if (className === "") {
-	        alert("직급명을 입력하세요.");
-	        document.getElementById("kClassName").focus();
+	        modal1("직급명을 입력하세요.", "#kClassName");
 	        return false;
 	    }
 	    
 	    
-
-	document.writeForm.action = "/mes/user/kw_userLevel_i.do";
-	document.writeForm.submit();
+	modal3("등록하시겠습니까?", function() {
+		document.writeForm.action = "/mes/user/kw_userLevel_i.do";
+		document.writeForm.submit();
+	});
+	
 }
 function filterNumericOnly(input) {
     input.value = input.value.replace(/[^0-9]/g, '').trim();

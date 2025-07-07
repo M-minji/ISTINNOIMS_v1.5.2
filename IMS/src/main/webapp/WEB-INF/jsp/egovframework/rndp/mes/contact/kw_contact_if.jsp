@@ -10,11 +10,11 @@ $(document).ready(function(){
 
 function insert_go(){
 	if(chkIns()){
-		if(confirm("저장하시겠습니까?")){
+		modal3("등록하시겠습니까?", function() {
 			$("#mloader").show();
 			document.frm.action = "/mes/contact/kw_contact_i.do";	
 			document.frm.submit();	
-		}
+		});
 	}
 }
 
@@ -24,15 +24,17 @@ function chkIns(){
 		
 	if(ln > 0){
 		for(var i = 0; i < ln; i++){
-			 
+			var text = "";
+			 if(i+1>1){
+				 text = (i+1) + "번째 ";
+			 }
 			if(document.getElementsByName("eContactName")[i].value == ""){
-				alert((i+1)+"번째 담당자명을 입력해주세요.");
-				document.getElementsByName("eContactName")[i].focus();
+				modal1(text + "담당자명을 입력하세요.", "#eContactName_"+i);
 				return false;
 			}
 		}
 	}else{
-		alert("등록할 행이 없습니다.");
+		alert("등록할 담당자가 없습니다.");
 		return false;
 	} 
 	

@@ -19,11 +19,11 @@
 		document.listForm.submit();		
 	}
 	function userLevelDel(key){
-		if(confirm("삭제하시겠습니까?")){
+		modal3("삭제하시겠습니까?", function() {
 			document.listForm.kClassKey.value = key;
 			document.listForm.action="/mes/user/kw_userLevel_d.do";
-			document.listForm.submit();			
-		}
+			document.listForm.submit();	
+		});
 	}
 	
 	function mesUserMenu(key){

@@ -1,7 +1,8 @@
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
+<script src="/js/jBox/jBox.all.min.js"></script>
 <script type="text/javascript">
 
 $(document).ready(function(){
@@ -10,10 +11,10 @@ $(document).ready(function(){
 
 function insert_go(){
 	if(chkIns()){
-		if(confirm("저장하시겠습니까?")){
+		modal3("등록하시겠습니까?", function() {
 			$("#mloader").show();
 			document.frm.submit();	
-		}
+		});
 	}
 }
 
@@ -24,18 +25,24 @@ function chkIns(){
 	if(ln > 0){
 		for(var i = 0; i < ln; i++){
 			if(document.getElementsByName("sGubunCateKey")[i].value == ""){
-				alert((i+1)+"번째 구분을 선택하세요.");
-				document.getElementsByName("sGubunCateKey")[i].focus();
+				var text = "";
+				if(i+1 > 1) {
+					text = (i+1) + "번째 "
+				}
+				modal1(text + "구분을 선택하세요.", "#sGubunCateKey_"+i);
 				return false;
 			}
 			if(document.getElementsByName("sGubunName")[i].value == ""){
-				alert((i+1)+"번째 구분명을 입력해주세요.");
-				document.getElementsByName("sGubunName")[i].focus();
+				var text = "";
+				if(i+1 > 1) {
+					text = (i+1) + "번째 "
+				}
+				modal1(text + "세부항목을 입력하세요.", "#sGubunName_"+i);
 				return false;
 			}
 		}
 	}else{
-		alert("등록할 행이 없습니다.");
+		modal1("등록할 세부항목이 없습니다.");
 		return false;
 	} 
 	return true;

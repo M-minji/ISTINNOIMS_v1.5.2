@@ -9,21 +9,20 @@ function memberUp(){
 	    const className = document.getElementById("kClassName").value.trim();
 
 	    if (rank === "") {
-	        alert("순서를 입력하세요.");
-	        document.getElementById("kClassRank").focus();
+	        modal1("순서를 입력하세요.", "#kClassRank");
 	        return false;
 	    }
 	 // 숫자만 남기도록 rank 값을 필터링
 	    document.getElementById("kClassRank").value = rank.replace(/[^0-9]/g, '');
 	    if (className === "") {
-	        alert("직급명을 입력하세요.");
-	        document.getElementById("kClassName").focus();
+	        modal1("직급명을 입력하세요.", "#kClassName");
 	        return false;
 	    }
 
-	    
-	document.writeForm.action = "/mes/user/kw_userLevel_u.do";
-	document.writeForm.submit();
+	    modal3("저장하시겠습니까?", function() {
+	    	document.writeForm.action = "/mes/user/kw_userLevel_u.do";
+	    	document.writeForm.submit();
+		});
 }
 </script>
 <form name="writeForm" id="writeForm">		

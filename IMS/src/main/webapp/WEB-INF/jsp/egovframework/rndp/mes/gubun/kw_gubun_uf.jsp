@@ -4,24 +4,22 @@
 <script type="text/javascript">
 	function update_go(){
 		if(chkIns()){
-			if(confirm("저장하시겠습니까?")){
+			modal3("저장하시겠습니까?", function() {
 				$("#mloader").show();
-				document.frm.submit();	
-			}
+				document.frm.submit();
+			});
 		}
 	}
 
 // validation
 function chkIns(){
 	if ($("#sGubunCateKey").val() == ""){
-		alert("구분을 선택하세요.");
-		$("#sGubunCateKey").focus();
+		modal1("구분을 선택하세요.", "#sGubunCateKey");
 		return false;
 	}
 	
 	if ($("#sGubunName").val() == ""){
-		alert("구분명을 입력하세요.");
-		$("#sGubunName").focus();
+		modal1("세부항목을 입력하세요.", "#sGubunName");
 		return false;
 	}
 	return true;
@@ -29,11 +27,11 @@ function chkIns(){
 
 // 삭제
 function delete_go(){
-	if(confirm("삭제하시겠습니까?")){
+	modal3("삭제하시겠습니까?", function() {
 		$("#mloader").show();
 		document.frm.action = "/mes/gubun/kw_gubun_d.do";
 		document.frm.submit();
-	}
+	});
 }
 
 // 목록
@@ -64,7 +62,7 @@ function cancel(){
 	       	<thead>
 	       		<tr>
 	           		<th style="width: 200px"><span style="color: red">* </span>구분</th>
-	           		<th><span style="color: red">* </span>구분명</th>
+	           		<th><span style="color: red">* </span>세부항목</th>
 	           		<th>영문표기(약어)</th>
 	       		</tr>
 	       	</thead>

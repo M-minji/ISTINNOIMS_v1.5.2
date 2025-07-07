@@ -4,18 +4,17 @@
 <script type="text/javascript">
 	function update_go(){
 		if(chkIns()){
-			if(confirm("저장하시겠습니까?")){
+			modal3("저장하시겠습니까?", function() {
 				$("#mloader").show();
 				document.frm.submit();	
-			}
+			});
 		}
 	}
 
 // validation
 function chkIns(){
 	if ($("#eContactName").val() == ""){
-		alert("담당자명 선택하세요.");
-		$("#eContactName").focus();
+		modal1("담당자명을 입력하세요.", "#eContactName");
 		return false;
 	}
 	
@@ -24,11 +23,11 @@ function chkIns(){
 
 // 삭제
 function delete_go(){
-	if(confirm("삭제하시겠습니까?")){
+	modal3("삭제하시겠습니까?", function() {
 		$("#mloader").show();
 		document.frm.action = "/mes/contact/kw_contact_d.do";
-		document.frm.submit();
-	}
+		document.frm.submit()	
+	});
 }
 
 // 목록
