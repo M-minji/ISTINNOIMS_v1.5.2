@@ -15,6 +15,27 @@
 <link href="/js/jBox/jBox.all.min.css" rel="stylesheet">
 <script src="/js/jBox/jBox.all.min.js"></script>
 <script type="text/javascript">
+function modalContent(titlemsg, message, onCloseCallback) {  
+	new jBox('Modal', {
+	    title: titlemsg,
+	    width: 300,
+	    blockScrollAdjust: ['header'],
+	    content:message,
+	    overlay: false,
+	    position: {
+	        x: 'center',
+	        y: 'top'
+	      },
+	      offset: {
+	        y: 70
+	      },
+	      onClose: function () { 
+	          if (typeof onCloseCallback === 'function') {
+	            onCloseCallback();
+	          }
+	  }}).open();
+ 
+}
 function notice(message) {
 	new jBox('Notice', {
 		content: message,
@@ -184,8 +205,11 @@ function checkRequiredFields(field1, field2, field3, field4, field5, field6) {
         requiredFieldsCount++;  // 필수값 하나라도 없으면 카운트 증가    -> 이렇게 해버리니까 몇개가 잘못돼도 카운트가 1임 -> 필수 누락은 카운트 뺌
     }
 }
-
+let alertMessageT1 = "";
+let alertMessageT2 = "";
 let alertMessage = "";  // 경고 메시지 전역 변수
+let alertMessage2 = ""; 
+var alertCount = 0;
 function checkAllConditions() {
 	  alertMessage = "";  // 경고 메시지 초기화
 	  if (assetTypeCount > 0) {
@@ -211,25 +235,59 @@ function checkAllConditions() {
 	    if (requiredFieldsCount > 0) {
 	        alertMessage += "필수 입력 항목 누락!  " ; // +requiredFieldsCount+"건\n";    // 필수 누락은 카운트 뺌
 	    }
+	    if(alertMessage !== "") {
+	    	alertCount = -1;
+	    	return true;
+	    }
+	    alertMessage = "";
+	    alertCount = 0;
 	    if(ANexcelCheckNum > 0) {
-	    		alertMessage = "엑셀 파일에서 중복되는 자산번호를 발견하였습니다."
+	    	alertCount ++;
+	    		alertMessageT1 = "엑셀 파일 내에  <strong>중복되는 자산번호 </strong>가 있습니다."
+	    		
 				 for(let msg of ANDuplicatearr){
 					 alertMessage += msg;
 				 }
 	    		alertMessage += "\n";
 		 }
 	    if(SNexcelCheckNum > 0) {
-	    	alertMessage += "\n";
-			 alertMessage += "엑셀 파일에서 중복되는 제조번호를 발견하였습니다."
-			 for(let msg of SNDuplicatearr){
-				 alertMessage += msg;
-			 }
+	    	alertCount ++;
+	    	if(alertCount == 1) {
+	    		alertMessageT1 = "엑셀 파일 내에  <strong>중복되는 제조번호 </strong>가 있습니다."
+	    		for(let msg of SNDuplicatearr){
+					 alertMessage += msg;
+				 }
+	    	} else {
+	    		alertMessageT2 = "엑셀 파일 내에  <strong>중복되는 제조번호 </strong>가 있습니다.";
+	    		alertMessage2 = "";
+	    		for(let msg of SNDuplicatearr){
+					 alertMessage2 += msg;
+				 }
+	    	}
+	    	
 		 }
+	    if(alertCount !== 0) {
+	    	return true;
+	    }
+	    alertMessage = "";
+	    alertCount = 0;
 	    if(duplicateValueAN > 0) {
-			 alertMessage = "등록된 자산과 중복되는 자산번호를 발견하였습니다.\n" + duplicateeAssetNumber;
+	    	alertCount++;
+	    	alertMessageT1 = "등록된 자산과  <strong>중복되는 자산번호 </strong>를 발견하였습니다.";
+	    	alertMessage = duplicateeAssetNumber;
+		//	 alertMessage = "등록된 자산과 중복되는 자산번호를 발견하였습니다.\n" + duplicateeAssetNumber;
 		 }
 	    if(duplicateValueSN > 0) {
-	    	alertMessage += "\n등록된 자산과 중복되는 제조번호를 발견하였습니다.\n" + duplicateeAssetSNumber;
+	    	alertCount++;
+	    	if(alertCount == 1) {
+	    		alertMessageT1 = "등록된 자산과  <strong>중복되는 제조번호 </strong>를 발견하였습니다."
+	    		alertMessage = duplicateeAssetSNumber;
+	    	} else {
+	    		alertMessageT2 = "등록된 자산과  <strong>중복되는 제조번호 </strong>를 발견하였습니다.";
+	    		alertMessage2 = duplicateeAssetSNumber;
+	    		
+	    	}
+	    //	alertMessage += "\n등록된 자산과 중복되는 제조번호를 발견하였습니다.\n" + duplicateeAssetSNumber;
 		 }
 	if (assetTypeCount === 0 && assetStatusCount === 0 && specialCharCount === 0 &&
 	        checkCount === 0 && dateCheckCount === 0 && requiredFieldsCount === 0 && duplicateValueSN == 0 && duplicateValueAN == 0 &&
@@ -295,7 +353,7 @@ function SNexcelCheck(sn, index){
 		SNexcelCheckNum++;
 		var indexNum = SNDuplicatearr.findIndex(str => str.includes("'" + value + "'  "));
 		if(indexNum < 0) {	// 중복이 처음 발견됨
-			SNDuplicatearr.push("\n'" + value + "'  " + SNarrIdx[SNarr.indexOf(value)] + "행, " + (index+1) + "행");
+			SNDuplicatearr.push("<p>'" + value + "'  " + SNarrIdx[SNarr.indexOf(value)] + "행, " + (index+1) + "행");
 		} else {	// 중복이 또 발견됨 (3개이상)
 			SNDuplicatearr[indexNum] += (", " + (index+1) + "행");  
 		}
@@ -311,7 +369,7 @@ function ANexcelCheck(an, index){
 		ANexcelCheckNum++;
 		var indexNum = ANDuplicatearr.findIndex(str => str.includes("'" + value + "'  "));
 		if(indexNum < 0) {	// 중복이 처음 발견됨
-			ANDuplicatearr.push("\n'" + value + "'  " + ANarrIdx[ANarr.indexOf(value)] + "행, " + (index+1) + "행");
+			ANDuplicatearr.push("<p>'" + value + "'  " + ANarrIdx[ANarr.indexOf(value)] + "행, " + (index+1) + "행");
 		} else {	// 중복이 또 발견됨 (3개이상)
 			ANDuplicatearr[indexNum] += (", " + (index+1) + "행");  
 		}
@@ -343,7 +401,7 @@ function eAssetSNumberCheck(ogj, idx){
 			var dataInfo  = msg.result.dataAdd;
 			 if (dataInfo > 0) {
                 // 데이터가 있는 경우 -> 중복 제조번호
-                duplicateeAssetSNumber += (idx + "행. " + ogj + "\n");
+                duplicateeAssetSNumber += (idx + "행. " + ogj + "<p>");
                 duplicateValueSN++;
                 return false;
             }
@@ -366,7 +424,7 @@ function eAssetNumberCheck(obb, idx){
 			var dataInfo  = msg.result.dataAdd;
 			 if (dataInfo > 0) {
                 // 데이터가 있는 경우 -> 중복 자산번호
-				 duplicateeAssetNumber += (idx + "행. " + obb + "\n");
+				 duplicateeAssetNumber += (idx + "행. " + obb + "<p>");
 	                duplicateValueAN++;
 	                return false;
             	}
@@ -492,7 +550,17 @@ function readExcel(e) {
         	
         	
         	 if(checkAllConditions()){//체크하여 문제있으면 메시지 출력 후 종료
-    			 alert(alertMessage);
+        		 if(alertCount<0){
+        			 modalContent("엑셀 업로드 실패", alertMessage);
+        			 return;
+        		 } else if(alertCount == 1) {
+        			 modalContent(alertMessageT1, alertMessage);
+        			 return;
+        		 } else {
+        			 modalContent(alertMessageT1, alertMessage, function() {
+        				 modalContent(alertMessageT2, alertMessage2);
+        			 });
+        		 }
     			 return;
     		 }else{
     			 for(var i = 1 ; i < arr.length; i++){
@@ -807,13 +875,23 @@ document.ondragstart = function() {
         text-align: left;
     }
 }
-</style>
-<style>
-	.jBox-Notice.complite-notice .jBox-content {
-	  font-size: 16px; 
-	  font-family: 'Pretendard GOV', sans-serif;
-	  font-weight: 400; 
-	}
+.jBox-Modal .jBox-title {
+    border-radius: 4px 4px 0 0;
+    padding: 15px 20px;
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+    height: 50px;
+}
+.jBox-Modal .jBox-content {
+    height: auto;
+}
+.jBox-Modal {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+  border: 2px solid #eee !important;
+}
+.jBox-closeButton path{
+	fill:#000;
+}
 </style>
 <form name="listForm" id="listForm" method="post" action = "/mes/asset/kw_asset_lf.do">		
 	<input type="hidden" id="pageIndex" name="pageIndex" value="${mesAssetVO.pageIndex}"/>
