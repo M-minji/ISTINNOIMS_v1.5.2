@@ -6,7 +6,6 @@
 <!-- 그리드 S -->
 <script type="text/javascript" src="/js/cdnjs_cloudflare_com_ajax_libs_jqueryui_1.12.1/jquery.min.js"></script>
 <script type="text/javascript" src="/js/cdnjs_cloudflare_com_ajax_libs_jqueryui_1.12.1/gridjs.production.min.js"></script>
-
 <script type="text/javascript" src="/js/cdnjs_cloudflare_com_ajax_libs_jqueryui_1.12.1/jquery-ui.min.js"></script>
 <link href="/css/mes/jquery-ui.min.css" rel="stylesheet"	type="text/css" />
 <script src="/js/xlsx.full.min.js"></script>
@@ -65,6 +64,51 @@ window.addEventListener("DOMContentLoaded", function () {
 	    sessionStorage.removeItem("actionType");
   }
 });
+function initTooltip() {
+	  new jBox('Tooltip', {
+		    attach: '#Tooltip',
+		    theme: 'TooltipBorder',
+		    trigger: 'click',
+		    adjustTracker: true,
+		    closeOnClick: 'body',
+		    closeOnEsc: true,
+		    animation: 'move',
+		    position: {
+		      x: 'right',
+		      y: 'top'
+		    },
+		    outside: 'x', 
+		    adjustPosition: false,
+		    content:
+		    	"• 자산유형과 자산상태는 ‘시스템관리 - 코드관리’에 등록된 항목만 등록할 수 있습니다.<br>"+
+		    	"• 중복된 자산번호와 제조번호는 등록이 불가능합니다.<br>"+
+		    	"• 도입원가와 내구연수는 숫자만 등록이 가능합니다.<br>"+
+		    	"• 도입일과 EoS, EoL은 YYYY-MM-DD 형식으로 입력해 주세요.<br>"+
+		    	"• 제공된 양식을 사용하지 않을 경우, 양식과 동일하게 셀 위치를 맞춰야 정상적으로 등록됩니다.<br>"+
+		    	"• 자산 등록에 실패한 경우, 수정된 파일은 새로고침 후에 업로드해 주세요.<brp>"+
+		    	"• 업로드 가능 확장자: .xlsx<br>"+
+		    	"• 미입력시 자동으로 기입되는 항목:<br>"+
+		    	"&nbsp;&nbsp;- 자산상태: 사용<br>"+
+		    	"&nbsp;&nbsp;- 도입원가: 0<br>"+
+		    	"&nbsp;&nbsp;- 도입일: 등록일자<br>"+
+		    	"&nbsp;&nbsp;- 내구연수: 0<br>"+
+		    	"&nbsp;&nbsp;- EoS, EoL: 2999-01-01<br>",
+		    onOpen: function (tooltip) {
+		    	document.body.style.height = '120%';
+		    },
+		    onClose: function () {
+		    	document.body.style.height = '100%';
+		    },
+		    onPosition: function () {
+	    		const instance = this;
+	    	    const pointer = instance.wrapper.find('.jBox-pointer');
+	    	    pointer.css({
+	    	    top: '290px',
+	    	    transform: 'translateY(0)'
+	    	   });
+	    	}
+		  });
+}
 function fn_guestList(pageNo) {
 	$('#mloader').show();
 	document.listForm.pageIndex.value = pageNo;
@@ -213,23 +257,23 @@ var alertCount = 0;
 function checkAllConditions() {
 	  alertMessage = "";  // 경고 메시지 초기화
 	  if (assetTypeCount > 0) {
-	        alertMessage += "자산유형 오류!   "+assetTypeCount+"건\n";
+	        alertMessage += "자산유형 오류!   "+assetTypeCount+"건<br>";
 	    }
 
 	    if (assetStatusCount > 0) {
-	        alertMessage += "자산상태 오류!  "+assetStatusCount+"건\n";
+	        alertMessage += "자산상태 오류!  "+assetStatusCount+"건<br>";
 	    }
 
 	    if (specialCharCount > 0) {
-	    	alertMessage += '특수문자 (<, >, ", \', &) 포함 셀! ' + specialCharCount + '건\n';
+	    	alertMessage += '특수문자 (<, >, ", \', &) 포함 셀! ' + specialCharCount + '건<br>';
 	    }
 
 	    if (checkCount > 0) {
-	        alertMessage += "텍스트 길이 80자 초과!  "+checkCount+"건\n";
+	        alertMessage += "텍스트 길이 80자 초과!  "+checkCount+"건<br>";
 	    }
 
 	    if (dateCheckCount > 0) {
-	        alertMessage += "날짜 형식(YYYY-MM-DD) 오류!  "+dateCheckCount+"건\n";
+	        alertMessage += "날짜 형식(YYYY-MM-DD) 오류!  "+dateCheckCount+"건<br>";
 	    }
 	  
 	    if (requiredFieldsCount > 0) {
@@ -248,7 +292,7 @@ function checkAllConditions() {
 				 for(let msg of ANDuplicatearr){
 					 alertMessage += msg;
 				 }
-	    		alertMessage += "\n";
+	    		alertMessage += "<br>";
 		 }
 	    if(SNexcelCheckNum > 0) {
 	    	alertCount ++;
@@ -353,7 +397,7 @@ function SNexcelCheck(sn, index){
 		SNexcelCheckNum++;
 		var indexNum = SNDuplicatearr.findIndex(str => str.includes("'" + value + "'  "));
 		if(indexNum < 0) {	// 중복이 처음 발견됨
-			SNDuplicatearr.push("<p>'" + value + "'  " + SNarrIdx[SNarr.indexOf(value)] + "행, " + (index+1) + "행");
+			SNDuplicatearr.push("<br>'" + value + "'  " + SNarrIdx[SNarr.indexOf(value)] + "행, " + (index+1) + "행");
 		} else {	// 중복이 또 발견됨 (3개이상)
 			SNDuplicatearr[indexNum] += (", " + (index+1) + "행");  
 		}
@@ -369,7 +413,7 @@ function ANexcelCheck(an, index){
 		ANexcelCheckNum++;
 		var indexNum = ANDuplicatearr.findIndex(str => str.includes("'" + value + "'  "));
 		if(indexNum < 0) {	// 중복이 처음 발견됨
-			ANDuplicatearr.push("<p>'" + value + "'  " + ANarrIdx[ANarr.indexOf(value)] + "행, " + (index+1) + "행");
+			ANDuplicatearr.push("<br>'" + value + "'  " + ANarrIdx[ANarr.indexOf(value)] + "행, " + (index+1) + "행");
 		} else {	// 중복이 또 발견됨 (3개이상)
 			ANDuplicatearr[indexNum] += (", " + (index+1) + "행");  
 		}
@@ -401,7 +445,7 @@ function eAssetSNumberCheck(ogj, idx){
 			var dataInfo  = msg.result.dataAdd;
 			 if (dataInfo > 0) {
                 // 데이터가 있는 경우 -> 중복 제조번호
-                duplicateeAssetSNumber += (idx + "행. " + ogj + "<p>");
+                duplicateeAssetSNumber += (idx + "행. " + ogj + "<br>");
                 duplicateValueSN++;
                 return false;
             }
@@ -424,7 +468,7 @@ function eAssetNumberCheck(obb, idx){
 			var dataInfo  = msg.result.dataAdd;
 			 if (dataInfo > 0) {
                 // 데이터가 있는 경우 -> 중복 자산번호
-				 duplicateeAssetNumber += (idx + "행. " + obb + "<p>");
+				 duplicateeAssetNumber += (idx + "행. " + obb + "<br>");
 	                duplicateValueAN++;
 	                return false;
             	}
@@ -432,7 +476,15 @@ function eAssetNumberCheck(obb, idx){
 		});
 
 }
-
+function isRowEmpty(row) {
+	  // A~S열 인덱스 0~18까지 모두 빈 값인지 확인
+	  for(let col = 0; col <= 18; col++) {
+	    if(row[col] !== undefined && row[col] !== null && row[col].toString().trim() !== '') {
+	      return false; // 하나라도 값이 있으면 빈 행 아님
+	    }
+	  }
+	  return true; // 모두 빈 값이면 빈 행임
+	}
 function readExcel(e) {
     var input = event.target;
     var reader = new FileReader();
@@ -445,8 +497,18 @@ function readExcel(e) {
             var val1 = true;
             var val2 = true;
             var val3 = true;
+            
+            for(let i = arr.length -1; i > 0; i--) {
+      		  if(isRowEmpty(arr[i])) {
+      		    arr.splice(i, 1);  // 빈 행 삭제
+      		  } else {
+      		    break;  // 데이터 있는 행 만나면 멈춤
+      		  }
+      		}
             // 필수값 확인
             for(var i = 1 ; i < arr.length; i++){  
+            	
+            	
         		//필수값 확인
         		checkRequiredFields(arr[i][0],arr[i][1],arr[i][2],arr[i][3],arr[i][4],arr[i][5]);
         		if(requiredFieldsCount != 0) {	// 필수값이 비어있으면 나감
@@ -605,7 +667,8 @@ function readExcel(e) {
     								} 
     			   		});
     			 } //for
-    			 alert("업로드 완료!");
+    			 sessionStorage.setItem("actionType", "create");
+    			 location.reload();
     			 
     		 }//if else
         	
@@ -642,7 +705,7 @@ $(document).ready(function() {
 	if(assetStatusChars.length > 0){
 		assetStatusFirst = assetStatusChars[0];
 	}
-	
+	initTooltip();
     
 	    
 	 datepickerSet('topStartDate', 'topEndDate');
@@ -852,6 +915,7 @@ document.ondragstart = function() {
 </script>
   
 <style>
+
   .highlighted-row {
     background-color: #c0c0c0 !important;
      #tableContainer {
@@ -891,6 +955,21 @@ document.ondragstart = function() {
 }
 .jBox-closeButton path{
 	fill:#000;
+}
+
+.jBox-TooltipBorder .jBox-container,
+.jBox-TooltipBorder .jBox-pointer:after {
+  border-color: #4869fb;
+}
+
+.btn {position:relative; width: 115px; height: 25px; float:left; font-size: 12px;  color: #fff; text-align: center; line-height: 27px; cursor: pointer;}
+.royal-blue {background-color: #171d2f; margin-top:10px;}
+.royal-blue:after {content: ''; position: absolute; top:0; left: 0; border-top: 10px solid rgb(255,255,255); border-right: 10px solid #4869fb; width: 0;}
+.royal-blue:before {content:''; position: absolute; bottom:0; right:0; border-bottom: 10px solid rgb(255,255,255); border-left: 10px solid #4869fb; width 0:}
+.jBox-wrapper.jBox-Tooltip.jBox-TooltipBorder.jBox-pointerPosition-left {
+  padding-top: 285px;
+  font-size: 15px;
+  padding-left: 12.5px !important;
 }
 </style>
 <form name="listForm" id="listForm" method="post" action = "/mes/asset/kw_asset_lf.do">		
@@ -1083,6 +1162,7 @@ document.ondragstart = function() {
 	    		<button type="button" class="form_btn ico_excel" onclick="formDownload()">양식 다운로드</button>
 	    		<button type="button" class="form_btn ico_excel" onclick="document.getElementById('managerFile').click();">자산 등록</button>
 	    		<input id="managerFile" type="file"  style="display: none;" onchange="readExcel(event);"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
+	   		<!-- 	<img id="Tooltip" class="force-scroll" src="/images/img/i_new_questionmark.png" alt="도움말" style="width: 16px; height: 16px; position: relative; top: 8px; cursor: pointer;"/> -->
 			</c:if>
 		</div>
 		<div class="paging">
@@ -1097,4 +1177,8 @@ document.ondragstart = function() {
 			</c:if>
 		</div>
 	</div>
+	<div class="force-scroll">
+	<div class="btn royal-blue" id="Tooltip">
+	<span>엑셀등록 주의사항</span>
+	</div></div>
 </form>
