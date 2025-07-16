@@ -284,7 +284,7 @@ function chkAll(flag, flagTag,flag2){
 	
 			<div class="content_top">
 				<div class="content_tit">
-					<h2>직원 메뉴 관리</h2>
+					<h2>메뉴별 권한</h2>
 				</div>
 			</div>
 		

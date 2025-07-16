@@ -56,7 +56,7 @@ function setToolTip(){
 		if (checkbox.prop('checked')) {
 		} else if(elements.length > 0){
 			$("#approvalWrap").addClass("hoverToolTip");
-				window.hoverTipBox = new jBox('Tooltip', {
+			window.hoverTipBox = new jBox('Tooltip', {
 		    attach: '.hoverToolTip',
 		    theme: 'TooltipDark',
 		    animation: 'zoomOut',
@@ -94,6 +94,7 @@ function setToolTip(){
 		if(sSignStatus == "등록" || sSignStatus == "반려" || sSignStatus == "승인"){
 			$("#oSignPass").val("N");
 			 $('#oPass').prop('checked', false);
+			 setToolTip();
 		}else{
 			 $('#oPass').prop('checked', true);
 			$("#oSignPass").val("Y");
@@ -412,6 +413,10 @@ function setToolTip(){
 		}
 		if($("#eRequester").val() == ""){
 			modal1("요청자를 입력하세요.", "#eRequester");
+			return false;
+		}
+		if($("#eIssueContent").val() == ""){
+			modal1("요청내용을 입력하세요.", "#eIssueContent");
 			return false;
 		}
 // 		if($("#eRequester").val() == ""){
@@ -831,7 +836,7 @@ function setToolTip(){
 					 
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>장애 정보 수정 페이지</h2>
+			<h2>장애정보 수정</h2>
 		</div>
 	</div>
 	
@@ -923,9 +928,7 @@ function setToolTip(){
 					</td>
   				</tr>
 				<tr>
-					<th>
-						요청내용
-					</th>
+					<th><span style="color: red">* </span>요청내용</th>
 					<td id="td_editor" colspan="3" scope="row"> 
 						<textarea id="eIssueContent" name="eIssueContent" cols="100%" rows="20" style="font-size: 20px; width: 100%; height: 300px; resize: none;" maxLength="1000">${issueInfo.eIssueContent}</textarea>
 					</td>
@@ -1114,9 +1117,7 @@ function setToolTip(){
 			<div id="approvalWrap">
 			<label for="oPass" class="inp_chkbox">
 				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();" onchange="removeToolTip();"/>
-				<i></i>
-				결재 제외
-			</label>
+				<i></i>결재 제외	</label>
 			</div>
 		</div>
 		<div class="btns">

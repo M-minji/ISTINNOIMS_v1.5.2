@@ -253,7 +253,7 @@ function startApproval(eSWRegisterKey, eStatus){
 	
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>소프트웨어 라이선스 관리</h2>
+			<h2>소프트웨어 라이선스관리</h2>
 		</div>		
 		<div class="filter_wrap"> 
 			<div class="search_filter">

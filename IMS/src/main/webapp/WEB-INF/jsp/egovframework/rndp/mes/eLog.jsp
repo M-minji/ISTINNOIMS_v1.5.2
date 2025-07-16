@@ -194,7 +194,7 @@ function nowDate(){
 <input   type="hidden"      id="kStaffId"   name="kStaffId" value="${staffVo.kStaffId}">
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>접속 통계</h2>
+			<h2>접속통계</h2>
 		</div>
 		<div class="filter_wrap"> 
 			<div class="search_filter">

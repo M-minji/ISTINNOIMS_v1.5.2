@@ -103,7 +103,7 @@ function initTooltip() {
 	    		const instance = this;
 	    	    const pointer = instance.wrapper.find('.jBox-pointer');
 	    	    pointer.css({
-	    	    top: '290px',
+	    	    top: '264px',
 	    	    transform: 'translateY(0)'
 	    	   });
 	    	}
@@ -485,6 +485,7 @@ function isRowEmpty(row) {
 	  }
 	  return true; // 모두 빈 값이면 빈 행임
 	}
+var excelassetcount = 0;
 function readExcel(e) {
     var input = event.target;
     var reader = new FileReader();
@@ -608,6 +609,7 @@ function readExcel(e) {
 //         			console.log( "16:EoL(일자)="+  arr[i][16]); 
 //         			console.log( "17:내구연수(숫자)="+arr[i][17]); 
 //         			console.log( "18:비고값(50)="+  arr[i][18]); 
+        		excelassetcount++;
        		}}
         	
         	
@@ -623,53 +625,55 @@ function readExcel(e) {
         				 modalContent(alertMessageT2, alertMessage2);
         			 });
         		 }
+        		 excelassetcount = 0;
     			 return;
     		 }else{
-    			 for(var i = 1 ; i < arr.length; i++){
-    	  			$.ajax({
-    			  			method : "post"
-    			  		,	cache  : false
-    			  		,	url    : "/mes/asset/kw_uploadAssetAjax.do"
-    			  		,	dataType : "json"
-    			  		,	async: false
-    			       	, 	data: {
-    			       			eAssetTypeName    :	arr[i][0]
-    				       ,	eAssetNumber	  : arr[i][1]
-    				       ,	eAssetName        : arr[i][2]
-    				       ,	eAssetMaker       : arr[i][3]
-    				       ,	eAssetSNumber     : arr[i][4]
-    				       ,	eAssetModel       : arr[i][5]
-    				       ,	eAssetStatusName  : arr[i][6]
-    				       ,	eAssetCost        : processInput(arr[i][7],10) 
-    				       ,	aAssetDate        : arr[i][8]
-    				       ,	eDeviceType       : arr[i][9]
-    				       ,	eAssetPurpose     : arr[i][10]
-    				       ,	eNetworkType      : arr[i][11]
-    				       ,	eHostName         : arr[i][12]
-    				       ,	eIp               : arr[i][13]
-    				       ,	eOs               : arr[i][14]
-    				       ,	eEosDate          : arr[i][15]
-    				       ,	eEolDate          : arr[i][16]
-    				       ,	eLifespan    : processInput(arr[i][17],2)
-    				       ,	eAssetEtc    : ConverttoHtml(arr[i][18])
-    			       		
-    		             	}
-    			  		,	success:function(msg){
-    			  			//	console.log("성공");
-    			  			}
-    			  		,	error: function(xhr, status, error) {
-    			           		// 요청이 실패했을 때 수행할 작업
-    			           		console.log(error);
-    			           		if (xhr.status === 500) {
-    			           			// AJAX 요청 중단
-    			           			console.log('AJAX 요청이 중지되었습니다.');
-    									}
-    								} 
-    			   		});
-    			 } //for
-    			 sessionStorage.setItem("actionType", "create");
-    			 location.reload();
-    			 
+    			 modal3(excelassetcount+"개 자산을 등록하시겠습니까?", function(){
+    				 for(var i = 1 ; i < arr.length; i++){
+    	    	  			$.ajax({
+    	    			  			method : "post"
+    	    			  		,	cache  : false
+    	    			  		,	url    : "/mes/asset/kw_uploadAssetAjax.do"
+    	    			  		,	dataType : "json"
+    	    			  		,	async: false
+    	    			       	, 	data: {
+    	    			       			eAssetTypeName    :	arr[i][0]
+    	    				       ,	eAssetNumber	  : arr[i][1]
+    	    				       ,	eAssetName        : arr[i][2]
+    	    				       ,	eAssetMaker       : arr[i][3]
+    	    				       ,	eAssetSNumber     : arr[i][4]
+    	    				       ,	eAssetModel       : arr[i][5]
+    	    				       ,	eAssetStatusName  : arr[i][6]
+    	    				       ,	eAssetCost        : processInput(arr[i][7],10) 
+    	    				       ,	aAssetDate        : arr[i][8]
+    	    				       ,	eDeviceType       : arr[i][9]
+    	    				       ,	eAssetPurpose     : arr[i][10]
+    	    				       ,	eNetworkType      : arr[i][11]
+    	    				       ,	eHostName         : arr[i][12]
+    	    				       ,	eIp               : arr[i][13]
+    	    				       ,	eOs               : arr[i][14]
+    	    				       ,	eEosDate          : arr[i][15]
+    	    				       ,	eEolDate          : arr[i][16]
+    	    				       ,	eLifespan    : processInput(arr[i][17],2)
+    	    				       ,	eAssetEtc    : ConverttoHtml(arr[i][18])
+    	    			       		
+    	    		             	}
+    	    			  		,	success:function(msg){
+    	    			  			//	console.log("성공");
+    	    			  			}
+    	    			  		,	error: function(xhr, status, error) {
+    	    			           		// 요청이 실패했을 때 수행할 작업
+    	    			           		console.log(error);
+    	    			           		if (xhr.status === 500) {
+    	    			           			// AJAX 요청 중단
+    	    			           			console.log('AJAX 요청이 중지되었습니다.');
+    	    									}
+    	    								} 
+    	    			   		});
+    	    			 } //for
+    	    			 sessionStorage.setItem("actionType", "create");
+    	    			 location.reload();
+    			 }); // modal3
     		 }//if else
         	
         });
@@ -967,7 +971,7 @@ document.ondragstart = function() {
 .royal-blue:after {content: ''; position: absolute; top:0; left: 0; border-top: 10px solid rgb(255,255,255); border-right: 10px solid #4869fb; width: 0;}
 .royal-blue:before {content:''; position: absolute; bottom:0; right:0; border-bottom: 10px solid rgb(255,255,255); border-left: 10px solid #4869fb; width 0:}
 .jBox-wrapper.jBox-Tooltip.jBox-TooltipBorder.jBox-pointerPosition-left {
-  padding-top: 285px;
+  padding-top: 260px;
   font-size: 15px;
   padding-left: 12.5px !important;
 }
@@ -1177,8 +1181,6 @@ document.ondragstart = function() {
 			</c:if>
 		</div>
 	</div>
-	<div class="force-scroll">
-	<div class="btn royal-blue" id="Tooltip">
-	<span>엑셀등록 주의사항</span>
-	</div></div>
+	<div class="force-scroll btn royal-blue" id="Tooltip">
+	<span>엑셀등록 주의사항</span></div>
 </form>

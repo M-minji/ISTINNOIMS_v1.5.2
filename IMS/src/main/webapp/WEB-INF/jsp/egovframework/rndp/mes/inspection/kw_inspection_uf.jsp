@@ -88,6 +88,7 @@ function setToolTip(){
 		if(sSignStatus == "등록" || sSignStatus == "반려" || sSignStatus == "승인"){
 			$("#oSignPass").val("N");
 			 $('#oPass').prop('checked', false);
+			 setToolTip();
 		}else{
 			 $('#oPass').prop('checked', true);
 			$("#oSignPass").val("Y");
@@ -795,7 +796,7 @@ function setToolTip(){
 	<input type="hidden" id="eFieldKey" name="eFieldKey"  value="${mesInspectionVO.eFieldKey}"/>
 	<div class="content_top">	
 		<div class="content_tit">
-			<h2>점검 정보 수정 페이지</h2>
+			<h2>점검정보 수정</h2>
 		</div>
 	</div>
 	<div class="normal_table row">
@@ -1045,17 +1046,13 @@ function setToolTip(){
 					<c:forEach var="slist" items="${signList}" varStatus="j">
 							<tr>
 								<td>
-									<a class='del' onclick="delRowTwo(this);">X</a>
+									<span id='sn_sp_${j.index}' class='sn_sp'>${slist.sSignSequence}</span>
 			
 									<input type='hidden' id='sSignStaffKey_${j.index}' name='sSignStaffKey' value='${slist.sSignStaffKey}'/>
 									<input type='hidden' id='sSignStaffPosition_${j.index}' name='sSignStaffPosition' value='${slist.sSignStaffPosition}'/>
 									<input type='hidden' id='sSignStaffName_${j.index}' name='sSignStaffName' value='${slist.sSignStaffName}'/>
 									<input type='hidden' id='sSignSequence_${j.index}' name='sSignSequence' value='${slist.sSignSequence}'/>
 									<input type='hidden' id='sSignStaffGubun_${j.index}' name='sSignStaffGubun' value='${slist.sSignStaffGubun}'/>
-								</td>
-							
-								<td>
-									<span id='sn_sp_${j.index}' class='sn_sp'>${slist.sSignSequence}</span>
 								</td>
 							
 								<td>

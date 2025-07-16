@@ -133,7 +133,7 @@ td.gridjs-td:last-child{text-align:center !important;}
 
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>시스템 사용자 계정관리</h2>
+			<h2>사용자설정</h2>
 		</div>
 		
 		<div class="filter_wrap"> 
@@ -175,7 +175,7 @@ td.gridjs-td:last-child{text-align:center !important;}
 					<th>No.</th>
 					<th>ID</th>
 					<th>이름</th>
-					<th>E-Mail</th>
+					<th>이메일</th>
 					<th>휴대전화</th>
 					<th >관리</th>
 				</tr>

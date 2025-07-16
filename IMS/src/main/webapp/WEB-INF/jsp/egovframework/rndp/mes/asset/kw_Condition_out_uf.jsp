@@ -88,6 +88,9 @@ function setToolTip(){
 	$(document).ready(function(){
 		datepickerIdSet("eEntryExitDate");
 		datepickerIdSet("eAssetWdate");
+		
+				
+		datepickerNameSet("eEntryImportDate"); 
 // 		$('#eEntryExitDate').val(nowDate());
  
 		 var firstEntryExitDate = $("input[name='eEntryExitDate1']").first().val();
@@ -107,6 +110,7 @@ function setToolTip(){
 		if(sSignStatus == "등록" || sSignStatus == "반려" || sSignStatus == "승인"){
 			$("#oSignPass").val("N");
 			 $('#oPass').prop('checked', false);
+			 setToolTip();
 		}else{
 			 $('#oPass').prop('checked', true);
 			$("#oSignPass").val("Y");
@@ -136,6 +140,25 @@ function setToolTip(){
 			modal1("반출장비가 없습니다.");
 	    	return;
 	    }
+	 	
+	 	var indexArr = document.getElementsByName("eAssetKey").length;
+	 	for(var i = 0; i<indexArr; i++){
+	 		var el = document.getElementById("eEntryImportDate_"+i);
+	 		if(el.type === "hidden"){
+	 		} else{
+	 			var entryDate = document.getElementById("eEntryImportDate_"+i).value;
+	 			var importer = document.getElementById("eEntryImporter_"+i).value;
+	 			if(!entryDate.trim()) {  // 빈 값 또는 공백만 있는 경우 체크
+					modal1("반입일을 선택하세요.", "#eEntryImportDate_"+i);
+		            return;
+		        }
+	 			if(!importer.trim()) { 
+					modal1("반입확인자를 입력하세요.", "#eEntryImporter_"+i);
+		            return;
+		        }
+	 		}			
+		}
+	 	
 	  
 		if($("#oSignPass").val() != 'Y'){
 		if(document.getElementsByName("sSignStaffKey").length == 0){
@@ -144,8 +167,10 @@ function setToolTip(){
 			}
 		}
 		
-
 		modal3("저장하시겠습니까?", function() {
+			
+			
+			
 			sessionStorage.setItem("actionType", "update");
 			$('#mloader').show();
 			document.writeForm.action = "/mes/asset/kw_eCondition_out_u.do";
@@ -438,6 +463,13 @@ function setToolTip(){
 		// os
 		innerStr += "		<td>"+obj.eOs;
 		innerStr += "		</td>";	
+		
+		
+		innerStr += "		<td>"
+		innerStr += "		</td>";	
+		innerStr += "		<td>"
+		innerStr += "		</td>";	
+		
 		innerStr += "	</tr>";
 		
 		$(innerStr).appendTo("#lineRow");	
@@ -617,7 +649,7 @@ function setToolTip(){
 	<input type="hidden" id="eStatus" name="eStatus" value="${assetInfo.eStatus }" />
 	<div class="content_top">	
 		<div class="content_tit">
-			<h2>보유자산 반출 정보 수정 페이지</h2>
+			<h2>반출정보 수정</h2>
 		</div>
 	</div>
 	<div class="normal_table row">
@@ -688,15 +720,17 @@ function setToolTip(){
 		<table>
 			<thead>
 				<tr>
-					<th style="width: 10%;">구분</th>
-					<th style="width: 12%;">자산유형</th>
+					<th style="width: 8%;">구분</th>
+					<th style="width: 8%;">자산유형</th>
 					<th style="width: 12%;">자산번호</th>
 					<th style="width: 12%;">자산명</th>
-					<th style="width: 12%;">모델명</th>
-					<th style="width: 12%;">망구분</th>
+					<th style="width: 10%;">모델명</th>
+					<th style="width: 10%;">망구분</th>
 					<th style="width: 10%;">HOSTNAME</th>
 					<th style="width: 10%;">IP</th>
 					<th style="width: 10%;">OS</th>
+					<th style="width: 8%;">반입일</th>
+					<th style="width: 8%;">반입확인자</th>
 				</tr>
 			</thead>
 			<tbody id="lineRow">
@@ -733,7 +767,21 @@ function setToolTip(){
 								 	</td>	
 								 
 								 	<td>${list.eOs}
-								 	</td>	
+								 	</td>
+								 	<c:choose>
+								 		<c:when test="${empty list.eEntryImportDate}">
+								 			<td><input type="hidden" name='eEntryImportDate' id='eEntryImportDate_${i.index}' value='' style="text-align:center;" class="inp_color" readonly="readonly"/>   </td>	
+										 	<td><input type="hidden" name='eEntryImporter' id="eEntryImporter_${i.index}" style="width:100%; text-align:left;" maxLength="30" value=""/></td>
+								 		</c:when>
+								 		<c:otherwise>
+								 			<td>
+			      								<input type="text" name='eEntryImportDate' id='eEntryImportDate_${i.index}' value='${list.eEntryImportDate}' style="text-align:center;" class="inp_color" readonly="readonly"/>   
+								 			</td>	
+										 	<td>
+										 		<input type="text" name="eEntryImporter" id="eEntryImporter_${i.index}" style="width:100%; text-align:left;" maxLength="30" value="${list.eEntryImporter}"/>
+										 	</td>
+								 		</c:otherwise>
+								 	</c:choose>
 								 </tr>
 					 </c:forEach>
 			</tbody>
@@ -746,9 +794,7 @@ function setToolTip(){
 			<div id="approvalWrap">
 			<label for="oPass" class="inp_chkbox">
 				<input type="checkbox" id="oPass" name="oPass" class="checkbox" onclick="handleOPassClick();" onchange="removeToolTip();"/>
-				<i></i>
-				결재 제외
-			</label></div>
+				<i></i>결재 제외</label></div>
 		</div>
 		<div class="btns">
 			 <button type="button" onclick="approvalPop()" class="form_btn md">결재선 선택</button>

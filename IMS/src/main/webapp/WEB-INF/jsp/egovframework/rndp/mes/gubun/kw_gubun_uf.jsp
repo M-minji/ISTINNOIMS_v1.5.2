@@ -53,7 +53,7 @@ function cancel(){
 	
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>코드관리 수정</h2>
+			<h2>코드정보 수정</h2>
 		</div>
 	</div>
 	

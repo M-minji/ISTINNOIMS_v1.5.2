@@ -47,7 +47,7 @@ td.gridjs-td:last-child{text-align:center !important;}
 
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>직급 관리</h2>	 
+			<h2>직급관리</h2>	 
 		</div>
 	</div>
 	

@@ -151,7 +151,7 @@ function setToolTip(){
 	 		});
 
      }
-	var eAssetSNumCheckB = "F"
+	var eAssetSNumCheckB = "F";
 	 function eAssetSNumberCheck(ogj){
          var value = $(ogj).val();
          if (!value) {
@@ -172,15 +172,16 @@ function setToolTip(){
 					modal1("이미 등록된 제조번호입니다.", "#eAssetSNumber");
 	      //           $("#eAssetSNumber").val(""); // 필드 초기화
 	             }else {
-	            	 eAssetSNumCheckB = "T"
+	            	 eAssetSNumCheckB = "T";
 	             }
 	 			}
 	 		});
 
      }
 	 
-	 var eAssetNumCheckB = "F"
+	 var eAssetNumCheckB = "T";
 	 function eAssetNumberCheck(obb){
+		 eAssetNumCheckB = "F";
          var ttvalue = $(obb).val();
          if (!ttvalue) {
      	//	modal1("자산번호를 입력하세요.", "#eAssetNumber");
@@ -200,7 +201,7 @@ function setToolTip(){
 					modal1("이미 등록된 자산번호입니다.", "#eAssetNumber");
 	        //         $("#eAssetNumber").val(""); // 필드 초기화
 	             } else {
-	            	 eAssetNumCheckB = "T"
+	            	 eAssetNumCheckB = "T";
 	             }
 	 			}
 	 		});
@@ -825,7 +826,7 @@ function setToolTip(){
 	</c:if>
 	<div class="content_top">	
 		<div class="content_tit">
-			<h2>대상장비 등록</h2>
+			<h2>장비정보 등록</h2>
 		</div>
 	</div>
 	<div class="normal_table row">

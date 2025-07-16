@@ -438,21 +438,21 @@ function eDownloadAll(fileGubun){
 					</td>
 				</tr>
 				<tr>
-					<th>담당자명</th>
+					<th>담당자</th>
 					<td>${projectInfo.eManager}
 						<input type="hidden" id="eManager" name="eManager" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
-					<th>담당자연락처</th>
+					<th>담당자 연락처</th>
 					<td>${projectInfo.eManagerContact}
 						<input type="hidden" id="eManagerContact" name="eManagerContact" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
-					<th>담당자메일</th>
+					<th>담당자 이메일</th>
 					<td>${projectInfo.eManagerEmail}
 						<input type="hidden" id="eManagerEmail" name="eManagerEmail" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
 				</tr>
 				<tr>
-					<th>사업 PM명</th>
+					<th>사업 PM</th>
 					<td>${projectInfo.eProjectPM}
 	 					<input type="hidden" id="eProjectPM" name="eProjectPM" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
@@ -460,7 +460,7 @@ function eDownloadAll(fileGubun){
 					<td>${projectInfo.ePMContact}
 						<input type="hidden" id="ePMContact" name="ePMContact" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
-					<th>PM 메일</th>
+					<th>PM 이메일</th>
 					<td>${projectInfo.ePMEmail}
 						<input type="hidden" id="ePMEmail" name="ePMEmail" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>

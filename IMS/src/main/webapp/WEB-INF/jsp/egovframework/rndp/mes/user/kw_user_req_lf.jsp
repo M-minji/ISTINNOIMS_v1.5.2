@@ -62,7 +62,7 @@ td.gridjs-td{padding: .7rem;}
 	
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>직원 신청 승인</h2>
+			<h2>사용자신청승인</h2>
 		</div>
 	</div>
 		
@@ -81,7 +81,7 @@ td.gridjs-td{padding: .7rem;}
 					<th>No.</th>    
 					<th>이름</th>
 					<th>I D</th>
-					<th>E-Mail</th>
+					<th>이메일</th>
 					<th>휴대전화</th>
 					<th>관리</th>
 				</tr>

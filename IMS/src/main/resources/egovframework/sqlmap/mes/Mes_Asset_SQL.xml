@@ -1345,6 +1345,10 @@
 		,	ASSET_LIFE_TYPE
 		,	sSignStatus
 		,   ASSET_TYPE_MAX
+		,	ASSET_SELECT1
+		,	ASSET_SELECT2
+		,	ASSET_SELECT3
+		,	ASSET_SELECT4
 		) VALUES(
 			#eAssetNumber#
 		,	#eAssetStatusName#
@@ -1364,7 +1368,8 @@
 		
 		,	#aAssetForm#
 		,	#aAssetIntroducer#
-		,	IF(#eAssetDate# = '', now(), #eAssetDate#)
+		
+		,	#aAssetDate#
 		,	IF(#eAssetCost# = '', 0, #eAssetCost#) 
 		
 		,	#eDeviceType#
@@ -1378,7 +1383,7 @@
 		,	#eAssetEtc#
 		,	#kStaffName#
 		,	#kStaffKey#
-		,	#aAssetDate#
+		,	IF(#eAssetDate# = '', now(), #eAssetDate#)
 		,	#eAssetImageId#
 		,	#eAssetImageName#
 		,	#eAssetImageExt#
@@ -1388,6 +1393,10 @@
 		,	#eLifeType#
 		,	IF(#sSignStatus# IS NULL OR #sSignStatus# = '', '제외', #sSignStatus#) 
 		,	 (SELECT COUNT(*) + 1 FROM A_ASSET AS aa WHERE aa.ASSET_TYPE = #eAssetType#  AND DATE_FORMAT(aa.ASSET_WDATE, '%Y-%m-%d') = DATE_FORMAT(CURDATE(), '%Y-%m-%d'))
+		,	#maintanceSelect1#
+		,	#maintanceSelect1#
+		,	#maintanceSelect1#
+		,	#maintanceSelect1#
 		)
 	</insert>
 	<update id = "mesAssetDAO.eAssetModelUpdate" parameterClass = "mesAssetVO">
@@ -1488,11 +1497,15 @@
 					ENTRY_NUM
 				,	ASSET_NUM
 				,	sSignStatus
-	 			)
+				,	eEntryImporter
+				,	eEntryImportDate
+	 		)
 			VALUES(
 			   #eEntryExitKey#
 			  ,#eAssetKey#
 			  ,#sSignStatus#
+			  ,#eEntryImporter#
+			  ,#eEntryImportDate#
 			 )
 	</insert>
 	 
@@ -1807,7 +1820,7 @@
 		</insert>
 	 		 
 	 <insert id = "mesAssetDAO.insertInfoReplacementItem" parameterClass="mesAssetVO">
-	 /* mesAssetDAO.insertInfoConditionItem */
+	 /* mesAssetDAO.insertInfoReplacementItem */
 			INSERT INTO E_REPLACEMENT_ITEM
 	 			(  
 					E_REPLACEMENT_NUM

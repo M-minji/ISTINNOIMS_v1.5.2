@@ -146,7 +146,7 @@
 	
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>보유자산 반출입 통계</h2>
+			<h2>보유자산 반출입통계</h2>
 		</div>
 		<div class="filter_wrap"> 
 			<div class="search_filter">
@@ -187,8 +187,8 @@
 	   		  <thead>
 	   		  	<tr> 
 	   		  		<th>제조사</th>
-	   		  		<th>반출</th>
-	   		  		<th>미반입</th>
+	   		  		<th>반출 건수</th>
+	   		  		<th>미반입 건수</th>
   		  		</tr>
 	   		  </thead>
 	   		   <tbody>
@@ -215,8 +215,8 @@
 	   		  <thead>
 	   		  	<tr> 
 	   		  		<th>자산유형</th>
-	   		  		<th>반출</th>
-	   		  		<th>미반입</th>
+	   		  		<th>반출 건수</th>
+	   		  		<th>미반입 건수</th>
   		  		</tr>
 	   		  </thead>
 	   		   <tbody>
@@ -300,7 +300,7 @@
 	        //width: 650
 	    },
 	    title: {
-	        text: '제조사별 반출 등록 건',
+	        text: '제조사별 반출 건',
 	        style: {
        	        fontSize: '16px',
        	        fontWeight: 600,
@@ -363,7 +363,7 @@
 		        //width: 650
 		    },
 		    title: {
-		        text: '유형별 반출 등록 건',
+		        text: '자산유형별 반출 건',
 		        style: {
 	       	        fontSize: '16px',
 	       	        fontWeight: 600,
@@ -400,7 +400,7 @@
 		    },
 		    series: [
 		    	{
-		        	name: '자산 유형',
+		        	name: '자산유형',
 		            data: eWordBValuea.map((name, index) => ({ name, y: eValueBValue[index] })),
 		            visible: true
 		        }

@@ -592,7 +592,7 @@ function setToolTip(){
 	<input type="hidden" id="oSignPass" name="oSignPass" value="" />
 	<div class="content_top">	
 		<div class="content_tit">
-			<h2>부품 교체 정보 등록</h2>
+			<h2>교체정보 등록</h2>
 		</div>
 	</div>
 	<div class="normal_table row">

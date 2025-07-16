@@ -327,7 +327,7 @@ function autChange(obj){
 	
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>직원 정보 수정</h2>
+			<h2>사용자정보 수정</h2>
 		</div>
 	</div>
 		
@@ -373,7 +373,7 @@ function autChange(obj){
 							<span>음력 </span>
 						</label>
 					</td>
-					<th>E-Mail</th>
+					<th>이메일</th>
 					<td><input type="text" name="mesUserEmail" maxLength="100" style="width:100%;" value="${mesUserInfo.mesUserEmail}"/></td>
 				</tr>
 				<tr>

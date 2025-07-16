@@ -101,7 +101,7 @@ $(document).ready(function(){
 	</c:forEach>
 	<div class="content_top">	
 		<div class="content_tit">
-			<h2>결재 현황</h2>
+			<h2>결재현황</h2>
 		</div>
 		<div class="filter_wrap"> 
 			<div class="search_filter">

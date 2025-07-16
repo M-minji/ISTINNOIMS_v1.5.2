@@ -113,7 +113,7 @@ function decodeHtmlEntities(str) {
 	
 		<div class="content_top">
 			<div class="content_tit">
-				<h2>기업 정보관리</h2>
+				<h2>기업정보관리</h2>
 			</div>
 		</div>
 		

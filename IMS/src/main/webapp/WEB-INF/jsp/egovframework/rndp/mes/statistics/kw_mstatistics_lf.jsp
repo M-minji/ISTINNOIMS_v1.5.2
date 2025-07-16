@@ -146,7 +146,7 @@
 	
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>유지관리 통계</h2>
+			<h2>유지관리통계</h2>
 		</div>
 		<div class="filter_wrap"> 
 			<div class="search_filter">
@@ -186,7 +186,7 @@
 	 		<table>
 	   		  <thead>
 	   		  	<tr> 
-	   		  		<th>메뉴명</th>
+	   		  		<th>메뉴</th>
 	   		  		<th>등록 건수 </th>
 	  		  		</tr>
 	   		  </thead>
@@ -211,7 +211,7 @@
 	 		<table>
 	   		  <thead>
 	   		  	<tr> 
-	   		  		<th>유형</th>
+	   		  		<th>자산유형</th>
 	   		  		<th>등록 건수</th>
 	  		  		</tr>
 	   		  </thead>
@@ -295,7 +295,7 @@
 	        type: 'pie',
 	    },
 	    title: {
-	        text: '소 메뉴별 조회기간 등록 건',
+	        text: '메뉴별 등록 건',
 	        style: {
        	        fontSize: '16px',
        	        fontWeight: 600,
@@ -357,7 +357,7 @@
 		        type: 'column',
 		    },
 		    title: {
-		        text: '유형별 등록건',
+		        text: '자산유형별 등록 건',
 		        style: {
 	       	        fontSize: '16px',
 	       	        fontWeight: 600,
@@ -394,7 +394,7 @@
 		    },
 		    series: [
 		    	{
-		        	name: '자산 유형',
+		        	name: '자산유형',
 		            data: eWordBValuea.map((name, index) => ({ name, y: eValueBValue[index] })),
 		            visible: true
 		        }

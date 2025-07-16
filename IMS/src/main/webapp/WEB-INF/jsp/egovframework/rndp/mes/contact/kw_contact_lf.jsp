@@ -48,7 +48,7 @@ td.gridjs-td{padding:.7rem;}
 	
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>담당자 정보 관리 </h2>
+			<h2>담당자정보관리</h2>
 		</div>
 		<div class="filter_wrap"> 
 			<div class="search_filter">

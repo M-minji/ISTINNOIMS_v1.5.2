@@ -709,7 +709,7 @@ window.addEventListener("DOMContentLoaded", function () {
 	<input type="hidden" id="kStaffKey" name="kStaffKey" value="${staffVO.kStaffKey}" />
 	<div class="content_top">	
 		<div class="content_tit">
-			<h2>점검관리 상세</h2>
+			<h2>점검정보 상세</h2>
 		</div>
 	</div>
 	<div class="normal_table row">
@@ -877,7 +877,7 @@ window.addEventListener("DOMContentLoaded", function () {
 	<c:if test="${not empty signList}">
 		<div class="content_top nofirst">
 			<div class="content_tit">
-				<h2>결재정보</h2>
+				<h2>결재 정보</h2>
 			</div>
 		</div>
 		
@@ -885,7 +885,7 @@ window.addEventListener("DOMContentLoaded", function () {
 	        <table>
 	        	<thead>
 		          	<tr>
-						<th style="width:5%; border-left: 1px solid #bfdaf7;">결재순서</th>
+						<th style="width:5%;">결재순서</th>
 						<th style="width:8%;">결재자</th>
 						<th style="width:8%;">결정</th>
 						<th style="width:15%;">결재구분</th>
@@ -898,7 +898,7 @@ window.addEventListener("DOMContentLoaded", function () {
 							<td style="text-align:center; width:5%; padding-left:0px;">
 								${i.index + 1}
 							</td>
-							<td style="text-align:left; padding-left:5px; width:10%;">
+							<td style="text-align:center; padding-left:5px; width:10%;">
 								${signList.sSignStaffName}
 							</td>
 							<td style="text-align:center; width:10%;">

@@ -49,7 +49,7 @@ function cancel(){
 	
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>담당자 정보 수정</h2>
+			<h2>담당자정보 수정</h2>
 		</div>
 	</div>
 	

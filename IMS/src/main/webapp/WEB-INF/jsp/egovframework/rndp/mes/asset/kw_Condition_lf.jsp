@@ -259,7 +259,7 @@ function excelDwonload(){
 	<input type="hidden" id="viewDetail" name="viewDetail" value="${mesAssetVO.viewDetail}" />
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>보유자산 반출입 관리</h2>
+			<h2>보유자산 반출입관리</h2>
 		</div>
 		<div class="filter_wrap"> 
 			<div class="search_filter">
@@ -324,7 +324,7 @@ function excelDwonload(){
 					<th>반출일</th>
 					<th>반출자</th>
 					<th>반출사유</th>
-					<th>반입일자</th>
+					<th>반입일</th>
 					<th>반입확인자</th>
 					<th>상태</th>
 				</tr>

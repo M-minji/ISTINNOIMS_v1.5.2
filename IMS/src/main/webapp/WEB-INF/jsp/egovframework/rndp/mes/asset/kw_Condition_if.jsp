@@ -586,7 +586,7 @@ function setToolTip(){
 	<input type="hidden" name="oSignPass" id="oSignPass" value="${mesAssetVO.oSignPass}" />
 	<div class="content_top">	
 		<div class="content_tit">
-			<h2>보유자산 반출 정보 등록페이지</h2>
+			<h2>반출정보 등록</h2>
 		</div>
 	</div>
 	<div class="normal_table row">

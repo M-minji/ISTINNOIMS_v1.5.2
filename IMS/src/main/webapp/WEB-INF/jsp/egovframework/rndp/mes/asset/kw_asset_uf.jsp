@@ -103,6 +103,7 @@ function setToolTip(){
 		if(sSignStatus == "등록"  || sSignStatus == "반려" || sSignStatus == "승인"){
 			$("#oSignPass").val("N");
 			 $('#oPass').prop('checked', false);
+			 setToolTip();
 		}else{
 			 $('#oPass').prop('checked', true);
 			$("#oSignPass").val("Y");
@@ -791,7 +792,7 @@ function setToolTip(){
 	<input type="hidden" name="kStaffKey" id="kStaffKey" value="${staffVO.kStaffKey}" />
 	<div class="content_top">	
 		<div class="content_tit">
-			<h2>대상장비 정보 수정</h2>
+			<h2>장비정보 수정</h2>
 		</div>
 	</div>
 	<div class="normal_table row">

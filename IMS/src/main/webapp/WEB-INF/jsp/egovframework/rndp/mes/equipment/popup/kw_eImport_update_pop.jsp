@@ -60,7 +60,7 @@ function mesIMGregInsert() {
 		return false;
 	}
 	if($("#eExitExporter").val() == ''){
-		modal1("반출 확인자를 입력하세요.", "#eExitExporter");
+		modal1("반출확인자를 입력하세요.", "#eExitExporter");
 		return false;
 	}
 	
@@ -119,12 +119,12 @@ function nowDate(){
 				<table>
 				  <tbody>
 						<tr>
-							<th>반출 일자</th>
+							<th>반출일</th>
 			      			<td>
 			      				<input type="hidden" name='eEquipmentItemKey' id='eEquipmentItemKey' value='${mesEquipmentVO.eEquipmentItemKey }'> 
 			      				<input type="text" name='eEntryExporterDate' id='eEntryExporterDate' value='' style="width:120px; text-align:center;" class="inp_color"   value=""  readonly="readonly">   
 			      			</td>
-			      			<th>반출 확인자</th>
+			      			<th>반출확인자</th>
 			      			<td>
 			      				<input type="text" name='eExitExporter' id='eExitExporter' style="width:100%;" value='' maxlength="30">  
 			      			</td>

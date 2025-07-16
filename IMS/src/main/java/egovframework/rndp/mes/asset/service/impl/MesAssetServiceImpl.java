@@ -92,6 +92,7 @@ public class MesAssetServiceImpl implements MesAssetService {
 		
 		//결재 상태-엑셀 업로드임으로 기본 제외처리
 		mesAssetVO.setsSignStatus("제외");
+		mesAssetVO.setMaintanceSelect1("0");
 		mesAssetDAO.insertExcelInfoAsset(mesAssetVO);
 		//결재정보 등록
 		mesAssetVO.setsSignTableName("A_ASSET");
@@ -873,6 +874,15 @@ public class MesAssetServiceImpl implements MesAssetService {
               mesAssetDAO.updateAssetOutIn(vo1);
         }
 		
+        // 수정 시 반입정보 사라지지 않게
+//        List<MesAssetVO> entryList = new ArrayList<MesAssetVO>();
+//        for (int i = 0; i < info.size(); i++) {
+//        	MesAssetVO vo = info.get(i);
+//        	if(vo.geteEntryImportDate() != null && !"".equals(vo.geteEntryImportDate())) {
+//        		entryList.add(vo);
+//        	}
+//      }
+        
 		//아이템삭제
 		mesAssetDAO.eDeleteEntryItem(mesAssetVO);
 		//헤더 업로드
@@ -883,6 +893,8 @@ public class MesAssetServiceImpl implements MesAssetService {
 		  if(mesAssetVO.geteAssetKey() != null && !"".equals(mesAssetVO.geteAssetKey())) {
 			  
 	            String[] eAssetKey = EgovStringUtil.split(mesAssetVO.geteAssetKey(), ",");
+	            String[] importer = EgovStringUtil.split(mesAssetVO.geteEntryImporter(), ",");
+	            String[] importdate = EgovStringUtil.split(mesAssetVO.geteEntryImportDate(), ",");
 	            MesAssetVO vo = new MesAssetVO();
 	            for (int i = 0; i < eAssetKey.length; i++) {
 	            	vo.seteEntryExitKey(mesAssetVO.geteEntryExitKey());
@@ -891,7 +903,9 @@ public class MesAssetServiceImpl implements MesAssetService {
 	            	vo.seteEntryStaff(mesAssetVO.geteEntryStaff());
 	            	vo.seteEntryExitDate(mesAssetVO.geteEntryExitDate());
 	            	vo.seteEntryRequestReason(mesAssetVO.geteEntryRequestReason());
-	            	 
+	            	vo.seteEntryImportDate(importdate[i]);
+	            	vo.seteEntryImporter(importer[i]);
+	            	
 	                mesAssetDAO.insertInfoConditionItem(vo);
 	                //A_ASSET 테이블 상태값
 	                vo.seteEntryStatus(eEntryStatus);

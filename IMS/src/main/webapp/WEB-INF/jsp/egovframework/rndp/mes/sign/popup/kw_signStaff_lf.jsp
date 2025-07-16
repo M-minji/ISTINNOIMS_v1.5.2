@@ -472,7 +472,7 @@ window.resizeTo(980, 900);
 	<div class="pop_head">
 		<div id="pop_head">
 			<div class="tit">
-				<h3 style="cursor:default;">받는사람 선택</h3>
+				<h3 style="cursor:default;">결재선 선택</h3>
 			</div>
 			<a href="javascript:self.close();"></a>
 		</div>

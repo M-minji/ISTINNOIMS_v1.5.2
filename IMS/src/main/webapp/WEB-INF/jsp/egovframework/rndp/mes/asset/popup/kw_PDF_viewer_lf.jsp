@@ -39,7 +39,7 @@ function eDownload(){
     <div class="pop_head">
         <div id="pop_head">
             <div class="tit">
-                <h3>PDF Viewer Pop</h3>
+                <h3>장비사진</h3>
             </div>
             <a href="javascript:self.close();"><img src="/images/btn/close.gif" width="22" height="21" /></a>
         </div>  

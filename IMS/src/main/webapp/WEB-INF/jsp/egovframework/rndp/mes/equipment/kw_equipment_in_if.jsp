@@ -526,7 +526,7 @@ function setToolTip(){
 	<input type="hidden" name="oSignPass" id="oSignPass" value="${mesEquipmentVO.oSignPass}" />
 	<div class="content_top">	
 		<div class="content_tit">
-			<h2>반입 정보 등록</h2>
+			<h2>반입정보 등록</h2>
 		</div>
 	</div>
 	<div class="normal_table row">
