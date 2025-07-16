@@ -130,7 +130,7 @@ function addRow() {
 
 	<div class="content_top with_btn">
 		<div class="content_tit">
-			<h2>담당자 정보 등록</h2>
+			<h2>담당자정보 등록</h2>
 		</div>
 		<div class="btns">
 			 <button type="button" class="form_btn md" onclick="addRow();">담당자 추가</button>

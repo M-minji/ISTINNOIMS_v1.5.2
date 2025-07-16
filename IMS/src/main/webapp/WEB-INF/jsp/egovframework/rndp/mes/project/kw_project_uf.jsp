@@ -89,6 +89,7 @@ $(document).ready(function(){
 	if(sSignStatus == "등록" || sSignStatus == "반려" || sSignStatus == "승인"){
 		$("#oSignPass").val("N");
 		 $('#oPass').prop('checked', false);
+		 setToolTip();
 	}else{
 		 $('#oPass').prop('checked', true);
 		$("#oSignPass").val("Y");
@@ -339,7 +340,7 @@ function deleteGyeoljaeList(){
   	
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>프로젝트 정보 수정 페이지</h2>
+			<h2>프로젝트 수정</h2>
 		</div>
 	</div>
 	<div class="normal_table row">
@@ -383,12 +384,12 @@ function deleteGyeoljaeList(){
 							<a class="form_btn bg" onclick="selectWorkerPop('R', 'eManager')" style="margin-left: auto;">담당자 선택</a>
 						</div>
 					</td>
-					<th>담당자연락처</th>
+					<th>담당자 연락처</th>
 					<td>
 						<input type="text" id="eManagerHP" name="eManagerHP" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"   value="${projectInfo.eManagerHP}" />
 						<span id="eManagerHPTxt" style="display: none;"></span>
 					</td>
-					<th>담당자메일</th>
+					<th>담당자 이메일</th>
 					<td>
 						<input type="text" id="eManagerMail" name="eManagerMail" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.eManagerMail}"  />
 						<span id="eManagerMailTxt" style="display: none;"></span>
@@ -403,7 +404,7 @@ function deleteGyeoljaeList(){
 					<td>
 						<input type="text" id="ePMContact" name="ePMContact" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.ePMContact}"  />
 					</td>
-					<th>PM 메일</th>
+					<th>PM 이메일</th>
 					<td>
 						<input type="text" id="ePMEmail" name="ePMEmail" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value="${projectInfo.ePMEmail}"  />
 					</td>

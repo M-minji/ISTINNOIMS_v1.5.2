@@ -83,7 +83,7 @@ td a {
 
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>점검결과 필드 관리</h2>
+			<h2>점검결과 필드관리</h2>
 		</div>
 		<div class="filter_wrap"> 
 			<div class="search_filter nogrid">

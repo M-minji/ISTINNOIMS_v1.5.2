@@ -602,7 +602,7 @@ function setToolTip(){
 	<input type="hidden" id="oSignPass" name="oSignPass" value="" />
 	<div class="content_top">	
 		<div class="content_tit">
-			<h2>소프트웨어 라이선스 정보 등록</h2>
+			<h2>소프트웨어 라이선스 등록</h2>
 		</div>
 	</div>
 	

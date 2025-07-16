@@ -151,7 +151,7 @@ function resetFileInput(obj) {
 	<div class="pop_head">
 		<div id="pop_head">
 			<div class="tit">
-				<h3>파일 등록 POP</h3>
+				<h3>파일등록</h3>
 			</div>
 			<a href="javascript:self.close();">닫기</a>
 		</div>

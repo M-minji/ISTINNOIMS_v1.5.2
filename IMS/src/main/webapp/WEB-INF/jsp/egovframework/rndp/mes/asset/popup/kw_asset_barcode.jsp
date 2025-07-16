@@ -125,7 +125,7 @@ function barcodeCr(){
 		<div class="pop_head">
 			<div id="pop_head">
 				<div class="tit">
-					<h3>QR코드 출력</h3>
+					<h3>QR코드</h3>
 				</div>
 				<a href="javascript:self.close();"><img src="/images/btn/close.gif" width="22" height="21" /></a>
 			</div>  

@@ -87,6 +87,7 @@ $(document).ready(function(){
 	if(sSignStatus == "등록" || sSignStatus == "반려" || sSignStatus == "승인"){
 		$("#oSignPass").val("N");
 		 $('#oPass').prop('checked', false);
+		 setToolTip();
 	}else{
 		 $('#oPass').prop('checked', true);
 		$("#oSignPass").val("Y");
@@ -120,10 +121,14 @@ $(document).ready(function(){
 	
 	function chkIns(){
 		if($("#eRequester").val() == ""){
-			modal1("작성자를 입력하세요.", "#eRequester");
+			modal1("요청자를 입력하세요.", "#eRequester");
 			return false;
 		}
-		
+
+		if($("#eReqContent").val() == ""){
+			modal1("문제사항을 입력하세요.", "#eReqContent");
+			return false;
+		}
 
 		var idx = document.getElementsByName("eDepartment").length;
 		
@@ -757,7 +762,7 @@ $(document).ready(function(){
 
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>문제관리 정보 수정 페이지</h2>
+			<h2>문제정보 수정</h2>
 		</div>
 	</div>
 	<div class="normal_table row">
@@ -808,9 +813,7 @@ $(document).ready(function(){
 				</tr>
   				
 				<tr>
-					<th>
-						문제사항
-					</th>
+					<th><span style="color: red">* </span>문제사항</th>
 					<td id="td_editor" colspan="3" align="center" scope="row"> 
 							<textarea id="eReqContent" name="eReqContent" cols="100%" rows="10" style="font-size: 20px; width: 100%;">${info.eReqContent}</textarea>
 					</td>
@@ -972,7 +975,7 @@ $(document).ready(function(){
 			
 				<c:if test="${empty aDeteliList }">
 					<tr>
-						<td colspan="10">상세내역을 추가 하여 정보를 입력하세요.</td>
+						<td colspan="6">상세내역을 추가 하여 정보를 입력하세요.</td>
 					</tr>
 				</c:if>
 			</tbody>

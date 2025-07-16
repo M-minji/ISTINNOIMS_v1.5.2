@@ -493,7 +493,7 @@ input[name="tab_item"] {
 		
 	<div class="content_top">	
 		<div class="content_tit">
-			<h2>대상장비 상세정보 </h2>
+			<h2>장비정보 상세</h2>
 		</div>
 	</div>
 	<div class="normal_table row">
@@ -677,7 +677,7 @@ input[name="tab_item"] {
 	<c:if test="${not empty signList}">
 		<div class="content_top nofirst">
 			<div class="content_tit">
-				<h2>결재정보</h2>
+				<h2>결재 정보</h2>
 			</div>
 		</div>
 		
@@ -697,7 +697,7 @@ input[name="tab_item"] {
 							<td style="text-align:center; width:5%; padding-left:0px;">
 								${i.index + 1}
 							</td>
-							<td style="text-align:left; padding-left:5px; width:10%;">
+							<td style="text-align:center; padding-left:5px; width:10%;">
 								${signList.sSignStaffName}
 							</td>
 							<td style="text-align:center; width:10%;">

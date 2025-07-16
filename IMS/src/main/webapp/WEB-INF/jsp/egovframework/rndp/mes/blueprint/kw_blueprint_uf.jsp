@@ -91,6 +91,7 @@ function setToolTip(){
 		if(sSignStatus == "등록" || sSignStatus == "반려" || sSignStatus == "승인"){
 			$("#oSignPass").val("N");
 			 $('#oPass').prop('checked', false);
+			 setToolTip();
 		}else{
 			 $('#oPass').prop('checked', true);
 			$("#oSignPass").val("Y");
@@ -201,6 +202,11 @@ function setToolTip(){
 		
 		if($("#eRequester").val() == ""){
 			modal1("요청자를 입력하세요.", "#eRequester");
+			return false;
+		}
+
+		if($("#eReqContent").val() == ""){
+			modal1("요청내용을 입력하세요.", "#eReqContent");
 			return false;
 		}
 		
@@ -751,7 +757,7 @@ function setToolTip(){
 
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>변경관리 수정 페이지</h2>
+			<h2>변경정보 수정</h2>
 		</div>
 	</div>
 	<div class="normal_table row">
@@ -801,9 +807,7 @@ function setToolTip(){
 					</td>
 				</tr>
 				<tr>
-					<th>
-						요청내용
-					</th>
+					<th><span style="color: red">* </span>요청내용</th>
 					<td id="td_editor" colspan="3" align="center" scope="row"> 
 						<textarea id="eReqContent" name="eReqContent" cols="100%" rows="10"  style="font-size: 20px; width: 100%; height: 300px; resize: none;"  maxLength="1000">${info.eReqContent }</textarea>
 					</td>
@@ -853,12 +857,12 @@ function setToolTip(){
 		<table>
 				<thead>
 				<tr>
-					<th style="width: 8%;">구분</th>
+					<th style="width: 200px;">구분</th>
 					<th style="width: 12%;"><span style="color: red">* </span>작업자</th>
-					<th style="width: 12%;">작업자소속</th>
+					<th style="width: 12%;">작업자 소속</th>
 					<th style="width: 12%;">작업일시</th>
 					<th style="width: *;">내용</th>
-					<th style="width: 16%;text-align: center;">첨부 파일</th>
+					<th style="width: 14%;">첨부 파일</th>
 				</tr>
 			</thead>
 			<tbody id="lineRowTwo">

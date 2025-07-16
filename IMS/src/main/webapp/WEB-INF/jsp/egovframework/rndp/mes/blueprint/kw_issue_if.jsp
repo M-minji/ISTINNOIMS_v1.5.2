@@ -143,6 +143,11 @@ function chkIns(){
 		modal1("요청자를 입력하세요.", "#eRequester");
 		return false;
 	}
+
+	if($("#eReqContent").val() == ""){
+		modal1("문제사항을 입력하세요.", "#eReqContent");
+		return false;
+	}
  	
 
 	
@@ -801,7 +806,7 @@ function approvalPop(){
   	<input type="hidden" id="oSignPass" name="oSignPass" value="" />
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>문제 정보 등록</h2>
+			<h2>문제정보 등록</h2>
 		</div>
 	</div>
 	<div class="normal_table row">
@@ -855,9 +860,7 @@ function approvalPop(){
 					</td>
 				</tr>
 				<tr>
-					<th>
-						문제사항
-					</th>
+					<th><span style="color: red">* </span>문제사항</th>
 					<td id="td_editor" colspan="3" align="center" scope="row"> 
 						<textarea id="eReqContent" name="eReqContent" cols="100%" rows="10" style="font-size: 20px; width: 100%; height: 300px; resize: none;"  maxLength="1000"></textarea>
 					</td>

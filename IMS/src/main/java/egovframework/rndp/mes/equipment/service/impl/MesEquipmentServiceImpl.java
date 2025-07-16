@@ -89,6 +89,16 @@ public class MesEquipmentServiceImpl implements MesEquipmentService {
 	            String[] eAssetType = EgovStringUtil.split(mesEquipmentVO.geteAssetType(), ",");
 	            String[] eAssetDeviceType = EgovStringUtil.split(mesEquipmentVO.geteAssetDeviceType(), ",");
 	            
+	            boolean isExport = false;
+	            String[] eExitExporter = null;
+	            String[] eEntryExporterDate = null;
+	            if(mesEquipmentVO.geteExitExporter() != null && mesEquipmentVO.geteExitExporter() != "") {
+	            	isExport = true;
+	            	eExitExporter =	EgovStringUtil.split(mesEquipmentVO.geteExitExporter(), ",");
+	            	eEntryExporterDate = EgovStringUtil.split(mesEquipmentVO.geteEntryExporterDate(), ",");
+	            }
+	            	            
+	            
 	            MesEquipmentVO vo = new MesEquipmentVO();
 	            
 	            
@@ -111,6 +121,15 @@ public class MesEquipmentServiceImpl implements MesEquipmentService {
 	            	
 	            	vo.seteStatus(mesEquipmentVO.geteStatus());
 	            	vo.seteSignStatus(mesEquipmentVO.geteSignStatus());
+	            	
+	            	if(isExport) {
+	            		vo.seteExitExporter(eExitExporter[i]);
+		            	vo.seteEntryExporterDate(eEntryExporterDate[i]);
+	            	} else {
+	            		vo.seteExitExporter("");
+		            	vo.seteEntryExporterDate("");
+	            	}
+	            	
 	            	mesEquipmentDAO.insertEquipmentRowInfo(vo);
 	            }
 	        }

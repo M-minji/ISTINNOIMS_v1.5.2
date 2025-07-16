@@ -254,7 +254,7 @@ function excelDwonload(){
 	<input type="hidden" id="viewDetail" name="viewDetail" value="${mesEquipmentVO.viewDetail}" />
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>임시장비 반입출 관리</h2>
+			<h2>임시장비 반입출관리</h2>
 		</div>		
 		<div class="filter_wrap"> 
 			<div class="search_filter">
@@ -272,7 +272,7 @@ function excelDwonload(){
 						<input type="text" id="eSearchWord3" name="eSearchWord3" class="searchWord" value="${mesEquipmentVO.eSearchWord3}" maxlength="30" />
 					</li>
 					<li>
-						<span>반입 일자</span>
+						<span>반입일</span>
 						<div class="date">
 							<input type="text" id="eTopStartDate" name="eTopStartDate" value="${mesEquipmentVO.eTopStartDate}" readonly />
 				           	- <input type="text" id="eTopEndDate" name="eTopEndDate" style="padding-left:2px;" value="${mesEquipmentVO.eTopEndDate}" readonly />
@@ -312,7 +312,7 @@ function excelDwonload(){
 					<th>자산명</th>
 					<th>제조사</th>
 					<th>모델명</th>
-					<th>반입일자</th>
+					<th>반입일</th>
 					<th>반입확인자</th>
 					<th>반입사유</th>
 					<th>반출일</th>

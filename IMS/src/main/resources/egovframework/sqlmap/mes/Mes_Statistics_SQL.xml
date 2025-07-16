@@ -382,12 +382,12 @@
 		    eManager  AS eWordD, 
 		    eProjectPM AS eWordE, 
 		    ePMContact AS eWordF, 
-		    COUNT(pdf.eDeliverableFileNUM) eValueD,
-		     SUM(CASE WHEN pdf.eFileRowGubun = 'A' THEN 1 ELSE 0 END) AS eValueA,
-		    SUM(CASE WHEN pdf.eFileRowGubun = 'B' THEN 1 ELSE 0 END) AS eValueB,
-		    SUM(CASE WHEN pdf.eFileRowGubun = 'C' THEN 1 ELSE 0 END) AS eValueC
+		    COUNT(pr.eDeliverableNUM) AS eValueD,
+		     SUM(CASE WHEN pr.eItemGubun = 'A' THEN 1 ELSE 0 END) AS eValueA,
+		    SUM(CASE WHEN pr.eItemGubun = 'B' THEN 1 ELSE 0 END) AS eValueB,
+		    SUM(CASE WHEN pr.eItemGubun = 'C' THEN 1 ELSE 0 END) AS eValueC
 		FROM P_PROJECT AS pp
-		LEFT JOIN P_Deliverable_file AS pdf ON pp.P_PROJECT_NUM = pdf.eProjectNum 
+		LEFT JOIN P_Deliverable AS pr ON (pp.P_PROJECT_NUM  = pr.eProjectNum AND (pr.eItemName IS NOT NULL AND pr.eItemName != ''))
 		LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='P_PROJECT' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = pp.P_PROJECT_NUM)
 		WHERE SIGN_STATUS != '삭제' AND (pp.sSignStatus = '제외' OR (pp.sSignStatus = '승인요청' AND S.SIGN_PROGRESS_CNT IS NOT NULL)) AND
 		    ((eStartDate BETWEEN #topStartDate# AND #topEndDate#)  
@@ -405,24 +405,19 @@
 				    eManager  AS eWordD, 
 				    eProjectPM AS eWordE, 
 				    ePMContact AS eWordF, 
-				    COUNT(prf.eReportFileNUM) eValueD,
-				     SUM(CASE WHEN prf.eFileRowGubun = 'A' THEN 1 ELSE 0 END) AS eValueA,
-				    SUM(CASE WHEN prf.eFileRowGubun = 'B' THEN 1 ELSE 0 END) AS eValueB,
-				    SUM(CASE WHEN prf.eFileRowGubun = 'C' THEN 1 ELSE 0 END) AS eValueC
+				    COUNT(pr.eReportNUM) eValueE,
+				     SUM(CASE WHEN pr.eItemGubun = 'A' THEN 1 ELSE 0 END) AS eValueA,
+				    SUM(CASE WHEN pr.eItemGubun = 'B' THEN 1 ELSE 0 END) AS eValueB,
+				    SUM(CASE WHEN pr.eItemGubun = 'C' THEN 1 ELSE 0 END) AS eValueC,
+				    SUM(CASE WHEN pr.eItemGubun = 'D' THEN 1 ELSE 0 END) AS eValueD
 				FROM P_PROJECT AS pp
-				LEFT JOIN P_Report_file AS prf ON pp.P_PROJECT_NUM = prf.eProjectNum 
+				LEFT JOIN P_Report AS pr ON (pp.P_PROJECT_NUM  = pr.eProjectNum AND (pr.eItemName IS NOT NULL AND pr.eItemName != ''))
 				LEFT JOIN S_SIGN AS S ON (S.SIGN_TABLE_NAME='P_PROJECT' AND S.SIGN_PROGRESS = S.SIGN_PROGRESS_CNT AND S.SIGN_TABLE_NUM = pp.P_PROJECT_NUM)
 				WHERE 1=1  AND SIGN_STATUS != '삭제' AND (pp.sSignStatus = '제외' OR (pp.sSignStatus = '승인요청' AND S.SIGN_PROGRESS_CNT IS NOT NULL))
-		     <isNotEmpty property="topStartDate">
-		            <![CDATA[
-		                AND DATE_FORMAT(eStartDate, '%Y-%m-%d') >= #topStartDate#
-		                ]]>
-		         </isNotEmpty>
-		          <isNotEmpty property="topEndDate">
-	                <![CDATA[
-	                AND DATE_FORMAT(eEndDate, '%Y-%m-%d') <= #topEndDate#
-	                ]]>
-	            </isNotEmpty>
+				     
+				                AND ((eStartDate BETWEEN #topStartDate# AND #topEndDate#)  
+		    OR 
+		    (eEndDate BETWEEN #topStartDate# AND #topEndDate#)) 
 		   
 		  GROUP BY pp.P_PROJECT_NUM
      </select>

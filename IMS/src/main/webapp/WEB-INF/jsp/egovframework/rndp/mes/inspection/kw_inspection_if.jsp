@@ -639,7 +639,7 @@
 	
 	<div class="content_top">	
 		<div class="content_tit">
-			<h2>점검 정보 등록</h2>
+			<h2>점검정보 등록</h2>
 		</div>
 	</div>
 	

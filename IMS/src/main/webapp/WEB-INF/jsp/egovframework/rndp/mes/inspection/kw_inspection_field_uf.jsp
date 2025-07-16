@@ -65,7 +65,7 @@ function fieldDel() {
 	
 		<div class="content_top">
 			<div class="content_tit">
-				<h2>점검결과 필드</h2>
+				<h2>점검필드 수정</h2>
 			</div>
 		</div>
 		

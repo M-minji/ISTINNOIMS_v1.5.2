@@ -163,6 +163,10 @@ function chkIns(){
 		modal1("요청자를 입력하세요.", "#eRequester");
 		return false;
 	}
+	if($("#eReqContent").val() == ""){
+		modal1("요청내용을 입력하세요.", "#eReqContent");
+		return false;
+	}
 	
 	var idx = document.getElementsByName("eDepartment").length;
 	
@@ -429,15 +433,16 @@ function add_row(){
 	innerStr += "		<td>";
 	innerStr += "			<a class='del' onclick=\"delRowTwo(this);\">X</a>";
 	innerStr += "		</td>";
+	// 작업자
+	innerStr += "		<td>";
+	innerStr += "			<input type='text' id='eWorker_"+rowTwo_Index+"' name='eWorker' value='' maxLength='30'/>";
+	innerStr += "		</td>";	
 	// 소속
 	innerStr += "		<td>";
 	innerStr += "			<input type='text' id='eDepartment_"+rowTwo_Index+"' name='eDepartment' value='' maxLength='30'/>";
 	innerStr += "			<input type='hidden' id='eRowIndex_"+rowTwo_Index+"' name='eRowIndex' value='"+rowTwo_Index+"' maxLength='30'/>";
 	innerStr += "		</td>";
-	// 작업자
-	innerStr += "		<td>";
-	innerStr += "			<input type='text' id='eWorker_"+rowTwo_Index+"' name='eWorker' value='' maxLength='30'/>";
-	innerStr += "		</td>";		
+		
 	// 작업일자  style='width:100px; text-align: center;' class='inp_color' readonly
 	innerStr += "		<td>"; 
 	innerStr += "			<input type='text' id='eWorkDate_"+rowTwo_Index+"' name='eWorkDate' value='' maxLength='30'/>";
@@ -719,7 +724,7 @@ function approvalPop(){
 	
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>변경 정보 등록</h2>
+			<h2>변경정보 등록</h2>
 		</div>
 	</div>
 	<div class="normal_table row">
@@ -775,9 +780,7 @@ function approvalPop(){
   			 
   			
 				<tr>
-					<th>
-						요청내용
-					</th>
+					<th><span style="color: red">* </span>요청내용</th>
 					<td id="td_editor" colspan="3" align="center" scope="row"> 
 						<textarea id="eReqContent" name="eReqContent" cols="100%" rows="10" style="font-size: 20px; width: 100%; height: 300px; resize: none;"  maxLength="1000"></textarea>
 					</td>
@@ -825,8 +828,8 @@ function approvalPop(){
 			<thead>
 				<tr>
 					<th style="width: 200px;">구분</th>
-					<th style="width: 12%;">소속</th>
 					<th style="width: 12%;"><span style="color: red">* </span>작업자</th>
+					<th style="width: 12%;">작업자 소속</th>
 					<th style="width: 12%;">작업일시</th>
 					<th style="width: *;">내용</th>
 					<th style="width: 14%;">첨부 파일</th>

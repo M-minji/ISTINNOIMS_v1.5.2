@@ -13,8 +13,6 @@
 <link rel="stylesheet" type="text/css" href='/css/mes/pretendard.css'>
 <script type="text/javascript">
 
-	
-
 	 
 	$(document).ready(function(){	
 		datepickerSet("eRequestDate", "eProcessingDate");
@@ -244,6 +242,10 @@
 		}
 		if($("#eRequester").val() == ""){
 			modal1("요청자를 입력하세요.", "#eRequester");
+			return false;
+		}
+		if($("#eIssueContent").val() == ""){
+			modal1("요청내용을 입력하세요.", "#eIssueContent");
 			return false;
 		}
 		
@@ -837,9 +839,7 @@
 					</td>
   				</tr>
 				<tr>
-					<th>
-						요청내용
-					</th>
+					<th><span style="color: red">* </span>요청내용</th>
 					<td id="td_editor" colspan="3" align="center" scope="row"> 
 						<textarea id="eIssueContent" name="eIssueContent" cols="100%" rows="20" style="font-size: 20px; width: 100%; height: 300px; resize: none;"  maxLength="1000"></textarea>
 					</td>

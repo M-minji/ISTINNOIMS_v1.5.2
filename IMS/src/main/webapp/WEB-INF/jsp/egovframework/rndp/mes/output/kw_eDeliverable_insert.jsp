@@ -413,11 +413,11 @@ function eDownloadAll(fileGubun){
 					<td>${projectInfo.eManager}
 						<input type="hidden" id="eManager" name="eManager" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
-					<th>담당자연락처</th>
+					<th>담당자 연락처</th>
 					<td>${projectInfo.eManagerContact}
 						<input type="hidden" id="eManagerContact" name="eManagerContact" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
-					<th>담당자메일</th>
+					<th>담당자 이메일</th>
 					<td>${projectInfo.eManagerEmail}
 						<input type="hidden" id="eManagerEmail" name="eManagerEmail" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
@@ -431,13 +431,13 @@ function eDownloadAll(fileGubun){
 					<td>${projectInfo.ePMContact}
 						<input type="hidden" id="ePMContact" name="ePMContact" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
-					<th>PM 메일</th>
+					<th>PM 이메일</th>
 					<td>${projectInfo.ePMEmail}
 						<input type="hidden" id="ePMEmail" name="ePMEmail" style="width:90%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
 				</tr>
 				<tr>
-					<th>기타</th>
+					<th>비고</th>
 					<td id="td_editor" colspan="3" align="center" scope="row">${projectInfo.eRemarks}</td>
 					<th><span style="color: red">* </span>진행상태</th>
 					<td> 

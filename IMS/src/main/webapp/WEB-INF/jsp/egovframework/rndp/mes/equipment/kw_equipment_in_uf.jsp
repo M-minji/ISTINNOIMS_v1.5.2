@@ -84,10 +84,12 @@ function setToolTip(){
 	$(document).ready(function(){
 		datepickerIdSet("eEntryImportDate");
 		datepickerIdSet("eEntryWdate");
+		datepickerNameSet("eEntryExporterDate"); 
 		var sSignStatus  = $("#sSignStatus").val();
 		if(sSignStatus == "등록" || sSignStatus == "반려" || sSignStatus == "승인"){
 			$("#oSignPass").val("N");
 			 $('#oPass').prop('checked', false);
+			 setToolTip();
 		}else{
 			 $('#oPass').prop('checked', true);
 			$("#oSignPass").val("Y");
@@ -134,8 +136,25 @@ function setToolTip(){
 		    				modal1(text+"자산명을 입력하세요.");
 		    	            return;
 		    	        }
+		    	        
+		    	        var el = document.getElementById("eEntryExporterDate_"+i);
+				 		if(el.type === "hidden"){
+				 		} else{
+				 			var entryDate = document.getElementById("eEntryExporterDate_"+i).value;
+				 			var importer = document.getElementById("eExitExporter_"+i).value;
+				 			if(!entryDate.trim()) {  // 빈 값 또는 공백만 있는 경우 체크
+								modal1("반출일을 선택하세요.", "#eEntryExporterDate_"+i);
+					            return;
+					        }
+				 			if(!importer.trim()) { 
+								modal1("반출확인자를 입력하세요.", "#eExitExporter_"+i);
+					            return;
+					        }
+				 		}
 				    }
 		    }
+		 	
+		 	
 		  
 		    for(var i=0; i < eAssetKeyArr ; i++){
 				var eAssetTypeName = document.getElementsByName("eAssetTypeName")[i].value;
@@ -153,6 +172,10 @@ function setToolTip(){
 				var eAssetType = document.getElementsByName("eAssetType")[i].value;
 				var eAssetDeviceType = document.getElementsByName("eAssetDeviceType")[i].value;
 				
+				var eEntryExporterDate = document.getElementsByName("eEntryExporterDate")[i].value;
+				var eExitExporter = document.getElementsByName("eExitExporter")[i].value;
+				
+				
 				document.getElementsByName("eAssetTypeName")[i].value = ConverttoHtml(eAssetTypeName);
 				document.getElementsByName("eAssetName")[i].value = ConverttoHtml(eAssetName);
 				document.getElementsByName("eAssetMaker")[i].value = ConverttoHtml(eAssetMaker);
@@ -167,6 +190,12 @@ function setToolTip(){
 				document.getElementsByName("eAssetPurpose")[i].value = ConverttoHtml(eAssetPurpose);
 				document.getElementsByName("eAssetType")[i].value = ConverttoHtml(eAssetType);
 				document.getElementsByName("eAssetDeviceType")[i].value = ConverttoHtml(eAssetDeviceType);
+				
+
+				document.getElementsByName("eEntryExporterDate")[i].value = ConverttoHtml(eEntryExporterDate);
+				document.getElementsByName("eExitExporter")[i].value = ConverttoHtml(eExitExporter);
+				
+				
 			}
 	    if($("#oSignPass").val() != 'Y'){
 			if(document.getElementsByName("sSignStaffKey").length == 0){
@@ -468,6 +497,11 @@ function setToolTip(){
 		// os
 		innerStr += "		<td>"+obj.eOs;
 		innerStr += "		</td>";	
+		
+		innerStr += "		<td>"
+		innerStr += "		</td>";	
+		innerStr += "		<td>"
+		innerStr += "		</td>";	
 		innerStr += "	</tr>";
 		
 		$(innerStr).appendTo("#lineRow");	
@@ -723,7 +757,7 @@ function setToolTip(){
 	<input type="hidden" id="eEquipmentInKey" name="eEquipmentInKey" value="${mesEquipmentVO.eEquipmentInKey}" />
 	<div class="content_top">	
 		<div class="content_tit">
-			<h2>임시장비 반입정보 수정</h2>
+			<h2>반입정보 수정</h2>
 		</div>
 	</div>
 	<div class="normal_table row">
@@ -805,6 +839,8 @@ function setToolTip(){
 						<th style="width: 10%;">HOSTNAME</th>
 						<th style="width: 10%;">IP</th>
 						<th style="width: 10%;">OS</th>
+						<th style="width: 10%;">반출일</th>
+						<th style="width: 10%;">반출확인자</th>
 					</tr>
 				</thead>
 			<tbody id="lineRow">
@@ -848,6 +884,20 @@ function setToolTip(){
 						 	<td>	 	
 						 		<input type='text' name='eAssetOs' id='eAssetOs${i.index}' style='width:95%; text-align:left;' maxLength='100' value='${list.eAssetOs}' />
 						 	</td>	
+						 	<c:choose>
+						 		<c:when test="${empty list.eEntryExporterDate}">
+						 			<td><input type="hidden" name='eEntryExporterDate' id='eEntryExporterDate_${i.index}' value='' style="text-align:center;" class="inp_color" readonly="readonly"/>   </td>	
+								 	<td><input type="hidden" name='eExitExporter' id="eExitExporter_${i.index}" style="width:100%; text-align:left;" maxLength="30" value=""/></td>
+						 		</c:when>
+						 		<c:otherwise>
+						 			<td>
+	      								<input type="text" name='eEntryExporterDate' id='eEntryExporterDate_${i.index}' value='${list.eEntryExporterDate}' style="text-align:center;" class="inp_color" readonly="readonly"/>   
+						 			</td>	
+								 	<td>
+								 		<input type="text" name="eExitExporter" id="eExitExporter_${i.index}" style="width:100%; text-align:left;" maxLength="30" value="${list.eExitExporter}"/>
+								 	</td>
+						 		</c:otherwise>
+						 	</c:choose>
 						 </tr>
 			 	</c:forEach>
 			</tbody>

@@ -71,7 +71,7 @@ function checmesUserId() {
 			success : function(msg) { //응답이 성공 상태 코드를 반환하면 호출
 				var resultFlag = msg.result.resultFlag;
 				if (resultFlag == "T") {
-					notice("사용 가능한 아이디 입니다.");
+					modal1("사용 가능한 아이디 입니다.");
 				} else {
 					modal1("중복된 아이디입니다.");
 				}
@@ -153,8 +153,7 @@ function insert_go() {		/* 전제적인 입력창 널값 체크 */
 function insert_close() {		/* 등록 후 팝업창 닫기 */
 	var aa = "${closeValue}";
 	if (aa == '1') {
-		notice("신청이 완료되었습니다.");
-	//	window.close();
+		window.close();
 	}
 }
 function nextclose() {		/* 아이디 중복 체크 후 아이디를 변경하였을경우 다시 기본 값 셋팅 */
@@ -282,7 +281,7 @@ function samePassword(){
 	<div class="pop_head">
 		<div id="pop_head">
 			<div class="tit">
-				<h3>임직원등록 신청</h3>
+				<h3>사용자 추가</h3>
 			</div>
 		</div>
 	</div>
@@ -372,7 +371,7 @@ function samePassword(){
 								</label>
 						</tr>
 						<tr>
-							<th scope="row">E-Mail</th>
+							<th scope="row">이메일</th>
 							<td><input type="text" name="mesUserEmail" maxLength="100" style="width:200px" /></td>
 						</tr>
 		          		<tr>

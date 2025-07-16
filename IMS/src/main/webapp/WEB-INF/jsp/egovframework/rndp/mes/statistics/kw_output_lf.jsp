@@ -144,7 +144,7 @@
 	
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>산출물 통계</h2>
+			<h2>산출물통계</h2>
 		</div>
 		<div class="filter_wrap"> 
 			<div class="search_filter">
@@ -182,13 +182,14 @@
   		  		</tr>
   		  		<tr>
   		  			<th class="bl">착수</th>
-	   		  		<th>중간</th>
+	   		  		<th>수행</th>
 	   		  		<th>완료</th>
 	   		  		<th>합계</th>
   		  		</tr>
 	   		  </thead>
 	   		  <tbody>
 	   		 	<c:forEach var="outputList" items="${outputList}" varStatus="status1">
+	   		 		<c:if test="${outputList.eValueD != 0}">
 	  		  			<tr> 
 			   		  		<td>
 								<c:out value="${outputList.eWordA}" />
@@ -208,6 +209,8 @@
 			   		  			 ${outputList.eValueD} 
 							</td>
 						</tr>
+						
+	   		 		</c:if>
 				</c:forEach>
 	   		  </tbody>
 			</table>
@@ -220,23 +223,25 @@
 	   		  <thead>
 	   		  	<tr> 
 	   		  		<th rowspan="2">프로젝트명</th>
-	   		  		<th colspan="4"> 보고서 </th>
+	   		  		<th colspan="5"> 보고서 </th>
 	   		  		
   		  		</tr>
   		  		<tr>
-  		  			<th>착수</th>
-	   		  		<th>중간</th>
-	   		  		<th>완료</th>
+  		  			<th  class="bl">주간</th>
+	   		  		<th>월간</th>
+	   		  		<th>분기</th>
+	   		  		<th>반기</th>
 	   		  		<th>합계</th>
   		  		</tr>
 	   		  </thead>
 	   		  <tbody>
 	   		 	<c:forEach var="projectList" items="${projectList}" varStatus="status2">
+	   		 		<c:if test="${projectList.eValueE != 0}">
 	  		  			<tr> 
 			   		  		<td>
 								<c:out value="${projectList.eWordA}" />
 								<input type="hidden" id="eWordB_${status2.index}" name="eWordB" value="${projectList.eWordA}">
-								<input type="hidden" id="eValueB_${status2.index}" name="eValueB" value="${projectList.eValueD}">
+								<input type="hidden" id="eValueB_${status2.index}" name="eValueB" value="${projectList.eValueE}">
 							</td>
 							<td>
 			   		  			 ${projectList.eValueA} 
@@ -250,7 +255,11 @@
 							<td>
 			   		  			 ${projectList.eValueD} 
 							</td>
+							<td>
+			   		  			 ${projectList.eValueE} 
+							</td>
 						</tr>
+						</c:if>
 				</c:forEach>
 	   		  </tbody>
 			</table>
@@ -356,7 +365,7 @@
 	        //width: 650
 	    },
 	    title: {
-	        text: '프로젝트당 산출물 등록 건',
+	        text: '산출물 등록 건',
 	        style: {
 	 	        fontSize: '16px',
 	 	        fontWeight: 600,
@@ -418,7 +427,7 @@
 		        //width: 650
 		    },
 		    title: {
-		        text: '프로젝트 보고서 등록 건',
+		        text: '보고서 등록 건',
 		        style: {
 		 	        fontSize: '16px',
 		 	        fontWeight: 600,

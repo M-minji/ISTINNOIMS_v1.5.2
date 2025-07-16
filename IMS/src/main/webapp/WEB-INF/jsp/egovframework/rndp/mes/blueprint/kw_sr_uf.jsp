@@ -87,6 +87,7 @@ $(document).ready(function(){
 	if(sSignStatus == "등록" || sSignStatus == "반려" || sSignStatus == "승인"){
 		$("#oSignPass").val("N");
 		 $('#oPass').prop('checked', false);
+		 setToolTip();
 	}else{
 		 $('#oPass').prop('checked', true);
 		$("#oSignPass").val("Y");
@@ -205,7 +206,13 @@ $(document).ready(function(){
 	}
 	function chkIns(){
 		if($("#eRequester").val() == ""){
-			modal1("작성자를 입력하세요.", "#eRequester");
+			modal1("요청자를 입력하세요.", "#eRequester");
+			return false;
+		}
+		
+
+		if($("#eReqContent").val() == ""){
+			modal1("요청내용을 입력하세요.", "#eReqContent");
 			return false;
 		}
 		
@@ -548,7 +555,7 @@ $(document).ready(function(){
 
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>SR관리 정보 수정 페이지</h2>
+			<h2>SR정보 수정</h2>
 		</div>
 	</div>
 	<div class="normal_table row">
@@ -603,9 +610,7 @@ $(document).ready(function(){
 				</tr>
   				
 				<tr>
-					<th>
-						요청내용
-					</th>
+					<th><span style="color: red">* </span>요청내용</th>
 					<td id="td_editor" colspan="3" align="center" scope="row"> 
 							<textarea id="eReqContent" name="eReqContent" cols="100%" rows="10" maxLength="1000" style="font-size: 20px; width: 100%; height: 300px; resize: none;" >${info.eReqContent}</textarea>
 					</td>

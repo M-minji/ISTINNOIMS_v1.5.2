@@ -381,12 +381,12 @@ function approvalPop(){
 							<a class="form_btn bg" onclick="selectWorkerPop('R', 'eManager')" style="margin-left: auto;">담당자 선택</a>
 						</div>
 					</td>
-					<th>담당자연락처</th>
+					<th>담당자 연락처</th>
 					<td>
 						<input type="text" id="eManagerHP" name="eManagerHP" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 						<span id="eManagerHPTxt" style="display: none;"></span>
 					</td>
-					<th>담당자메일</th>
+					<th>담당자 이메일</th>
 					<td>
 						<input type="text" id="eManagerMail" name="eManagerMail" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 						<span id="eManagerMailTxt" style="display: none;"></span>
@@ -401,7 +401,7 @@ function approvalPop(){
 					<td>
 						<input type="text" id="ePMContact" name="ePMContact" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>
-					<th>PM 메일</th>
+					<th>PM 이메일</th>
 					<td>
 						<input type="text" id="ePMEmail" name="ePMEmail" style="width:100%; text-align: left;padding-left: 5px;"  maxlength="30"  value=""  />
 					</td>

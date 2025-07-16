@@ -55,7 +55,10 @@
 					  eAssetOs,
 					  eAssetDeviceType,
 					  eSignStatus,
-					  eStatus
+					  eStatus,
+					  eEntryExporterDate,
+					  eExitExporter
+					  
 					) VALUES (
 					  #eEquipmentInKey#,
 					  #eAssetPurpose#,
@@ -71,7 +74,9 @@
 					  #eAssetOs#,
 					  #eAssetDeviceType#,
 					  #eSignStatus#,
-					  #eStatus#
+					  #eStatus#,
+					  #eEntryExporterDate#,
+					  #eExitExporter#
 					);
 
 	</insert>
@@ -305,6 +310,8 @@
 			  eei.eStatus,
 		      eei.eEntryLocation,
 			  eei.eEntryImporterOrg,
+			  eeii.eExitExporter,
+			  eeii.eEntryExporterDate,
 			  DATE_FORMAT(eei.wDate, '%Y-%m-%d') AS  eEntryWdate
 			FROM
 			  E_EQUIPMENT_IN_ITEM AS eeii

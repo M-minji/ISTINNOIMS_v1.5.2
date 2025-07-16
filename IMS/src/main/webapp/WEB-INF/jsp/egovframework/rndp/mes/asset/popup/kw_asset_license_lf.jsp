@@ -65,7 +65,7 @@ function fn_search_detail(){
 	<div class="pop_head">
 		<div id="pop_head">
 			<div class="tit">
-				<h3>대상장비 조회 <i class="badge"><c:if test="${not empty mesAssetVO.eUsedLicenseQuantity}">총 등록된 수량 ${mesAssetVO.eUsedLicenseQuantity}건</c:if></i></h3>
+				<h3>라이선스 사용자산 조회 <i class="badge"><c:if test="${not empty mesAssetVO.eUsedLicenseQuantity}">총 등록된 수량 ${mesAssetVO.eUsedLicenseQuantity}건</c:if></i></h3>
 			</div>
 			<a href="javascript:self.close();"><img src="/images/btn/close.gif" width="22" height="21" /></a>
 		</div>

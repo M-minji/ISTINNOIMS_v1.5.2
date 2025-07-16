@@ -615,6 +615,15 @@ public class MesInspectionController {
 			
 			List<MesInspectionVO> info = new ArrayList<>();
 			MesInspectionVO selInfo = 	mesInspectionService.eInspectionInfo(mesInspectionVO);
+			if (selInfo.geteFieldKey() == null || selInfo.geteFieldKey().equals("")) {
+				selInfo.seteField1("필드1");
+				selInfo.seteField2("필드2");
+				selInfo.seteField3("필드3");
+				selInfo.seteField4("필드4");
+				selInfo.seteField5("필드5");
+			} else {
+				selInfo = mesInspectionService.selectFieldInfo(selInfo);
+			}
 			info.add(selInfo);
 			beans.put("info", info);
 			

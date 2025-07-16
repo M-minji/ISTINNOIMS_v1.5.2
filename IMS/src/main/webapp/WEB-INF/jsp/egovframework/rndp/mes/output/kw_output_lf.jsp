@@ -274,7 +274,7 @@ function eReport_update(eProjectNum){
 			      	<th >보고서</th>
 			    	<th >담당자</th>
 			      	<th >담당자연락처</th>
-			      	<th >담당자메일</th>
+			      	<th >담당자이메일</th>
 			      	<th >주사업자</th>
 			      	<th >사업PM</th>
 			      	<th >PM연락처</th>

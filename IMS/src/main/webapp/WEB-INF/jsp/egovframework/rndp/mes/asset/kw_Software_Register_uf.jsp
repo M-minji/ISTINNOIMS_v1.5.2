@@ -93,6 +93,7 @@ function setToolTip(){
 		if(sSignStatus == "등록" || sSignStatus == "반려" || sSignStatus == "승인"){
 			$("#oSignPass").val("N");
 			 $('#oPass').prop('checked', false);
+			 setToolTip();
 		}else{
 			 $('#oPass').prop('checked', true);
 			$("#oSignPass").val("Y");
@@ -505,7 +506,7 @@ function setToolTip(){
 			
 	<div class="content_top">	
 		<div class="content_tit">
-			<h2>소프트웨어 라이선스 정보 수정페이지</h2>
+			<h2>소프트웨어 라이선스 수정</h2>
 		</div>
 	</div>
 	

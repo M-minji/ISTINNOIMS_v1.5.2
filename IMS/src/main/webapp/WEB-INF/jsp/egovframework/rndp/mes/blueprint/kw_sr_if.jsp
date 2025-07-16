@@ -215,6 +215,11 @@ function chkIns(){
 		modal1("요청자를 입력하세요.", "#eRequester");
 		return false;
 	}
+	
+	if($("#eReqContent").val() == ""){
+		modal1("요청내용을 입력하세요.", "#eReqContent");
+		return false;
+	}
 	 
 	if($("#oSignPass").val() != 'Y'){
 		if(document.getElementsByName("sSignStaffKey").length == 0){
@@ -583,7 +588,7 @@ function approvalPop(){
 	
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>SR 정보 등록</h2>
+			<h2>SR정보 등록</h2>
 		</div>
 	</div>
 	<div class="normal_table row">
@@ -640,9 +645,7 @@ function approvalPop(){
   			
   				
 				<tr>
-					<th>
-						요청내용
-					</th>
+					<th><span style="color: red">* </span>요청내용</th>
 					<td id="td_editor" colspan="3" align="center" scope="row"> 
 						<textarea id="eReqContent" name="eReqContent" cols="100%" rows="10" style="font-size: 20px; width: 100%; height: 300px; resize: none;" maxLength="1000"></textarea>
 					</td>

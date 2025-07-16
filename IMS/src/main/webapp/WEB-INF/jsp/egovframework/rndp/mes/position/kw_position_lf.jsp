@@ -44,7 +44,9 @@
 			showStr += "				${list.kPositionStaffName}";
 			showStr += "			</td>";
 			showStr += "			<td>";
-			showStr += "				<a class='form_btn sm'  onclick='addRow("+index+", "+(depth+1)+")'>하위 부서 추가</a>";
+			if(depth+1 < 4){
+				showStr += "				<a class='form_btn sm'  onclick='addRow("+index+", "+(depth+1)+")'>하위 부서 추가</a>";
+			}
 			showStr += "				<a class='form_btn sm' onclick='setUpdatePosition("+index+", \"Y\", this)'>수정</a>";
 			showStr += "				<a class='form_btn sm'  onclick='deletePosition("+index+")'>삭제</a>";
 			showStr += "				";

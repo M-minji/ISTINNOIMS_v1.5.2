@@ -149,7 +149,7 @@
 	
 	<div class="content_top">
 		<div class="content_tit">
-			<h2>대상장비(자산)관리 통계</h2>
+			<h2>대상장비(자산)관리통계</h2>
 		</div>
 		<div class="filter_wrap"> 
 			<div class="search_filter">
@@ -173,7 +173,7 @@
 						</select> 
 					</li>
 					<li>
-		           	 	<span>도입일 선택 </span>
+		           	 	<span>도입일</span>
 		           	 	<div class="date">
 		           	 		<input type="text" name="topStartDate"  id="topStartDate" value="${mesStatisticsVO.topStartDate}" readonly/>
 				       		-
@@ -200,7 +200,7 @@
 	 		<table>
 	   		  <thead>
 	   		  	<tr> 
-	   		  		<th>제조사명</th>
+	   		  		<th>제조사</th>
 	   		  		<th>등록 자산 수</th>
 	  		  		</tr>
 	   		  </thead>
@@ -268,6 +268,11 @@
 						</tr>
 	  		  		</c:forEach>
 	   		  </tbody>
+	   		  <tbody id="lineRow3">	
+				<tr>
+					<td colspan="2">표시할 데이터가 없습니다.</td>
+				</tr>		
+				</tbody>
 			</table>
 		</div>
 	</div>
@@ -331,7 +336,7 @@
 	       // width: 650
 	    },
 	    title: {
-	        text: '제조사별 통계',
+	        text: '제조사별',
 	        style: {
 	 	        fontSize: '16px',
 	 	        fontWeight: 600,
@@ -394,7 +399,7 @@
 		        //width: 650
 		    },
 		    title: {
-		        text: '유형별 통계',
+		        text: '자산유형별',
 		        style: {
 		 	        fontSize: '16px',
 		 	        fontWeight: 600,
