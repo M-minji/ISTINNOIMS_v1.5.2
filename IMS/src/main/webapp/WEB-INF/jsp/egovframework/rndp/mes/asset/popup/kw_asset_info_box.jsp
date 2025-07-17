@@ -169,6 +169,8 @@ window.resizeTo(1430, 800);
 	<input type="hidden" id="searchType" name="searchType" value="${mesAssetVO.searchType}">
 	<input type="hidden" id="ePageInfo" name="ePageInfo" value="${mesAssetVO.ePageInfo}">
 	<input type="hidden" id="csrfToken" name="csrfToken" value="${csrfToken}">
+	<input type="hidden" id="aAssetKeyList" name="aAssetKeyList" value="${mesAssetVO.aAssetKeyList}">
+	
 	
 	<div class="pop_head">
 		<div id="pop_head">

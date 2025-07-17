@@ -556,9 +556,60 @@ function setToolTip(){
 		var formattedDate = new Date(date);
 	    return formattedDate;
 	}
+	
+	var keyList = "";
+	function assetKeyListinput(){
+		var rowArr = document.getElementsByName("eSWRegisterKey").length;
+		
+		if(rowArr > 0){
+			for(var i=0; i < rowArr ; i++){
+				var assetKey = document.getElementsByName("eSWRegisterKey")[i].value;
+					keyList += (assetKey + ",");
+			}
+			keyList = keyList.slice(0, -1);
+		}
+	}
+	
 	function addLicense() {
-		var url = "/mes/asset/popup/kw_license_pop.do";
-		window.open(url ,"eLicenseAdd" ,"width=1280,height=650,menubar=no,status=no,scrollbars=yes,location=no,resizable=yes");
+		
+		 const form = document.createElement("form");
+		    form.method = "POST";
+		    form.action = "/mes/asset/popup/kw_license_pop.do";
+		    form.target = "eLicenseAdd";    
+
+		    const csrfTokenGubun = document.createElement("input");
+		    csrfTokenGubun.type = "hidden";
+		    csrfTokenGubun.name = "csrfToken";
+		    csrfTokenGubun.value = $("input[name=csrfToken]").val();
+		    form.appendChild(csrfTokenGubun);
+		    
+		    const kMenuKeyGubun = document.createElement("input");
+		    kMenuKeyGubun.type = "hidden";
+		    kMenuKeyGubun.name = "kMenuKey";
+		    kMenuKeyGubun.value = "${key}";
+		    form.appendChild(kMenuKeyGubun);
+
+		    keyList = "";
+		    assetKeyListinput();
+		    
+		    const aAssetKeyList = document.createElement("input");
+		    aAssetKeyList.type = "hidden";
+		    aAssetKeyList.name = "aAssetKeyList";
+		    aAssetKeyList.value = keyList;
+		    form.appendChild(aAssetKeyList);
+		    
+		 // 폼을 문서에 추가
+		    document.body.appendChild(form);
+
+		    // 새 창 열기
+		    window.open("", "eLicenseAdd", "width=1280,height=700,menubar=no,status=no,scrollbars=yes,location=no,resizable=yes");
+
+		    // 폼 전송
+		    form.submit();
+
+		    // 폼 제거
+		    document.body.removeChild(form);
+		    
 	}
 	function setInfoReturnPop(obj) {
 		$.ajax({

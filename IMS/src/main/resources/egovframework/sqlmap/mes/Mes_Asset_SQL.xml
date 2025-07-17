@@ -886,6 +886,9 @@
 		<isNotEmpty property="searchTypeSet6">
 			AND ASSET_TYPE    = #searchTypeSet6#
 		</isNotEmpty>
+	 	<isNotEmpty property="aAssetKeyList">
+			AND ASSET_NUM NOT IN ($aAssetKeyList$)
+		</isNotEmpty>
         ORDER BY ASSET_NUMBER DESC
 		LIMIT #recordCountPerPage# OFFSET #firstIndex#
 	</select>
@@ -928,6 +931,9 @@
 		</isNotEmpty>
 		<isNotEmpty property="searchTypeSet6">
 			AND ASSET_TYPE    = #searchTypeSet6#
+		</isNotEmpty>
+	 	<isNotEmpty property="aAssetKeyList">
+			AND ASSET_NUM NOT IN ($aAssetKeyList$)
 		</isNotEmpty>
 	</select>
 	
@@ -1018,7 +1024,7 @@
 		      FROM A_ASSET_LICENSE AS aal WHERE aal.eSWRegisterKey = aas.asset_sw_key) AS eUsedLicenseQuantity
 		FROM A_ASSET_SW AS aas
 		LEFT JOIN S_SIGN AS s ON (SIGN_TABLE_NUM = asset_sw_key AND  SIGN_TABLE_NAME = 'A_ASSET_SW')
-		WHERE 1=1
+		WHERE 1=1  AND (eStatus = '제외' OR (eStatus = '승인요청' AND SIGN_PROGRESS = SIGN_PROGRESS_CNT))
         
 		<isNotEmpty property="searchTypeSet1">
 			AND LOWER(asset_manufacturer) LIKE CONCAT('%',LOWER(#searchTypeSet1#),'%')
@@ -1036,6 +1042,9 @@
 		  ]]>
 		  )
 		</isNotEmpty>
+		<isNotEmpty property="aAssetKeyList">
+			AND asset_sw_key NOT IN ($aAssetKeyList$)
+		</isNotEmpty>
         ORDER BY asset_sw_key DESC
 		LIMIT #recordCountPerPage# OFFSET #firstIndex#
 	</select>
@@ -1045,7 +1054,8 @@
 		SELECT 
 			COUNT(asset_sw_key) 
 		FROM A_ASSET_SW
-		WHERE 1=1
+		LEFT JOIN S_SIGN AS s ON (SIGN_TABLE_NUM = asset_sw_key AND  SIGN_TABLE_NAME = 'A_ASSET_SW')
+		WHERE 1=1  AND (eStatus = '제외' OR (eStatus = '승인요청' AND SIGN_PROGRESS = SIGN_PROGRESS_CNT))
 <!-- 		<isNotEmpty property="topStartDate"> -->
 <!-- 		    <isNotEmpty property="topEndDate"> -->
 <!-- 		         <![CDATA[ -->
@@ -1080,6 +1090,9 @@
       		)
 		  ]]>
 		  </isNotEmpty>
+		  <isNotEmpty property="aAssetKeyList">
+			AND asset_sw_key NOT IN ($aAssetKeyList$)
+		</isNotEmpty>
 	</select>
 	<select id="mesAssetDAO.mesSoftwareInfo" parameterClass="mesAssetVO" resultClass="mesAssetVO">
 		/* mesAssetDAO.mesSoftwareInfo*/

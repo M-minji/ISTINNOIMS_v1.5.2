@@ -104,16 +104,11 @@
 		LEFT JOIN S_SIGN AS s ON (s.SIGN_TABLE_NUM = INSPECTION_NUM  AND	s.SIGN_TABLE_NAME = 'INSPECTION')
 		WHERE 1=1 AND eStatus != '삭제'
 		<isNotEmpty property="eTopStartDate">
-		    <isNotEmpty property="eTopEndDate">
-		   	  <![CDATA[
-		        AND (DATE_FORMAT(eInspectionDate, '%Y-%m-%d') >= #eTopStartDate# 
-		          OR DATE_FORMAT(eInspectionDate, '%Y-%m-%d') <= #eTopEndDate#)
-		         ]]>
-		    </isNotEmpty>
-		    <isEmpty property="topEndDate">
-		        AND DATE_FORMAT(eInspectionDate, '%Y-%m-%d') >= #eTopStartDate#
-		    </isEmpty>
+			AND DATE_FORMAT(eInspectionDate, '%Y-%m-%d') >= DATE_FORMAT(#eTopStartDate#, '%Y-%m-%d')		
 		</isNotEmpty>
+	    <isNotEmpty property="eTopEndDate">  	  
+	        AND DATE_FORMAT(#eTopEndDate#, '%Y-%m-%d') >= DATE_FORMAT(eInspectionDate, '%Y-%m-%d')
+	    </isNotEmpty>
 		<isNotEmpty property="eSearchTypeSet1">
 			AND LOWER(eInspectionTypeName) LIKE CONCAT('%',LOWER(#eSearchTypeSet1#),'%')
 		</isNotEmpty>
@@ -142,16 +137,11 @@
 		FROM INSPECTION
 		WHERE 1=1 AND eStatus != '삭제'
 		<isNotEmpty property="eTopStartDate">
-		    <isNotEmpty property="eTopEndDate">
-		   	  <![CDATA[
-		        AND (DATE_FORMAT(eInspectionDate, '%Y-%m-%d') >= #eTopStartDate# 
-		          OR DATE_FORMAT(eInspectionDate, '%Y-%m-%d') <= #eTopEndDate#)
-		         ]]>
-		    </isNotEmpty>
-		    <isEmpty property="topEndDate">
-		        AND DATE_FORMAT(eInspectionDate, '%Y-%m-%d') >= #eTopStartDate#
-		    </isEmpty>
+			AND DATE_FORMAT(eInspectionDate, '%Y-%m-%d') >= DATE_FORMAT(#eTopStartDate#, '%Y-%m-%d')		
 		</isNotEmpty>
+	    <isNotEmpty property="eTopEndDate">  	  
+	        AND DATE_FORMAT(#eTopEndDate#, '%Y-%m-%d') >= DATE_FORMAT(eInspectionDate, '%Y-%m-%d')
+	    </isNotEmpty>
 		<isNotEmpty property="eSearchTypeSet1">
 			AND LOWER(eInspectionTypeName) LIKE CONCAT('%',LOWER(#eSearchTypeSet1#),'%')
 		</isNotEmpty>

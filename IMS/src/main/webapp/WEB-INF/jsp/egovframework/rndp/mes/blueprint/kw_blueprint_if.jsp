@@ -309,6 +309,18 @@ function mesIMGreg(gubun) {
 }
  
 
+var keyList = "";
+function assetKeyListinput(){
+	var rowArr = document.getElementsByName("eAssetKey").length;
+	
+	if(rowArr > 0){
+		for(var i=0; i < rowArr ; i++){
+			var assetKey = document.getElementsByName("eAssetKey")[i].value;
+				keyList += (assetKey + ",");
+		}
+		keyList = keyList.slice(0, -1);
+	}
+}
 
 
 function sel_asset(){	
@@ -329,6 +341,15 @@ function sel_asset(){
     kMenuKeyGubun.name = "kMenuKey";
     kMenuKeyGubun.value = "${key}";
     form.appendChild(kMenuKeyGubun);
+    
+    keyList = "";
+    assetKeyListinput();
+    
+    const aAssetKeyList = document.createElement("input");
+    aAssetKeyList.type = "hidden";
+    aAssetKeyList.name = "aAssetKeyList";
+    aAssetKeyList.value = keyList;
+    form.appendChild(aAssetKeyList);
 
     // 폼을 문서에 추가
     document.body.appendChild(form);
