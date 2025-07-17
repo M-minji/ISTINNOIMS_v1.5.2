@@ -49,8 +49,8 @@ $(function(){
 	datepickerSet("topStartDate","topEndDate");
 	  $('table[role="grid"].gridjs-table th:nth-child(1) button').hide();
 	  $('table[role="grid"].gridjs-table th:nth-child(1)').css('width', '70px'); 
-	  $('table[role="grid"].gridjs-table th:nth-child(2)').css('width', '140px'); 
-	  $('table[role="grid"].gridjs-table th:nth-child(3)').css('width', '100px'); 
+	  $('table[role="grid"].gridjs-table th:nth-child(2)').css('width', '100px'); 
+	  $('table[role="grid"].gridjs-table th:nth-child(3)').css('width', '140px'); 
 	  $('table[role="grid"].gridjs-table th:nth-child(4)').css('width', '120px'); 
 	  $('table[role="grid"].gridjs-table th:nth-child(5)').css('width', '110px'); 
 	  $('table[role="grid"].gridjs-table th:nth-child(6)').css('width', '120px'); 
@@ -341,8 +341,8 @@ function excelDwonload(){
 			<thead>
 				<tr>
 					<th>No.</th>
-					<th>자산번호</th>
 					<th>작성자</th>
+					<th>자산번호</th>
 					<th>교체일자</th>
 					<th>교체확인자</th>
 					<th>자산명</th>
@@ -362,8 +362,8 @@ function excelDwonload(){
 							${paginationInfo.totalRecordCount - (mesAssetVO.pageIndex-1) * paginationInfo.recordCountPerPage  - i.index}
 							<input type="hidden" value="${list.eReplacedKey}" />
 						</td>
-						<td>${list.eAssetNumber}</td>
 						<td>${list.kStaffName}</td>
+						<td>${list.eAssetNumber}</td>
 						<td>${list.eReplacementDate}</td>
 						<td>${list.eReplacedBy}</td>
 						<td>${list.eAssetName}</td>

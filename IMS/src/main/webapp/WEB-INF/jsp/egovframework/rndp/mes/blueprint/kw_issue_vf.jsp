@@ -183,6 +183,9 @@ window.addEventListener("DOMContentLoaded", function () {
 		document.frm.submit();
 	}
 	
+	function eDownload(eFileId){
+		window.open("<c:url value='/cmm/fms/FileDown.do?atchFileId="+eFileId+"&fileSn=0'/>");
+	}
 
 	function eDownloadAll(){
 		 var fileInputs = document.getElementsByName("eFileRowId");

@@ -30,7 +30,14 @@ public class MesAssetVO extends DefultVO{
 	private String  eAssetStatusList                        = "";        
 	private String  eAssetTypeList                        = "";   
 	
+	private String aAssetKeyList					= "";
 	
+	public String getaAssetKeyList() {
+		return aAssetKeyList;
+	}
+	public void setaAssetKeyList(String aAssetKeyList) {
+		this.aAssetKeyList = aAssetKeyList;
+	}
 	// 자산정보
 	private String aAssetKey					= "";
 	private String aAssetNumber					= "";

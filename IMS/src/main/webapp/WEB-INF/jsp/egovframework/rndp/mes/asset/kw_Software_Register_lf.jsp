@@ -328,8 +328,8 @@ function startApproval(eSWRegisterKey, eStatus){
 						</td>
 						<td>
 							${list.eValidityPeriod}
-							<c:if test="${list.eValidityPeriod eq '만료' && staffVO.kStaffAuthWriteFlag eq 'T'}">
-								<c:if test="${list.kStaffKey eq staffVO.kStaffKey}">
+							<c:if test="${list.eValidityPeriod eq '만료' && (staffVO.kStaffAuthWriteFlag eq 'T' || staffVO.kAdminAuth eq 'T')}">
+								<c:if test="${list.kStaffKey eq staffVO.kStaffKey || staffVO.kAdminAuth eq 'T'}">
 							 		<a class="form_btn sm" onclick="dataUpdate(${list.eSWRegisterKey});">만료일 갱신</a>
 						 		</c:if>
 							</c:if>

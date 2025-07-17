@@ -8,7 +8,7 @@
 	<select id="mesIssueDAO.mesIssueInfoList" parameterClass="mesIssueVO" resultClass="mesIssueVO">
 		/* mesIssueDAO.mesIssueInfoList */
 		SELECT 
-				ISSUE_NUM AS eIssueKey,
+				DISTINCT ISSUE_NUM AS eIssueKey,
 				eAuthorKey,
 			    eAuthor,
 			    eCreationDate,
@@ -52,6 +52,7 @@
 					AND ssi.SIGN_STAFF_NUM = #kStaffKey#
 				) > 0, 'Y', 'N') AS eViewGubun
 		FROM I_ISSUE 
+		LEFT JOIN I_ISSUE_HANDLER AS ih ON(ih.eIssueKey = ISSUE_NUM)
 		LEFT JOIN S_SIGN AS s ON(s.SIGN_TABLE_NUM = ISSUE_NUM  and s.SIGN_TABLE_NAME = 'I_ISSUE')
 		WHERE 1=1 AND eIssueStatus != '삭제'
 		<isNotEmpty property="eSearchWordB">
@@ -73,10 +74,11 @@
 				AND LOWER(eIssueContent) LIKE CONCAT('%',LOWER(#eSearchWordE#),'%')
 		</isNotEmpty>
 		<isNotEmpty property="eSearchWordF">
-				AND LOWER(eHandler) LIKE CONCAT('%',LOWER(#eSearchWordF#),'%')
+				AND LOWER(ih.eRowWorker) LIKE CONCAT('%',LOWER(#eSearchWordF#),'%')
 		</isNotEmpty>
 		<isNotEmpty property="eSearchWordG">
-				AND ( DATE_FORMAT(COALESCE(NULLIF(eActualWorkDate, ''), eProcessingDate), '%Y-%m-%d') >= DATE_FORMAT(#eSearchWordG#, '%Y-%m-%d'))
+		<!-- 		AND ( DATE_FORMAT(COALESCE(NULLIF(eActualWorkDate, ''), eProcessingDate), '%Y-%m-%d') >= DATE_FORMAT(#eSearchWordG#, '%Y-%m-%d')) -->
+				AND ( DATE_FORMAT(COALESCE(NULLIF(eActualWorkDate, ''), eProcessingDate), '%Y-%m-%d') = DATE_FORMAT(#eSearchWordG#, '%Y-%m-%d'))
 		</isNotEmpty>
 		<isNotEmpty property="eSearchWordH">
 				AND LOWER(eRequester) LIKE CONCAT('%',LOWER(#eSearchWordH#),'%')
@@ -89,8 +91,9 @@
 	<select id="mesIssueDAO.mesIssueInfoListCnt" parameterClass="mesIssueVO" resultClass="int">
 		/* mesIssueDAO.mesIssueInfoListCnt */
 		SELECT 
-				COUNT(ISSUE_NUM )
+				COUNT(DISTINCT ISSUE_NUM )
 		FROM I_ISSUE
+		LEFT JOIN I_ISSUE_HANDLER AS ih ON(ih.eIssueKey = ISSUE_NUM)
 		WHERE 1=1 AND eIssueStatus != '삭제'
 		<isNotEmpty property="eSearchWordB">
 			AND LOWER(eAssetTypeName) LIKE CONCAT('%',LOWER(#eSearchWordB#),'%')
@@ -111,7 +114,7 @@
 				AND LOWER(eIssueContent) LIKE CONCAT('%',LOWER(#eSearchWordE#),'%')
 		</isNotEmpty>
 		<isNotEmpty property="eSearchWordF">
-				AND LOWER(eHandler) LIKE CONCAT('%',LOWER(#eSearchWordF#),'%')
+				AND LOWER(ih.eRowWorker) LIKE CONCAT('%',LOWER(#eSearchWordF#),'%')
 		</isNotEmpty>
 		<isNotEmpty property="eSearchWordG">
 				AND ( DATE_FORMAT(COALESCE(NULLIF(eActualWorkDate, ''), eProcessingDate), '%Y-%m-%d') >= DATE_FORMAT(#eSearchWordG#, '%Y-%m-%d'))
