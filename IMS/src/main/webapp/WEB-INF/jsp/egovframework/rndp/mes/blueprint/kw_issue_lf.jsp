@@ -116,7 +116,7 @@ $(document).ready(function() {
 	    var content = $(this).html();
 	    // <p>와 </p>를 제거
 	    content = content.replace(/<p[^>]*>/g, '').replace(/<\/p>/g, '');
-	    $(this).html(content);
+//	    $(this).html(content);
 	 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 	    $(this).css({
 	        'white-space': 'nowrap',
@@ -129,7 +129,7 @@ $(document).ready(function() {
 	    var content = $(this).html();
 	    // <p>와 </p>를 제거
 	    content = content.replace(/<p[^>]*>/g, '').replace(/<\/p>/g, '');
-	    $(this).html(content);
+//	    $(this).html(content);
 	 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 	    $(this).css({
 	        'white-space': 'nowrap',
@@ -142,7 +142,7 @@ $(document).ready(function() {
 	    var content = $(this).html();
 	    // <p>와 </p>를 제거
 	    content = content.replace(/<p[^>]*>/g, '').replace(/<\/p>/g, '');
-	    $(this).html(content);
+//	    $(this).html(content);
 	 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 	    $(this).css({
 	        'white-space': 'nowrap',
@@ -155,7 +155,7 @@ $(document).ready(function() {
 	    var content = $(this).html();
 	    // <p>와 </p>를 제거
 	    content = content.replace(/<p[^>]*>/g, '').replace(/<\/p>/g, '');
-	    $(this).html(content);
+//	    $(this).html(content);
 	 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 	    $(this).css({
 	        'white-space': 'nowrap',
@@ -168,7 +168,7 @@ $(document).ready(function() {
 	    var content = $(this).html();
 	    // <p>와 </p>를 제거
 	    content = content.replace(/<p[^>]*>/g, '').replace(/<\/p>/g, '');
-	    $(this).html(content);
+//	    $(this).html(content);
 	 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 	    $(this).css({
 	        'white-space': 'nowrap',
