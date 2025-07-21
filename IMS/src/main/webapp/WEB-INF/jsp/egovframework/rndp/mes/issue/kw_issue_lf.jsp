@@ -44,6 +44,9 @@ window.addEventListener("DOMContentLoaded", function () {
 	    sessionStorage.removeItem("actionType");
   }
 });
+
+
+
 $(document).ready(function(){
 	
 		// 달력 설정
@@ -66,7 +69,7 @@ $(document).ready(function(){
 			    var content = $(this).html();
 			    // <p>와 </p>를 제거
 			    content = content.replace(/<p[^>]*>/g, '').replace(/<\/p>/g, '');
-			    $(this).html(content);
+			//    $(this).html(content);  이부분에서 정렬시 두개씩 출력되는 오류가 생김
 			 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 			    $(this).css({
 			        'white-space': 'nowrap',
@@ -89,6 +92,7 @@ $(document).ready(function(){
 		 
 		  
 	}); 
+
 	
 	// 현황 다운로드
 	function excelDownload(){

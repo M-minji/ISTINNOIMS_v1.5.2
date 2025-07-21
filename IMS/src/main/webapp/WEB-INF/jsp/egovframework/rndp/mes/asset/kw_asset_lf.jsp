@@ -727,7 +727,7 @@ $(document).ready(function() {
 	  $('table[role="grid"].gridjs-table td:nth-child(4)').each(function() {
 		    var content = $(this).html();
 		    // <p>와 </p>를 제거
-		    $(this).html(content);
+//		    $(this).html(content);
 		 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 		    $(this).css({
 		        'white-space': 'nowrap',
@@ -739,7 +739,7 @@ $(document).ready(function() {
 	  $('table[role="grid"].gridjs-table td:nth-child(5)').each(function() {
 		    var content = $(this).html();
 		    // <p>와 </p>를 제거
-		    $(this).html(content);
+//		    $(this).html(content);
 		 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 		    $(this).css({
 		        'white-space': 'nowrap',
@@ -751,7 +751,7 @@ $(document).ready(function() {
 	  $('table[role="grid"].gridjs-table td:nth-child(6)').each(function() {
 		    var content = $(this).html();
 		    // <p>와 </p>를 제거
-		    $(this).html(content);
+//		    $(this).html(content);
 		 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 		    $(this).css({
 		        'white-space': 'nowrap',
@@ -763,7 +763,7 @@ $(document).ready(function() {
 	  $('table[role="grid"].gridjs-table td:nth-child(7)').each(function() {
 		    var content = $(this).html();
 		    // <p>와 </p>를 제거
-		    $(this).html(content);
+//		    $(this).html(content);
 		 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 		    $(this).css({
 		        'white-space': 'nowrap',
@@ -775,7 +775,7 @@ $(document).ready(function() {
 	  $('table[role="grid"].gridjs-table td:nth-child(8)').each(function() {
 		    var content = $(this).html();
 		    // <p>와 </p>를 제거
-		    $(this).html(content);
+//		    $(this).html(content);
 		 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 		    $(this).css({
 		        'white-space': 'nowrap',
@@ -787,7 +787,7 @@ $(document).ready(function() {
 	  $('table[role="grid"].gridjs-table td:nth-child(9)').each(function() {
 		    var content = $(this).html();
 		    // <p>와 </p>를 제거
-		    $(this).html(content);
+//		    $(this).html(content);
 		 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 		    $(this).css({
 		        'white-space': 'nowrap',
@@ -799,7 +799,7 @@ $(document).ready(function() {
 	  $('table[role="grid"].gridjs-table td:nth-child(10)').each(function() {
 		    var content = $(this).html();
 		    // <p>와 </p>를 제거
-		    $(this).html(content);
+//		    $(this).html(content);
 		 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 		    $(this).css({
 		        'white-space': 'nowrap',
@@ -811,7 +811,7 @@ $(document).ready(function() {
 	  $('table[role="grid"].gridjs-table td:nth-child(11)').each(function() {
 		    var content = $(this).html();
 		    // <p>와 </p>를 제거
-		    $(this).html(content);
+//		    $(this).html(content);
 		 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 		    $(this).css({
 		        'white-space': 'nowrap',
@@ -823,7 +823,7 @@ $(document).ready(function() {
 	  $('table[role="grid"].gridjs-table td:nth-child(12)').each(function() {
 		    var content = $(this).html();
 		    // <p>와 </p>를 제거
-		    $(this).html(content);
+//		    $(this).html(content);
 		 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 		    $(this).css({
 		        'white-space': 'nowrap',
@@ -835,7 +835,7 @@ $(document).ready(function() {
 	  $('table[role="grid"].gridjs-table td:nth-child(13)').each(function() {
 		    var content = $(this).html();
 		    // <p>와 </p>를 제거
-		    $(this).html(content);
+//		    $(this).html(content);
 		 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 		    $(this).css({
 		        'white-space': 'nowrap',
@@ -847,7 +847,7 @@ $(document).ready(function() {
 	  $('table[role="grid"].gridjs-table td:nth-child(14)').each(function() {
 		    var content = $(this).html();
 		    // <p>와 </p>를 제거
-		    $(this).html(content);
+//		    $(this).html(content);
 		 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 		    $(this).css({
 		        'white-space': 'nowrap',
@@ -859,7 +859,7 @@ $(document).ready(function() {
 	  $('table[role="grid"].gridjs-table td:nth-child(15)').each(function() {
 		    var content = $(this).html();
 		    // <p>와 </p>를 제거
-		    $(this).html(content);
+//		    $(this).html(content);
 		 // nowrap을 적용하여 줄내림 방지, overflow는 숨기기
 		    $(this).css({
 		        'white-space': 'nowrap',

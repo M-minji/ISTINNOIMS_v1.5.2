@@ -458,7 +458,7 @@ const sAssetTypeCost = document.getElementsByName('aAssetTypeCost');
          } 
      }, 
      tooltip: { 
-         valueSuffix: '개' 
+         valueSuffix: '식' 
      }, 
      plotOptions: { 
      	 pie: { 
@@ -471,7 +471,7 @@ const sAssetTypeCost = document.getElementsByName('aAssetTypeCost');
                       const maxLen = 12;
                       const name = this.point.name;
                       const shortName = name.length > maxLen ? name.substring(0, maxLen) + '...' : name;
-                      return shortName + ' ' + this.y + '개';
+                      return shortName + ' ' + this.y + '식';
                     }, // 각 섹션의 데이터 라벨 포맷 설정 
                   style: {
              	        fontSize: '13px',
@@ -506,7 +506,7 @@ const sAssetTypeCost = document.getElementsByName('aAssetTypeCost');
          } 
      }, 
      tooltip: { 
-         valueSuffix: '개' 
+         valueSuffix: '식' 
      }, 
      plotOptions: { 
      	 pie: { 
@@ -519,7 +519,7 @@ const sAssetTypeCost = document.getElementsByName('aAssetTypeCost');
                       const maxLen = 12;
                       const name = this.point.name;
                       const shortName = name.length > maxLen ? name.substring(0, maxLen) + '...' : name;
-                      return shortName + ' ' + this.y + '개';
+                      return shortName + ' ' + this.y + '식';
                     }, // 각 섹션의 데이터 라벨 포맷 설정 
                	  style: {
                	        fontSize: '13px',
