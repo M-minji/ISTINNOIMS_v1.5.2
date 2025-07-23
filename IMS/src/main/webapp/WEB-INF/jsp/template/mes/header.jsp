@@ -571,7 +571,8 @@ html {overflow-x:auto; line-height:1.15;}
 				</c:if> 
 				<c:if test="${staff.comLogImg eq ''}">
 					<a href="/mes/main.do">
-						<img src='/images/img/ico_h1_logo.svg'  alt="로고" />
+						<!-- <img src='/images/img/ico_h1_logo.svg'  alt="로고" /> -->
+						<img src='/images/img/logo_png_nover.png'  alt="로고" />
 					</a>
 				</c:if>    
 			</div>
