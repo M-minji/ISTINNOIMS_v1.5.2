@@ -122,7 +122,7 @@ function fn_keyDown(){
 	}
 </style>
 
-<body class="login_type_a"><!--  login_type_b 클래스 부여시 b타입 -->  
+<body class="login_type_b"><!--  login_type_b 클래스 부여시 b타입 -->  
 	<div class="login_wrap">
 		<header>
 			<h1>
